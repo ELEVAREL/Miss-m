@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Miss M — Assignments</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=Playfair+Display:ital,wght@0,400;0,700&display=swap" rel="stylesheet">
+<style>
+:root{--r5:#E91E8C;--r6:#C2185B;--r2:#F8BBD9;--r3:#F48FB1;--text:#1A0A10;--text-m:#5C3049;--text-s:#9A6B80;--text-xs:#C4A0B2;--glass-b:rgba(255,255,255,.82);--shadow:rgba(194,24,91,.13);--green:#34C759;--blue:#007AFF;--red:#FF3B30;--orange:#FF9500}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:linear-gradient(155deg,#FFF0F8,#FCE4EC 40%,#F8BBD9 70%,#FDE8F3);min-height:100vh;padding:32px;color:var(--text)}
+body::before{content:'';position:fixed;top:-150px;right:-150px;width:500px;height:500px;background:radial-gradient(circle,rgba(233,30,140,.11),transparent 70%);border-radius:50%;pointer-events:none}
+.header{display:flex;align-items:baseline;gap:16px;margin-bottom:24px;flex-wrap:wrap}
+h1{font-family:'Playfair Display',serif;font-size:30px;font-weight:700;font-style:italic;color:var(--text)}
+h1 span{color:var(--r5)}
+.subtitle{font-size:12px;color:var(--text-s)}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;align-items:center}
+.btn-p{background:linear-gradient(135deg,var(--r5),var(--r6));color:white;border:none;border-radius:12px;padding:10px 18px;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;box-shadow:0 4px 14px rgba(233,30,140,.32);transition:all .2s}
+.btn-p:hover{transform:translateY(-1px)}
+.btn-g{background:rgba(255,255,255,.75);border:1.5px solid var(--r2);color:var(--text-m);border-radius:12px;padding:9px 16px;font-size:11px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+.btn-g:hover{background:white;border-color:var(--r3);color:var(--r5)}
+.pill{display:inline-flex;align-items:center;gap:4px;border-radius:18px;padding:4px 10px;font-size:10px;font-weight:600}
+.pr{background:rgba(233,30,140,.11);color:var(--r5)}
+.kanban{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.kcol{background:rgba(255,255,255,.4);border:1px solid rgba(255,255,255,.7);border-radius:20px;padding:14px}
+.kch{font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:8px;padding:0 2px}
+.kbadge{font-size:9px;border-radius:9px;padding:2px 8px;font-weight:700}
+.kcard{background:rgba(255,255,255,.82);border:1px solid var(--glass-b);border-radius:16px;padding:14px;margin-bottom:10px;cursor:pointer;transition:all .2s;box-shadow:0 2px 8px rgba(194,24,91,.05);position:relative;overflow:hidden}
+.kcard:hover{background:white;transform:translateY(-3px);box-shadow:0 10px 28px rgba(194,24,91,.13)}
+.kcard::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%}
+.kcard.urgent::before{background:var(--red)}
+.kcard.progress::before{background:var(--orange)}
+.kcard.done-card::before{background:var(--green)}
+.kt{font-size:13px;font-weight:500;color:var(--text);margin-bottom:5px;line-height:1.35}
+.kd{font-size:11px;color:var(--text-s);line-height:1.5;margin-bottom:8px}
+.kmeta{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.ksubj{font-size:9px;border-radius:7px;padding:2px 8px;font-weight:600}
+.kdate{font-size:10px;color:var(--text-s);display:flex;align-items:center;gap:3px}
+.kprog{height:4px;background:rgba(233,30,140,.1);border-radius:4px;margin-top:8px}
+.kprogb{height:100%;border-radius:4px}
+.kfooter{display:flex;align-items:center;justify-content:space-between;margin-top:10px}
+.kwords{font-size:9px;color:var(--text-xs)}
+.kai-btn{background:rgba(233,30,140,.08);border:1px solid rgba(233,30,140,.18);border-radius:8px;padding:4px 9px;font-size:9px;color:var(--r5);cursor:pointer;font-weight:600;transition:all .15s;font-family:'DM Sans',sans-serif}
+.kai-btn:hover{background:rgba(233,30,140,.14)}
+.done-card .kt{text-decoration:line-through;color:var(--text-s)}
+.done-card .kd{color:var(--text-xs)}
+/* AI assistant banner */
+.ai-banner{background:rgba(255,255,255,.65);border:1px solid var(--glass-b);border-radius:18px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:14px;box-shadow:0 2px 12px var(--shadow)}
+.ai-icon{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--r5),var(--r6));display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 4px 12px rgba(233,30,140,.3);flex-shrink:0}
+.ai-msg{flex:1;font-size:12px;color:var(--text-m);line-height:1.6}
+.ai-msg strong{color:var(--text)}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Assignment <span>Tracker</span></h1>
+  <div class="subtitle">Kanban · AI-prioritised · deadline alerts · progress per subject</div>
+</div>
+
+<div class="ai-banner">
+  <div class="ai-icon">✦</div>
+  <div class="ai-msg">✦ <strong>AI Priority Insight:</strong> Your Consumer Behaviour essay is your most urgent item — 3 days left and only 15% done. I suggest spending 2 hours on it today before the study group. Want me to block time now?</div>
+  <button class="btn-p" style="white-space:nowrap;font-size:11px">Block Time</button>
+</div>
+
+<div class="toolbar">
+  <button class="btn-p">+ New Assignment</button>
+  <button class="btn-g">📊 By Subject</button>
+  <button class="btn-g">📅 By Due Date</button>
+  <button class="btn-g">✦ AI Prioritise</button>
+  <span class="pill pr" style="align-self:center">3 Due This Week</span>
+</div>
+
+<div class="kanban">
+  <!-- TO DO -->
+  <div class="kcol">
+    <div class="kch">
+      <div style="width:9px;height:9px;border-radius:50%;background:var(--red)"></div>
+      To Do
+      <span class="kbadge" style="background:rgba(255,59,48,.12);color:#B71C1C">2</span>
+    </div>
+    <div class="kcard urgent">
+      <div class="kt">Consumer Behaviour Case Study</div>
+      <div class="kd">Analyse Nike's STP market segmentation strategy across demographic, psychographic and behavioural dimensions.</div>
+      <div class="kmeta">
+        <span class="ksubj" style="background:rgba(233,30,140,.1);color:var(--r5)">MKT302</span>
+        <span class="kdate">📅 Fri 7 Apr</span>
+        <span class="pill prd" style="font-size:9px;padding:2px 8px;background:rgba(255,59,48,.1);color:#B71C1C">⚠️ Urgent</span>
+      </div>
+      <div class="kprog"><div class="kprogb" style="width:15%;background:linear-gradient(90deg,var(--r5),var(--r3))"></div></div>
+      <div class="kfooter"><div class="kwords">15% · 375 / 2,500 words</div><button class="kai-btn">✦ Write with AI</button></div>
+    </div>
+    <div class="kcard urgent">
+      <div class="kt">Brand Strategy Presentation</div>
+      <div class="kd">15-slide deck on Apple's brand repositioning — focus on target audience and channel strategy.</div>
+      <div class="kmeta">
+        <span class="ksubj" style="background:rgba(156,39,176,.1);color:#6A1B9A">MKT210</span>
+        <span class="kdate">📅 Mon 10 Apr</span>
+      </div>
+      <div class="kprog"><div class="kprogb" style="width:0%;background:linear-gradient(90deg,#9C27B0,#CE93D8)"></div></div>
+      <div class="kfooter"><div class="kwords">Not started</div><button class="kai-btn">✦ Build Outline</button></div>
+    </div>
+  </div>
+
+  <!-- IN PROGRESS -->
+  <div class="kcol">
+    <div class="kch">
+      <div style="width:9px;height:9px;border-radius:50%;background:var(--orange)"></div>
+      In Progress
+      <span class="kbadge" style="background:rgba(255,149,0,.12);color:#C65200">2</span>
+    </div>
+    <div class="kcard progress">
+      <div class="kt">Social Media Campaign Brief</div>
+      <div class="kd">Instagram campaign targeting Gen Z · group project with 3 others · focus on authenticity and UGC.</div>
+      <div class="kmeta">
+        <span class="ksubj" style="background:rgba(0,122,255,.09);color:var(--blue)">MKT150</span>
+        <span class="kdate">📅 Wed 12 Apr</span>
+      </div>
+      <div class="kprog"><div class="kprogb" style="width:60%;background:linear-gradient(90deg,var(--blue),#64B5F6)"></div></div>
+      <div class="kfooter"><div class="kwords">60% · Group · 2 contributors</div><button class="kai-btn">✦ Draft Copy</button></div>
+    </div>
+    <div class="kcard progress">
+      <div class="kt">Market Research Quiz Revision</div>
+      <div class="kd">Chapters 4–7 · qualitative vs quantitative · sampling methods and bias reduction.</div>
+      <div class="kmeta">
+        <span class="ksubj" style="background:rgba(52,199,89,.1);color:#2E7D32">MKT220</span>
+        <span class="kdate">📅 Thu 13 Apr</span>
+      </div>
+      <div class="kprog"><div class="kprogb" style="width:40%;background:linear-gradient(90deg,var(--green),#A5D6A7)"></div></div>
+      <div class="kfooter"><div class="kwords">40% · 4 chapters reviewed</div><button class="kai-btn">✦ Quiz Me</button></div>
+    </div>
+  </div>
+
+  <!-- DONE -->
+  <div class="kcol">
+    <div class="kch">
+      <div style="width:9px;height:9px;border-radius:50%;background:var(--green)"></div>
+      Submitted
+      <span class="kbadge" style="background:rgba(52,199,89,.12);color:#2E7D32">3</span>
+    </div>
+    <div class="kcard done-card">
+      <div class="kt">Consumer Trends Report</div>
+      <div class="kmeta"><span class="ksubj" style="background:rgba(233,30,140,.07);color:var(--text-s)">MKT302</span></div>
+      <div style="font-size:10px;color:var(--green);font-weight:600;margin-top:6px">✓ Submitted Apr 1</div>
+    </div>
+    <div class="kcard done-card">
+      <div class="kt">Competitor Analysis</div>
+      <div class="kmeta"><span class="ksubj" style="background:rgba(156,39,176,.07);color:var(--text-s)">MKT210</span></div>
+      <div style="font-size:10px;color:var(--green);font-weight:600;margin-top:6px">✓ Submitted Mar 28</div>
+    </div>
+    <div class="kcard done-card">
+      <div class="kt">Digital Marketing Quiz</div>
+      <div class="kmeta"><span class="ksubj" style="background:rgba(0,122,255,.07);color:var(--text-s)">MKT150</span></div>
+      <div style="font-size:10px;color:var(--green);font-weight:600;margin-top:6px">✓ Graded 82% — Well done!</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Miss M — Study, Meals & Budget</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=Playfair+Display:ital,wght@0,400;0,700&display=swap" rel="stylesheet">
+<style>
+:root{--r5:#E91E8C;--r6:#C2185B;--r7:#880E4F;--r2:#F8BBD9;--r3:#F48FB1;--text:#1A0A10;--text-m:#5C3049;--text-s:#9A6B80;--text-xs:#C4A0B2;--glass-b:rgba(255,255,255,.82);--shadow:rgba(194,24,91,.13);--green:#34C759;--blue:#007AFF;--orange:#FF9500;--red:#FF3B30}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:linear-gradient(155deg,#FFF0F8,#FCE4EC 40%,#F8BBD9 70%,#FDE8F3);min-height:100vh;padding:28px;display:flex;gap:20px;flex-wrap:wrap;align-items:start;color:var(--text)}
+body::before{content:'';position:fixed;top:-150px;right:-150px;width:500px;height:500px;background:radial-gradient(circle,rgba(233,30,140,.11),transparent 70%);border-radius:50%;pointer-events:none}
+.panel{background:rgba(255,255,255,.65);border:1px solid var(--glass-b);border-radius:20px;padding:18px;box-shadow:0 2px 12px var(--shadow)}
+.plbl{font-family:'Cormorant Garamond',serif;font-size:10px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:var(--r5);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.plbl::after{content:'';flex:1;height:1px;background:rgba(233,30,140,.14)}
+.btn-p{background:linear-gradient(135deg,var(--r5),var(--r6));color:white;border:none;border-radius:11px;padding:9px 16px;font-size:11px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;box-shadow:0 4px 12px rgba(233,30,140,.3);transition:all .2s}
+.btn-p:hover{transform:translateY(-1px)}
+.btn-g{background:rgba(255,255,255,.75);border:1.5px solid var(--r2);color:var(--text-m);border-radius:11px;padding:8px 14px;font-size:11px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+.btn-g:hover{background:white;color:var(--r5)}
+
+/* ── STUDY / POMODORO ── */
+.pomo-card{background:linear-gradient(145deg,var(--r7),var(--r6));border-radius:22px;padding:22px;text-align:center;color:white;box-shadow:0 12px 40px rgba(194,24,91,.22);width:300px}
+.pomo-ring{width:130px;height:130px;margin:0 auto 8px;border-radius:50%;border:5px solid rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;position:relative}
+.pomo-ring::before{content:'';position:absolute;inset:0;border-radius:50%;border:5px solid transparent;border-top-color:white;border-right-color:rgba(255,255,255,.55);animation:ps 25s linear infinite}
+@keyframes ps{to{transform:rotate(360deg)}}
+.pomo-time{font-family:'Cormorant Garamond',serif;font-size:56px;font-weight:600;line-height:1}
+.pomo-sub{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.65);margin-top:8px}
+.pomo-label{font-size:12px;color:rgba(255,255,255,.85);margin-top:4px;font-weight:300}
+.pomo-btns{display:flex;gap:10px;justify-content:center;margin-top:16px}
+.pbtn{border-radius:12px;border:none;padding:10px 20px;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+.pbtn-p{background:white;color:var(--r5)}
+.pbtn-g{background:rgba(255,255,255,.15);color:white;border:1px solid rgba(255,255,255,.25)}
+.pbtn:hover{transform:scale(1.04)}
+.session-dots{display:flex;gap:8px;justify-content:center;margin-top:14px}
+.sdot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.25)}
+.sdot.done{background:white}
+.sdot.now{background:rgba(255,255,255,.7);box-shadow:0 0 8px rgba(255,255,255,.5)}
+
+/* ── WEEK CALENDAR ── */
+.week{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;width:300px}
+.wday{background:rgba(255,255,255,.55);border:1px solid var(--glass-b);border-radius:12px;padding:8px 4px;text-align:center;cursor:pointer;transition:all .15s}
+.wday:hover{background:white;transform:translateY(-1px)}
+.wday.today{background:linear-gradient(135deg,rgba(233,30,140,.13),rgba(194,24,91,.07));border-color:rgba(233,30,140,.3)}
+.wday-n{font-size:8px;letter-spacing:1px;text-transform:uppercase;color:var(--text-s);font-weight:600}
+.wday-d{font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--text);margin:2px 0}
+.wday.today .wday-d{color:var(--r5);font-weight:600}
+.wdots{display:flex;gap:2px;justify-content:center}
+.wdot{width:4px;height:4px;border-radius:50%}
+
+/* ── MEAL GRID ── */
+.meal-wrap{width:560px}
+.mgrid{display:grid;grid-template-columns:46px repeat(7,1fr);gap:5px;font-size:10px}
+.mhead{background:linear-gradient(135deg,var(--r5),var(--r6));color:white;border-radius:9px;padding:7px 4px;text-align:center;font-weight:600;font-size:9px;letter-spacing:.5px}
+.mlbl{display:flex;align-items:center;justify-content:flex-end;font-size:9px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--text-s);padding-right:5px}
+.mcell{background:rgba(255,255,255,.58);border:1px solid rgba(255,255,255,.78);border-radius:9px;padding:7px 5px;text-align:center;cursor:pointer;font-size:10px;color:var(--text-m);min-height:44px;display:flex;align-items:center;justify-content:center;line-height:1.25;transition:all .14s}
+.mcell:hover{background:white;transform:scale(1.04);box-shadow:0 4px 12px var(--shadow)}
+.mcell.filled{background:rgba(233,30,140,.06);border-color:rgba(233,30,140,.14)}
+.mcell.add{color:var(--text-xs);font-size:16px}
+
+/* ── BUDGET DONUT ── */
+.budget-card{width:360px}
+.donut-wrap{display:flex;align-items:center;gap:20px;margin-bottom:16px}
+.donut-info{text-align:center}
+.donut-num{font-family:'Cormorant Garamond',serif;font-size:40px;font-weight:600;color:var(--r5)}
+.donut-lbl{font-size:10px;color:var(--text-s);font-weight:500;letter-spacing:.5px;text-transform:uppercase}
+.blist{display:flex;flex-direction:column;gap:8px;flex:1}
+.brow{display:flex;align-items:center;gap:8px}
+.bdot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.blbl{font-size:11px;color:var(--text-m);flex:1}
+.bbar{flex:2;height:5px;background:rgba(233,30,140,.07);border-radius:4px}
+.bfill{height:100%;border-radius:4px}
+.bamt{font-size:11px;font-weight:600;color:var(--text);min-width:42px;text-align:right}
+.savings{background:linear-gradient(135deg,rgba(233,30,140,.06),rgba(194,24,91,.03));border:1px solid rgba(233,30,140,.15);border-radius:14px;padding:13px;margin-top:10px}
+.sav-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.sav-name{font-size:12px;font-weight:500;color:var(--text)}
+.sav-amt{font-size:12px;color:var(--r5);font-weight:600}
+.sav-bar{height:7px;background:rgba(233,30,140,.1);border-radius:5px;overflow:hidden}
+.sav-fill{height:100%;border-radius:5px;background:linear-gradient(90deg,var(--r5),var(--r3))}
+
+/* ── GROCERY ── */
+.grocery-card{width:280px}
+.gs-sec{margin-bottom:13px}
+.gs-head{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--text-s);font-weight:600;margin-bottom:7px;display:flex;align-items:center;gap:7px}
+.gs-head::after{content:'';flex:1;height:1px;background:rgba(233,30,140,.1)}
+.gi{display:flex;align-items:center;gap:9px;padding:8px 12px;background:rgba(255,255,255,.6);border:1px solid var(--glass-b);border-radius:11px;margin-bottom:5px;cursor:pointer;transition:all .14s}
+.gi:hover{background:white}
+.gchk{width:18px;height:18px;border-radius:6px;border:1.5px solid var(--r3);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px;transition:all .14s}
+.gi.done .gchk{background:var(--green);border-color:var(--green);color:white}
+.gi.done .gn{text-decoration:line-through;color:var(--text-xs)}
+.gn{font-size:12px;color:var(--text);flex:1}
+.gq{font-size:10px;color:var(--text-s)}
+</style>
+</head>
+<body>
+
+<!-- STUDY PLANNER -->
+<div>
+  <div class="pomo-card">
+    <div class="pomo-ring"><div class="pomo-time">24:00</div></div>
+    <div class="pomo-sub">Pomodoro Session</div>
+    <div class="pomo-label">Consumer Behaviour Essay</div>
+    <div class="pomo-btns">
+      <div class="pbtn pbtn-p">▶ Start</div>
+      <div class="pbtn pbtn-g">⏭ Skip</div>
+      <div class="pbtn pbtn-g">⚙</div>
+    </div>
+    <div class="session-dots">
+      <div class="sdot done"></div>
+      <div class="sdot now"></div>
+      <div class="sdot"></div>
+      <div class="sdot"></div>
+    </div>
+    <div style="font-size:10px;color:rgba(255,255,255,.55);margin-top:10px">Session 2 of 4 · 5 min break after</div>
+  </div>
+
+  <div class="panel" style="margin-top:16px;width:300px">
+    <div class="plbl">This Week</div>
+    <div class="week">
+      <div class="wday"><div class="wday-n">M</div><div class="wday-d">3</div><div class="wdots"><div class="wdot" style="background:var(--r5)"></div><div class="wdot" style="background:var(--r5)"></div></div></div>
+      <div class="wday"><div class="wday-n">T</div><div class="wday-d">4</div><div class="wdots"><div class="wdot" style="background:var(--r5)"></div><div class="wdot" style="background:var(--r5)"></div><div class="wdot" style="background:var(--r5)"></div></div></div>
+      <div class="wday today"><div class="wday-n">W</div><div class="wday-d">7</div><div class="wdots"><div class="wdot" style="background:var(--r3)"></div></div></div>
+      <div class="wday"><div class="wday-n">T</div><div class="wday-d">8</div></div>
+      <div class="wday"><div class="wday-n">F</div><div class="wday-d">9</div></div>
+      <div class="wday"><div class="wday-n">S</div><div class="wday-d">10</div></div>
+      <div class="wday"><div class="wday-n">S</div><div class="wday-d">11</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:12px">
+      <div style="background:rgba(255,255,255,.65);border:1px solid var(--glass-b);border-radius:12px;padding:10px 6px;text-align:center"><div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--r5)">6</div><div style="font-size:9px;color:var(--text-s);text-transform:uppercase;letter-spacing:.5px">Sessions</div></div>
+      <div style="background:rgba(255,255,255,.65);border:1px solid var(--glass-b);border-radius:12px;padding:10px 6px;text-align:center"><div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--r5)">4.5h</div><div style="font-size:9px;color:var(--text-s);text-transform:uppercase;letter-spacing:.5px">Study</div></div>
+      <div style="background:rgba(255,255,255,.65);border:1px solid var(--glass-b);border-radius:12px;padding:10px 6px;text-align:center"><div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--r5)">3d</div><div style="font-size:9px;color:var(--text-s);text-transform:uppercase;letter-spacing:.5px">Left</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- MEAL PLANNER -->
+<div class="meal-wrap">
+  <div class="panel">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+      <div class="plbl" style="margin:0">Meal Planner</div>
+      <div style="display:flex;gap:7px"><button class="btn-p" style="padding:7px 13px">✦ AI Plan Week</button><button class="btn-g" style="padding:7px 13px">🛒 List</button></div>
+    </div>
+    <div class="mgrid">
+      <div></div>
+      <div class="mhead">MON</div><div class="mhead">TUE</div><div class="mhead">WED</div><div class="mhead">THU</div><div class="mhead">FRI</div><div class="mhead">SAT</div><div class="mhead">SUN</div>
+      <div class="mlbl">🌅</div>
+      <div class="mcell filled">Oats &amp; berries</div><div class="mcell filled">Avocado toast</div><div class="mcell filled">Greek yoghurt</div><div class="mcell add">+</div><div class="mcell add">+</div><div class="mcell filled">Pancakes 🥞</div><div class="mcell filled">Eggs &amp; toast</div>
+      <div class="mlbl">☀️</div>
+      <div class="mcell filled">Chicken salad</div><div class="mcell filled">Pasta pesto</div><div class="mcell filled">Wrap</div><div class="mcell add">+</div><div class="mcell add">+</div><div class="mcell filled">Sushi 🍣</div><div class="mcell filled">Roast chicken</div>
+      <div class="mlbl">🌙</div>
+      <div class="mcell filled">Stir-fry</div><div class="mcell filled">Salmon</div><div class="mcell add">+</div><div class="mcell add">+</div><div class="mcell filled">Pizza 🍕</div><div class="mcell filled">Pasta bake</div><div class="mcell filled">Soup &amp; bread</div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+      <span style="display:inline-flex;align-items:center;gap:5px;border-radius:18px;padding:5px 12px;font-size:10px;font-weight:600;background:rgba(52,199,89,.11);color:#2E7D32">🥦 High protein this week</span>
+      <span style="display:inline-flex;align-items:center;gap:5px;border-radius:18px;padding:5px 12px;font-size:10px;font-weight:600;background:rgba(233,30,140,.11);color:var(--r5)">🍓 Anti-inflammatory</span>
+      <span style="display:inline-flex;align-items:center;gap:5px;border-radius:18px;padding:5px 12px;font-size:10px;font-weight:600;background:rgba(0,122,255,.09);color:var(--blue)">💧 2L water daily</span>
+    </div>
+  </div>
+</div>
+
+<!-- BUDGET + GROCERY -->
+<div style="display:flex;flex-direction:column;gap:16px">
+  <!-- BUDGET -->
+  <div class="panel budget-card">
+    <div class="plbl">April Budget</div>
+    <div class="donut-wrap">
+      <div class="donut-info">
+        <svg width="110" height="110" viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="36" fill="none" stroke="rgba(233,30,140,.08)" stroke-width="13"/>
+          <circle cx="50" cy="50" r="36" fill="none" stroke="#E91E8C" stroke-width="13" stroke-dasharray="88 138" stroke-dashoffset="36" transform="rotate(-90 50 50)"/>
+          <circle cx="50" cy="50" r="36" fill="none" stroke="#FF9500" stroke-width="13" stroke-dasharray="46 180" stroke-dashoffset="-52" transform="rotate(-90 50 50)"/>
+          <circle cx="50" cy="50" r="36" fill="none" stroke="#9C27B0" stroke-width="13" stroke-dasharray="28 198" stroke-dashoffset="-98" transform="rotate(-90 50 50)"/>
+        </svg>
+        <div class="donut-num">$660</div>
+        <div class="donut-lbl">Spent</div>
+      </div>
+      <div class="blist">
+        <div class="brow"><div class="bdot" style="background:var(--r5)"></div><div class="blbl">Food</div><div class="bbar"><div class="bfill" style="width:65%;background:var(--r5)"></div></div><div class="bamt">$260</div></div>
+        <div class="brow"><div class="bdot" style="background:var(--orange)"></div><div class="blbl">School</div><div class="bbar"><div class="bfill" style="width:35%;background:var(--orange)"></div></div><div class="bamt">$140</div></div>
+        <div class="brow"><div class="bdot" style="background:#9C27B0"></div><div class="blbl">Transport</div><div class="bbar"><div class="bfill" style="width:22%;background:#9C27B0"></div></div><div class="bamt">$85</div></div>
+        <div class="brow"><div class="bdot" style="background:var(--blue)"></div><div class="blbl">Subs</div><div class="bbar"><div class="bfill" style="width:11%;background:var(--blue)"></div></div><div class="bamt">$45</div></div>
+        <div class="brow"><div class="bdot" style="background:var(--text-xs)"></div><div class="blbl">Other</div><div class="bbar"><div class="bfill" style="width:33%;background:var(--text-xs)"></div></div><div class="bamt">$130</div></div>
+      </div>
+    </div>
+    <div class="savings">
+      <div class="sav-row"><div class="sav-name">🎓 Laptop Upgrade</div><div class="sav-amt">$480 / $1,200</div></div>
+      <div class="sav-bar"><div class="sav-fill" style="width:40%"></div></div>
+      <div style="font-size:10px;color:var(--text-s);margin-top:6px">40% · ~4 months at current rate</div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:10px">
+      <div style="flex:1;background:rgba(255,255,255,.65);border:1px solid var(--glass-b);border-radius:12px;padding:10px;text-align:center"><div style="font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--green);font-weight:600">$340</div><div style="font-size:9px;color:var(--text-s);text-transform:uppercase;letter-spacing:.4px">Remaining</div></div>
+      <div style="flex:1;background:rgba(255,255,255,.65);border:1px solid var(--glass-b);border-radius:12px;padding:10px;text-align:center"><div style="font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--text);font-weight:600">$1,200</div><div style="font-size:9px;color:var(--text-s);text-transform:uppercase;letter-spacing:.4px">Income</div></div>
+    </div>
+  </div>
+
+  <!-- GROCERY -->
+  <div class="panel grocery-card">
+    <div class="plbl">Grocery List</div>
+    <div class="gs-sec"><div class="gs-head">🥦 Produce</div>
+      <div class="gi" onclick="this.classList.toggle('done')"><div class="gchk"></div><div class="gn">Spinach</div><div class="gq">1 bag</div></div>
+      <div class="gi" onclick="this.classList.toggle('done')"><div class="gchk"></div><div class="gn">Cherry tomatoes</div><div class="gq">250g</div></div>
+      <div class="gi done" onclick="this.classList.toggle('done')"><div class="gchk">✓</div><div class="gn">Avocados</div><div class="gq">3x</div></div>
+    </div>
+    <div class="gs-sec"><div class="gs-head">🥩 Protein</div>
+      <div class="gi" onclick="this.classList.toggle('done')"><div class="gchk"></div><div class="gn">Chicken breast</div><div class="gq">500g</div></div>
+      <div class="gi" onclick="this.classList.toggle('done')"><div class="gchk"></div><div class="gn">Salmon fillets</div><div class="gq">2x</div></div>
+      <div class="gi done" onclick="this.classList.toggle('done')"><div class="gchk">✓</div><div class="gn">Eggs</div><div class="gq">12 pack</div></div>
+    </div>
+    <div class="gs-sec"><div class="gs-head">🥛 Dairy</div>
+      <div class="gi" onclick="this.classList.toggle('done')"><div class="gchk"></div><div class="gn">Milk</div><div class="gq">2L</div></div>
+      <div class="gi" onclick="this.classList.toggle('done')"><div class="gchk"></div><div class="gn">Greek yoghurt</div><div class="gq">500g</div></div>
+    </div>
+    <button class="btn-g" style="width:100%;margin-top:4px;font-size:11px">+ Add via iMessage</button>
+  </div>
+</div>
+
+</body>
+</html>

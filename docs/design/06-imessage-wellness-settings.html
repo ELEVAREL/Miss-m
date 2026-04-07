@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Miss M — iMessage AI, Wellness & Settings</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=Playfair+Display:ital,wght@0,400;0,700&display=swap" rel="stylesheet">
+<style>
+:root{--r5:#E91E8C;--r6:#C2185B;--r7:#880E4F;--r2:#F8BBD9;--r3:#F48FB1;--text:#1A0A10;--text-m:#5C3049;--text-s:#9A6B80;--text-xs:#C4A0B2;--glass-b:rgba(255,255,255,.82);--shadow:rgba(194,24,91,.13);--green:#34C759;--blue:#007AFF;--orange:#FF9500;--red:#FF3B30}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:linear-gradient(155deg,#FFF0F8,#FCE4EC 40%,#F8BBD9 70%,#FDE8F3);min-height:100vh;padding:28px;display:flex;gap:20px;flex-wrap:wrap;align-items:start;color:var(--text)}
+body::before{content:'';position:fixed;top:-150px;right:-150px;width:500px;height:500px;background:radial-gradient(circle,rgba(233,30,140,.11),transparent 70%);border-radius:50%;pointer-events:none}
+.panel{background:rgba(255,255,255,.65);border:1px solid var(--glass-b);border-radius:20px;padding:16px;box-shadow:0 2px 12px var(--shadow)}
+.plbl{font-family:'Cormorant Garamond',serif;font-size:10px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:var(--r5);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.plbl::after{content:'';flex:1;height:1px;background:rgba(233,30,140,.14)}
+.btn-p{background:linear-gradient(135deg,var(--r5),var(--r6));color:white;border:none;border-radius:11px;padding:9px 16px;font-size:11px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;box-shadow:0 4px 12px rgba(233,30,140,.3);transition:all .2s}
+.btn-p:hover{transform:translateY(-1px)}
+.btn-g{background:rgba(255,255,255,.75);border:1.5px solid var(--r2);color:var(--text-m);border-radius:11px;padding:8px 14px;font-size:11px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+.btn-g:hover{background:white;color:var(--r5)}
+
+/* iMESSAGE DEVICE */
+.device{width:300px;background:#1C1C1E;border-radius:28px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.3);border:1.5px solid #3A3A3C}
+.d-notch{height:24px;background:#1C1C1E;display:flex;align-items:center;justify-content:center}
+.d-pill{width:70px;height:5px;background:#3A3A3C;border-radius:3px}
+.d-hdr{background:rgba(28,28,30,.95);padding:12px 16px;display:flex;align-items:center;gap:9px;border-bottom:1px solid rgba(255,255,255,.07)}
+.d-back{color:#0A84FF;font-size:20px}
+.d-av{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--r5),var(--r6));display:flex;align-items:center;justify-content:center;font-size:16px}
+.d-nm{font-size:12px;font-weight:600;color:white}
+.d-sub{font-size:9px;color:#8E8E93}
+.d-live{display:flex;align-items:center;gap:4px;font-size:9px;color:var(--green);font-weight:600;margin-left:auto}
+.glow{width:6px;height:6px;border-radius:50%;background:var(--green);animation:gl 2s infinite}
+@keyframes gl{0%,100%{box-shadow:0 0 5px rgba(52,199,89,.6)}50%{box-shadow:0 0 12px rgba(52,199,89,.95)}}
+.d-msgs{padding:12px;background:#000;min-height:340px;display:flex;flex-direction:column;gap:8px}
+.mtime{text-align:center;font-size:9px;color:#636366;margin-bottom:2px}
+.ib{border-radius:16px;padding:9px 13px;font-size:12px;line-height:1.55;max-width:82%}
+.ib.her{background:#1C1C1E;color:white;border-radius:16px 16px 16px 4px}
+.ib.ai{background:#0A84FF;color:white;border-radius:16px 16px 4px 16px;align-self:flex-end}
+.d-in{background:#1C1C1E;padding:10px 12px;display:flex;align-items:center;gap:7px;border-top:1px solid rgba(255,255,255,.05)}
+.d-inp{flex:1;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.09);border-radius:18px;padding:7px 12px;font-size:12px;color:white;font-family:'DM Sans',sans-serif;outline:none}
+.d-send{width:30px;height:30px;border-radius:50%;background:#0A84FF;display:flex;align-items:center;justify-content:center;color:white;font-size:13px;cursor:pointer}
+
+/* HOW IT WORKS */
+.step{display:flex;align-items:flex-start;gap:11px;margin-bottom:12px}
+.step-n{width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,var(--r5),var(--r6));color:white;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.step-t{font-size:12px;font-weight:500;color:var(--text);margin-bottom:2px}
+.step-d{font-size:10.5px;color:var(--text-s);line-height:1.5}
+
+/* WELLNESS */
+.well-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.wc{background:rgba(255,255,255,.65);border:1px solid var(--glass-b);border-radius:16px;padding:14px;text-align:center;cursor:pointer;transition:all .2s}
+.wc:hover{background:white;transform:translateY(-2px);box-shadow:0 8px 22px var(--shadow)}
+.wi{font-size:26px;margin-bottom:7px;display:block}
+.wt{font-size:12px;font-weight:500;color:var(--text);margin-bottom:3px}
+.wv{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--r5)}
+.wbar{height:4px;background:rgba(233,30,140,.09);border-radius:4px;margin-top:7px}
+.wfill{height:100%;border-radius:4px}
+.mood-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:12px}
+.mb{width:42px;height:42px;border-radius:13px;font-size:20px;background:rgba(255,255,255,.6);border:1.5px solid rgba(255,255,255,.8);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .14s}
+.mb:hover,.mb.on{background:white;border-color:var(--r3);transform:scale(1.1);box-shadow:0 4px 12px var(--shadow)}
+
+/* SETTINGS */
+.sgrp{background:rgba(255,255,255,.65);border:1px solid var(--glass-b);border-radius:18px;overflow:hidden;margin-bottom:12px;box-shadow:0 2px 8px var(--shadow)}
+.srow{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.7);cursor:pointer;transition:background .14s}
+.srow:last-child{border-bottom:none}
+.srow:hover{background:rgba(255,255,255,.88)}
+.sic{width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.sin{flex:1}
+.sn{font-size:12px;font-weight:500;color:var(--text)}
+.sd{font-size:10px;color:var(--text-s);margin-top:1px}
+.tog{width:40px;height:22px;border-radius:11px;background:var(--green);position:relative;cursor:pointer;transition:all .18s;flex-shrink:0}
+.tog::after{content:'';position:absolute;right:3px;top:3px;width:16px;height:16px;border-radius:50%;background:white;box-shadow:0 2px 4px rgba(0,0,0,.2);transition:all .18s}
+.tog.off{background:rgba(233,30,140,.18)}
+.tog.off::after{right:auto;left:3px}
+.sel{font-size:11px;color:var(--text-s)}
+</style>
+</head>
+<body>
+
+<!-- iMESSAGE AI -->
+<div>
+  <div class="device">
+    <div class="d-notch"><div class="d-pill"></div></div>
+    <div class="d-hdr">
+      <div class="d-back">‹</div>
+      <div class="d-av">🤖</div>
+      <div><div class="d-nm">Miss M AI (Mac)</div><div class="d-sub">Replies instantly · Always on</div></div>
+      <div class="d-live"><div class="glow"></div>Live</div>
+    </div>
+    <div class="d-msgs">
+      <div class="mtime">Today 11:04 AM</div>
+      <div class="ib her">What's due this week?</div>
+      <div class="ib ai">Hey Miss M! 🩷<br><br>📄 <strong>Case Study</strong> — Fri 5pm<br>📊 <strong>Brand Slides</strong> — Mon<br>📱 <strong>Campaign Brief</strong> — Wed<br><br>Start with the case study — want me to help?</div>
+      <div class="ib her">Yes please. Also add milk to shopping</div>
+      <div class="ib ai">Done! ✅ Milk added to your grocery list. I've also opened the Essay Writer on your Mac — your outline is ready 📝<br><br>Reply "quiz me" when you want to test yourself on STP!</div>
+      <div class="ib her">Quiz me on brand positioning</div>
+      <div class="ib ai">🎯 Q1: What are the three elements of the STP framework?<br><br>Take your time — I'll wait! 😊</div>
+    </div>
+    <div class="d-in">
+      <input class="d-inp" placeholder="Text your Mac from anywhere…">
+      <div class="d-send">↑</div>
+    </div>
+  </div>
+
+  <div class="panel" style="margin-top:16px;width:300px">
+    <div class="plbl">How It Works</div>
+    <div class="step"><div class="step-n">1</div><div><div class="step-t">Mac app runs in menu bar 24/7</div><div class="step-d">Silent background process — always ready, zero battery drain</div></div></div>
+    <div class="step"><div class="step-n">2</div><div><div class="step-t">She texts her Mac from iPhone</div><div class="step-d">AppleScript monitors incoming iMessages in real time</div></div></div>
+    <div class="step"><div class="step-n">3</div><div><div class="step-t">Claude processes + uses Mac tools</div><div class="step-d">Reads calendar, adds reminders, searches web, writes drafts</div></div></div>
+    <div class="step"><div class="step-n">4</div><div><div class="step-t">Reply sent back via iMessage</div><div class="step-d">Arrives on her iPhone, iPad, everywhere — instantly</div></div></div>
+  </div>
+</div>
+
+<!-- WELLNESS -->
+<div style="width:300px">
+  <div class="panel" style="margin-bottom:14px">
+    <div class="plbl">Wellness Dashboard</div>
+    <div class="well-grid">
+      <div class="wc"><span class="wi">💧</span><div class="wt">Hydration</div><div class="wv">1.2L / 2L</div><div class="wbar"><div class="wfill" style="width:60%;background:linear-gradient(90deg,var(--blue),#64B5F6)"></div></div></div>
+      <div class="wc"><span class="wi">😴</span><div class="wt">Last Sleep</div><div class="wv">7h 20m</div><div class="wbar"><div class="wfill" style="width:82%;background:linear-gradient(90deg,#7C4DFF,#CE93D8)"></div></div></div>
+      <div class="wc"><span class="wi">🧘</span><div class="wt">Focus Score</div><div class="wv">74/100</div><div class="wbar"><div class="wfill" style="width:74%;background:linear-gradient(90deg,var(--orange),#FFCC80)"></div></div></div>
+      <div class="wc"><span class="wi">⏱</span><div class="wt">Study Break</div><div class="wv">Due now!</div><div class="wbar"><div class="wfill" style="width:100%;background:linear-gradient(90deg,var(--red),var(--orange))"></div></div></div>
+    </div>
+    <div style="background:rgba(233,30,140,.06);border:1px solid rgba(233,30,140,.13);border-radius:13px;padding:12px;font-size:12px;color:var(--text-m);line-height:1.65;margin-bottom:12px">
+      ✦ You've been studying 2.5 hours — time for a 10-min break! Grab some water and step outside 🌿
+    </div>
+    <div style="font-size:11px;color:var(--text-s);margin-bottom:8px;text-align:center">How are you feeling today?</div>
+    <div class="mood-row">
+      <div class="mb" onclick="setMood(this)">😄</div>
+      <div class="mb on" onclick="setMood(this)">😊</div>
+      <div class="mb" onclick="setMood(this)">😐</div>
+      <div class="mb" onclick="setMood(this)">😔</div>
+      <div class="mb" onclick="setMood(this)">😩</div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="plbl">Wellness Reminders</div>
+    <div class="sgrp">
+      <div class="srow"><div class="sic" style="background:rgba(0,122,255,.1)">💧</div><div class="sin"><div class="sn">Hydration</div><div class="sd">Every 2 hours · 8am–8pm</div></div><div class="tog" onclick="this.classList.toggle('off')"></div></div>
+      <div class="srow"><div class="sic" style="background:rgba(52,199,89,.1)">🧘</div><div class="sin"><div class="sn">Study Break</div><div class="sd">After 90 min of study time</div></div><div class="tog" onclick="this.classList.toggle('off')"></div></div>
+      <div class="srow"><div class="sic" style="background:rgba(156,39,176,.1)">🌙</div><div class="sin"><div class="sn">Sleep Wind-Down</div><div class="sd">10:30 PM daily</div></div><div class="tog" onclick="this.classList.toggle('off')"></div></div>
+      <div class="srow"><div class="sic" style="background:rgba(255,220,0,.18)">☀️</div><div class="sin"><div class="sn">Morning Mood Check</div><div class="sd">8:00 AM weekdays</div></div><div class="tog" onclick="this.classList.toggle('off')"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div style="width:300px">
+  <div style="font-family:'Playfair Display',serif;font-size:20px;font-style:italic;color:var(--text);margin-bottom:16px">App <span style="color:var(--r5)">Settings</span></div>
+
+  <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-s);font-weight:600;margin-bottom:8px">AI & API</div>
+  <div class="sgrp">
+    <div class="srow"><div class="sic" style="background:rgba(233,30,140,.12)">✦</div><div class="sin"><div class="sn">Model</div><div class="sd">Claude Sonnet 4.6</div></div><span class="sel">Sonnet 4.6 ›</span></div>
+    <div class="srow"><div class="sic" style="background:rgba(52,199,89,.12)">💳</div><div class="sin"><div class="sn">API Credit</div><div class="sd">$24.00 remaining · ~5 months</div></div><span class="sel">Top up ›</span></div>
+    <div class="srow"><div class="sic" style="background:rgba(0,122,255,.1)">🔑</div><div class="sin"><div class="sn">API Key</div><div class="sd">Stored in Keychain · secure</div></div><span class="sel">Edit ›</span></div>
+  </div>
+
+  <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-s);font-weight:600;margin-bottom:8px">Apple Integrations</div>
+  <div class="sgrp">
+    <div class="srow"><div class="sic" style="background:rgba(233,30,140,.1)">📅</div><div class="sin"><div class="sn">Apple Calendar</div><div class="sd">Read + write access</div></div><div class="tog" onclick="this.classList.toggle('off')"></div></div>
+    <div class="srow"><div class="sic" style="background:rgba(255,149,0,.1)">🔔</div><div class="sin"><div class="sn">Apple Reminders</div><div class="sd">Read + write access</div></div><div class="tog" onclick="this.classList.toggle('off')"></div></div>
+    <div class="srow"><div class="sic" style="background:rgba(52,199,89,.1)">💬</div><div class="sin"><div class="sn">iMessage AI (Two-Way)</div><div class="sd">AppleScript · always listening</div></div><div class="tog" onclick="this.classList.toggle('off')"></div></div>
+    <div class="srow"><div class="sic" style="background:rgba(0,122,255,.1)">📧</div><div class="sin"><div class="sn">Apple Mail</div><div class="sd">Draft + open in Mail app</div></div><div class="tog" onclick="this.classList.toggle('off')"></div></div>
+  </div>
+
+  <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-s);font-weight:600;margin-bottom:8px">Privacy</div>
+  <div class="sgrp">
+    <div class="srow"><div class="sic" style="background:rgba(233,30,140,.1)">👆</div><div class="sin"><div class="sn">Touch ID Lock</div><div class="sd">Require Touch ID to open app</div></div><div class="tog off" onclick="this.classList.toggle('off')"></div></div>
+    <div class="srow"><div class="sic" style="background:rgba(0,122,255,.1)">🔒</div><div class="sin"><div class="sn">Local Only</div><div class="sd">No cloud — stays on her Mac</div></div><div class="tog" onclick="this.classList.toggle('off')"></div></div>
+    <div class="srow"><div class="sic" style="background:rgba(255,59,48,.1)">🗑</div><div class="sin"><div class="sn">Clear Chat History</div><div class="sd">Wipes all local messages</div></div><span style="font-size:11px;color:var(--red)">Clear ›</span></div>
+  </div>
+
+  <div style="background:rgba(233,30,140,.06);border:1px solid rgba(233,30,140,.14);border-radius:14px;padding:14px;margin-top:4px">
+    <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:6px">💰 API Cost Estimate</div>
+    <div style="font-size:11px;color:var(--text-m);line-height:1.7">At typical daily use: <strong>~$3–6/month</strong>. Your $24 covers <strong>4–8 months</strong> of everything — chat, iMessage AI, briefings, all features. Top up anytime from $5.</div>
+  </div>
+</div>
+
+<script>
+function setMood(el){
+  document.querySelectorAll('.mb').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+}
+</script>
+</body>
+</html>

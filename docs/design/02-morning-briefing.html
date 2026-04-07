@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Miss M — Morning Briefing</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=Playfair+Display:ital,wght@0,400;0,700&display=swap" rel="stylesheet">
+<style>
+:root{--r5:#E91E8C;--r6:#C2185B;--r7:#880E4F;--r2:#F8BBD9;--text:#1A0A10;--text-m:#5C3049;--text-s:#9A6B80;--text-xs:#C4A0B2;--glass-b:rgba(255,255,255,.82);--shadow:rgba(194,24,91,.13);--green:#34C759;--blue:#007AFF}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:linear-gradient(155deg,#FFF0F8,#FCE4EC 40%,#F8BBD9 70%,#FDE8F3);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:28px;gap:24px;flex-wrap:wrap}
+body::before{content:'';position:fixed;top:-150px;right:-100px;width:500px;height:500px;background:radial-gradient(circle,rgba(233,30,140,.11),transparent 70%);border-radius:50%;pointer-events:none}
+
+/* PHONE */
+.phone{width:340px;background:rgba(255,255,255,.65);backdrop-filter:blur(20px) saturate(180%);border:1px solid var(--glass-b);border-radius:28px;overflow:hidden;box-shadow:0 24px 60px var(--shadow),0 4px 16px rgba(0,0,0,.06),inset 0 1px 0 rgba(255,255,255,.92)}
+.hero{background:linear-gradient(145deg,var(--r5),var(--r6) 55%,var(--r7));padding:24px 20px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-50px;right:-50px;width:180px;height:180px;background:rgba(255,255,255,.1);border-radius:50%}
+.hero::after{content:'';position:absolute;bottom:-30px;left:60px;width:100px;height:100px;background:rgba(255,255,255,.07);border-radius:50%}
+.h-eye{font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,.7);margin-bottom:5px;font-weight:500}
+.h-name{font-family:'Playfair Display',serif;font-size:26px;color:white;font-style:italic;line-height:1.1;margin-bottom:9px}
+.h-msg{font-size:12px;color:rgba(255,255,255,.85);line-height:1.65;font-weight:300}
+.h-pills{display:flex;gap:7px;margin-top:12px;flex-wrap:wrap}
+.hpill{display:inline-flex;align-items:center;gap:5px;border-radius:20px;padding:5px 12px;font-size:11px;font-weight:500;background:rgba(255,255,255,.18);color:white;border:1px solid rgba(255,255,255,.25)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:14px}
+.sc{background:rgba(255,255,255,.65);border:1px solid var(--glass-b);border-radius:14px;padding:12px 6px;text-align:center}
+.sn{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:600;color:var(--r5)}
+.sl{font-size:9px;color:var(--text-s);font-weight:500;letter-spacing:.5px;text-transform:uppercase;margin-top:1px}
+.sec{font-family:'Cormorant Garamond',serif;font-size:10px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:var(--r5);margin-bottom:10px;padding:0 16px}
+.evts{padding:0 14px 4px}
+.er{display:flex;align-items:center;gap:10px;padding:9px 12px;background:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.75);border-radius:12px;margin-bottom:6px;cursor:pointer;transition:all .2s}
+.er:hover{background:white;transform:translateX(2px)}
+.et{font-size:10px;font-weight:700;color:var(--r5);min-width:38px;letter-spacing:.3px}
+.ebar{width:3px;height:28px;border-radius:3px;flex-shrink:0}
+.ei{flex:1}
+.en{font-size:12px;font-weight:500;color:var(--text)}
+.el{font-size:10px;color:var(--text-s);margin-top:1px}
+.edur{font-size:9px;color:var(--text-xs);margin-left:auto}
+.btns{padding:0 14px 16px;display:flex;gap:8px}
+.btn-p{background:linear-gradient(135deg,var(--r5),var(--r6));color:white;border:none;border-radius:12px;padding:10px;font-size:11px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;box-shadow:0 4px 14px rgba(233,30,140,.32);flex:1;transition:all .2s}
+.btn-p:hover{transform:translateY(-1px)}
+.btn-g{background:rgba(255,255,255,.75);border:1.5px solid var(--r2);color:var(--text-m);border-radius:12px;padding:10px;font-size:11px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+.btn-g:hover{background:white}
+
+/* iMESSAGE PREVIEW */
+.imsg{width:320px;background:#1C1C1E;border-radius:26px;overflow:hidden;box-shadow:0 20px 56px rgba(0,0,0,.28);border:1.5px solid #3A3A3C}
+.im-notch{height:22px;background:#1C1C1E;display:flex;align-items:center;justify-content:center}
+.im-pill{width:70px;height:5px;background:#3A3A3C;border-radius:3px}
+.im-hdr{background:rgba(28,28,30,.95);padding:12px 16px;display:flex;align-items:center;gap:9px;border-bottom:1px solid rgba(255,255,255,.07)}
+.im-av{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--r5),var(--r6));display:flex;align-items:center;justify-content:center;font-size:16px}
+.im-nm{font-size:12px;font-weight:600;color:white}
+.im-sub{font-size:9px;color:#8E8E93}
+.im-live{display:flex;align-items:center;gap:5px;font-size:9px;color:var(--green);font-weight:500;margin-left:auto}
+.im-dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 6px rgba(52,199,89,.7);animation:glow 2s infinite}
+@keyframes glow{0%,100%{box-shadow:0 0 6px rgba(52,199,89,.6)}50%{box-shadow:0 0 12px rgba(52,199,89,.95)}}
+.im-msgs{padding:14px 12px;background:#000;display:flex;flex-direction:column;gap:8px}
+.ib{border-radius:16px;padding:10px 13px;font-size:12px;line-height:1.6;max-width:85%}
+.ib.ai{background:#0A84FF;color:white;border-radius:16px 16px 4px 16px;align-self:flex-end}
+.im-time{text-align:center;font-size:9px;color:#636366;margin-bottom:2px}
+
+/* SETTINGS CARD */
+.settings{width:300px}
+.set-title{font-family:'Cormorant Garamond',serif;font-size:11px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:var(--r5);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.set-title::after{content:'';flex:1;height:1px;background:rgba(233,30,140,.15)}
+.sgrp{background:rgba(255,255,255,.65);border:1px solid var(--glass-b);border-radius:18px;overflow:hidden;margin-bottom:14px;box-shadow:0 2px 10px var(--shadow)}
+.srow{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.7);cursor:pointer;transition:background .14s}
+.srow:last-child{border-bottom:none}
+.srow:hover{background:rgba(255,255,255,.85)}
+.sic{width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.sin{flex:1}
+.sn{font-size:12px;font-weight:500;color:var(--text)}
+.sd{font-size:10px;color:var(--text-s);margin-top:1px}
+.tog{width:40px;height:22px;border-radius:11px;background:var(--green);position:relative;cursor:pointer;transition:background .18s;flex-shrink:0}
+.tog::after{content:'';position:absolute;right:3px;top:3px;width:16px;height:16px;border-radius:50%;background:white;box-shadow:0 2px 4px rgba(0,0,0,.2);transition:all .18s}
+.tog.off{background:rgba(233,30,140,.18)}
+.tog.off::after{right:auto;left:3px}
+</style>
+</head>
+<body>
+
+<!-- PHONE SCREEN -->
+<div class="phone">
+  <div class="hero">
+    <div class="h-eye">Tuesday · April 7th · 7:30 AM</div>
+    <div class="h-name">Good morning,<br><em>Miss M</em> ☀️</div>
+    <div class="h-msg">You have 2 classes, 3 tasks and a case study due Friday. Today looks like a solid study day — I've got you covered.</div>
+    <div class="h-pills"><span class="hpill">🌤 22°C</span><span class="hpill">⚡ High energy day</span><span class="hpill">📚 3 days to essay</span></div>
+  </div>
+  <div class="stats">
+    <div class="sc"><div class="sn">2</div><div class="sl">Classes</div></div>
+    <div class="sc"><div class="sn">3</div><div class="sl">Tasks</div></div>
+    <div class="sc"><div class="sn">4d</div><div class="sl">Essay</div></div>
+    <div class="sc"><div class="sn">22°</div><div class="sl">Weather</div></div>
+  </div>
+  <div class="sec" style="padding-top:4px">Today's Schedule</div>
+  <div class="evts">
+    <div class="er"><div class="et">9:00</div><div class="ebar" style="background:#E91E8C"></div><div class="ei"><div class="en">Marketing Lecture</div><div class="el">Room 204</div></div><div class="edur">90 min</div></div>
+    <div class="er"><div class="et">12:30</div><div class="ebar" style="background:#FF9500"></div><div class="ei"><div class="en">Study Group</div><div class="el">Library Level 2</div></div><div class="edur">60 min</div></div>
+    <div class="er"><div class="et">3:00</div><div class="ebar" style="background:#9C27B0"></div><div class="ei"><div class="en">Digital Marketing</div><div class="el">Zoom · Online</div></div><div class="edur">60 min</div></div>
+  </div>
+  <div class="btns">
+    <button class="btn-p">View Full Day</button>
+    <button class="btn-g">Snooze 30min</button>
+  </div>
+</div>
+
+<!-- iMESSAGE PREVIEW -->
+<div class="imsg">
+  <div class="im-notch"><div class="im-pill"></div></div>
+  <div class="im-hdr">
+    <div class="im-av">🤖</div>
+    <div><div class="im-nm">Miss M AI (Mac)</div><div class="im-sub">Automated · 7:30 AM daily</div></div>
+    <div class="im-live"><div class="im-dot"></div>Live</div>
+  </div>
+  <div class="im-msgs">
+    <div class="im-time">Today 7:30 AM — Delivered automatically</div>
+    <div class="ib ai">Good morning Miss M! ☀️<br><br><strong>Tuesday, April 7th</strong><br><br>📚 Case study due <strong>Friday</strong> — 3 days left<br>📅 Marketing 9am · Study group 12:30pm<br>🌤 22°C today · light jacket for evening<br>✅ 3 tasks ready for you<br><br>Reply to ask me anything 💬</div>
+    <div style="height:12px"></div>
+    <div style="background:#1C1C1E;border-radius:16px 16px 16px 4px;padding:9px 12px;font-size:12px;color:white;max-width:75%;line-height:1.5">what time is my lecture?</div>
+    <div class="ib ai">Your Marketing lecture is at <strong>9:00 AM</strong>, Room 204 in the Business Building. It runs for 90 minutes — want me to set a reminder 15 mins before? 📅</div>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div class="settings">
+  <div class="set-title">Briefing Schedule</div>
+  <div class="sgrp">
+    <div class="srow"><div class="sic" style="background:rgba(255,220,0,.18)">🌅</div><div class="sin"><div class="sn">Morning Briefing</div><div class="sd">Weekdays · 7:30 AM · iMessage</div></div><div class="tog" onclick="this.classList.toggle('off')"></div></div>
+    <div class="srow"><div class="sic" style="background:rgba(156,39,176,.1)">🌙</div><div class="sin"><div class="sn">Evening Wind-Down</div><div class="sd">Daily · 9:00 PM · recap + tomorrow</div></div><div class="tog" onclick="this.classList.toggle('off')"></div></div>
+    <div class="srow"><div class="sic" style="background:rgba(52,199,89,.1)">📅</div><div class="sin"><div class="sn">Sunday Weekly Plan</div><div class="sd">Sundays · 7:00 PM · full week ahead</div></div><div class="tog" onclick="this.classList.toggle('off')"></div></div>
+    <div class="srow"><div class="sic" style="background:rgba(255,59,48,.1)">⚠️</div><div class="sin"><div class="sn">Deadline Warnings</div><div class="sd">3 days · 1 day · morning of</div></div><div class="tog" onclick="this.classList.toggle('off')"></div></div>
+    <div class="srow"><div class="sic" style="background:rgba(0,122,255,.1)">💧</div><div class="sin"><div class="sn">Wellness Reminders</div><div class="sd">Water · breaks · bedtime</div></div><div class="tog" onclick="this.classList.toggle('off')"></div></div>
+  </div>
+  <div class="set-title">Study Reminders</div>
+  <div class="sgrp">
+    <div class="srow"><div class="sic" style="background:rgba(233,30,140,.1)">📚</div><div class="sin"><div class="sn">Smart Study Nudge</div><div class="sd">2hrs before next commitment</div></div><div class="tog" onclick="this.classList.toggle('off')"></div></div>
+    <div class="srow"><div class="sic" style="background:rgba(255,149,0,.1)">⏱</div><div class="sin"><div class="sn">Pomodoro Break Alert</div><div class="sd">Every 25 min study session</div></div><div class="tog" onclick="this.classList.toggle('off')"></div></div>
+  </div>
+</div>
+
+</body>
+</html>

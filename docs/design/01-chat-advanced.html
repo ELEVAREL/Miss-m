@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Miss M — AI Chat</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=Playfair+Display:ital,wght@0,400;0,700&display=swap" rel="stylesheet">
+<style>
+:root{--r5:#E91E8C;--r6:#C2185B;--r7:#880E4F;--r2:#F8BBD9;--r3:#F48FB1;--r4:#F06292;--text:#1A0A10;--text-m:#5C3049;--text-s:#9A6B80;--text-xs:#C4A0B2;--glass-b:rgba(255,255,255,0.82);--shadow:rgba(194,24,91,0.13);--green:#34C759;--blue:#007AFF}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:linear-gradient(155deg,#FFF0F8,#FCE4EC 40%,#F8BBD9 70%,#FDE8F3);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;gap:20px;flex-wrap:wrap}
+body::before{content:'';position:fixed;top:-150px;right:-150px;width:500px;height:500px;background:radial-gradient(circle,rgba(233,30,140,.12),transparent 70%);border-radius:50%;pointer-events:none}
+
+/* CHAT WINDOW */
+.chat-win{width:380px;background:rgba(255,255,255,.65);backdrop-filter:blur(20px) saturate(180%);border:1px solid var(--glass-b);border-radius:24px;overflow:hidden;box-shadow:0 20px 56px var(--shadow);height:660px;display:flex;flex-direction:column}
+.ch{background:linear-gradient(135deg,var(--r5),var(--r6));padding:14px 18px;display:flex;align-items:center;gap:10px;flex-shrink:0}
+.ch-av{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.2);border:2px solid rgba(255,255,255,.35);display:flex;align-items:center;justify-content:center;font-size:15px}
+.ch-nm{font-size:14px;font-weight:600;color:white}
+.ch-st{font-size:10px;color:rgba(255,255,255,.75)}
+.ch-acts{margin-left:auto;display:flex;gap:7px}
+.cib{width:30px;height:30px;border-radius:9px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;transition:all .15s}
+.cib:hover{background:rgba(255,255,255,.28)}
+.msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:4px;scrollbar-width:none}
+.msgs::-webkit-scrollbar{display:none}
+.mtime{text-align:center;font-size:9px;color:var(--text-xs);margin:6px 0;letter-spacing:.5px}
+.mrow{display:flex;align-items:flex-end;gap:7px;margin-bottom:3px}
+.mrow.u{flex-direction:row-reverse}
+.mav{width:24px;height:24px;min-width:24px;border-radius:50%;background:linear-gradient(135deg,var(--r5),var(--r6));display:flex;align-items:center;justify-content:center;font-size:10px;color:white;margin-bottom:2px;flex-shrink:0}
+.bbl{max-width:80%;padding:9px 13px;border-radius:16px;font-size:12.5px;line-height:1.55}
+.bbl.ai{background:rgba(255,255,255,.92);color:var(--text);border-radius:16px 16px 16px 4px;border:1px solid rgba(255,255,255,.9);box-shadow:0 2px 8px rgba(194,24,91,.07)}
+.bbl.u{background:linear-gradient(135deg,var(--r5),var(--r6));color:white;border-radius:16px 16px 4px 16px;box-shadow:0 4px 12px rgba(233,30,140,.28)}
+
+/* STATE: THINKING */
+.think{background:rgba(255,255,255,.9);border:1px solid rgba(233,30,140,.15);border-radius:16px 16px 16px 4px;padding:11px 14px;display:inline-flex;align-items:center;gap:9px;box-shadow:0 2px 8px rgba(194,24,91,.07)}
+.think-ic{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,rgba(233,30,140,.14),rgba(194,24,91,.1));display:flex;align-items:center;justify-content:center;font-size:13px;animation:tspin 2.5s linear infinite}
+@keyframes tspin{0%,100%{transform:rotate(0)scale(1)}50%{transform:rotate(180deg)scale(1.1)}}
+.tdots{display:flex;gap:4px}
+.td{width:5px;height:5px;border-radius:50%;background:var(--r4);animation:tb 1.1s ease infinite}
+.td:nth-child(2){animation-delay:.18s}.td:nth-child(3){animation-delay:.36s}
+@keyframes tb{0%,80%,100%{transform:scale(.55);opacity:.35}40%{transform:scale(1);opacity:1}}
+.think-txt{font-size:11px;color:var(--text-s);font-style:italic}
+
+/* STATE: TOOL PILL */
+.tp{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.9);border:1px solid rgba(0,122,255,.22);border-radius:18px;padding:5px 11px 5px 7px;font-size:11px;color:var(--blue);font-weight:500;box-shadow:0 2px 8px rgba(0,122,255,.07);margin-bottom:4px}
+.tp-ic{width:20px;height:20px;border-radius:50%;background:rgba(0,122,255,.1);display:flex;align-items:center;justify-content:center;font-size:10px}
+.tp-spin{width:13px;height:13px;border:2px solid rgba(0,122,255,.2);border-top-color:var(--blue);border-radius:50%;animation:spin .65s linear infinite;margin-left:4px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.tp.done{border-color:rgba(52,199,89,.25);color:#2E7D32;background:rgba(242,255,246,.95)}
+.tp.done .tp-ic{background:rgba(52,199,89,.12)}
+.tp-chk{color:var(--green);font-size:12px;margin-left:4px}
+
+/* RICH CARD */
+.rcard{background:white;border:1px solid rgba(233,30,140,.12);border-radius:13px;padding:11px 13px;margin-top:6px;box-shadow:0 2px 8px rgba(194,24,91,.06)}
+.rcard-hdr{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--r5);font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.rr{display:flex;align-items:center;gap:7px;padding:6px 0;border-bottom:1px solid rgba(233,30,140,.05)}
+.rr:last-child{border-bottom:none}
+.rr-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.rr-info{flex:1;font-size:11px;color:var(--text)}
+.rr-time{font-size:9px;color:var(--r5);font-weight:600}
+
+/* STREAM */
+.cur{display:inline-block;width:2px;height:13px;background:var(--r5);border-radius:1px;vertical-align:middle;animation:blk .75s ease infinite;margin-left:1px}
+@keyframes blk{0%,100%{opacity:1}50%{opacity:0}}
+
+/* VOICE WAVE */
+.vrow{background:rgba(255,255,255,.85);border:1px solid var(--r2);border-radius:18px;padding:11px 16px;display:flex;align-items:center;gap:12px}
+.v-ic{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--r5),var(--r6));display:flex;align-items:center;justify-content:center;color:white;font-size:14px;animation:vp 1.4s ease infinite;flex-shrink:0}
+@keyframes vp{0%,100%{box-shadow:0 0 0 0 rgba(233,30,140,.4)}70%{box-shadow:0 0 0 10px rgba(233,30,140,0)}}
+.wf{display:flex;align-items:center;gap:2.5px;height:24px}
+.wv{width:3px;border-radius:3px;background:var(--r5);animation:wa 1s ease infinite;transform-origin:bottom}
+.wv:nth-child(1){height:7px}.wv:nth-child(2){height:14px;animation-delay:.1s}.wv:nth-child(3){height:20px;animation-delay:.2s}.wv:nth-child(4){height:11px;animation-delay:.3s}.wv:nth-child(5){height:18px;animation-delay:.4s}.wv:nth-child(6){height:13px;animation-delay:.3s}.wv:nth-child(7){height:7px;animation-delay:.2s}
+@keyframes wa{0%,100%{transform:scaleY(.35)}50%{transform:scaleY(1.4)}}
+.v-txt{font-size:11px;color:var(--text-s);font-style:italic;flex:1}
+.v-timer{font-size:11px;font-weight:600;color:var(--r5)}
+
+/* INPUT AREA */
+.inp-area{padding:10px 14px;border-top:1px solid rgba(255,255,255,.7);background:rgba(255,255,255,.5);flex-shrink:0}
+.chips{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px}
+.chip{background:rgba(255,255,255,.75);border:1px solid var(--r2);border-radius:14px;padding:4px 10px;font-size:10px;color:var(--text-m);cursor:pointer;transition:all .14s;white-space:nowrap;font-weight:500}
+.chip:hover{background:white;border-color:var(--r4);color:var(--r5)}
+.inp-row{display:flex;gap:7px;align-items:center}
+.inp{flex:1;background:rgba(255,255,255,.8);border:1.5px solid var(--r2);border-radius:13px;padding:9px 13px;font-size:12px;font-family:'DM Sans',sans-serif;color:var(--text);outline:none;transition:border-color .2s}
+.inp:focus{border-color:var(--r5);box-shadow:0 0 0 3px rgba(233,30,140,.09)}
+.inp::placeholder{color:var(--text-xs)}
+.vbtn{width:36px;height:36px;border-radius:11px;border:1.5px solid var(--r2);background:rgba(255,255,255,.8);display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;transition:all .2s;flex-shrink:0}
+.vbtn:hover,.vbtn.on{background:linear-gradient(135deg,var(--r5),var(--r6));border-color:var(--r5);box-shadow:0 4px 12px rgba(233,30,140,.32)}
+.sbtn{width:36px;height:36px;border-radius:11px;background:linear-gradient(135deg,var(--r5),var(--r6));border:none;color:white;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(233,30,140,.32);transition:all .2s;flex-shrink:0}
+.sbtn:hover{transform:scale(1.08)}
+
+/* STATES PANEL */
+.panel{width:300px;display:flex;flex-direction:column;gap:8px}
+.panel-title{font-family:'Cormorant Garamond',serif;font-size:11px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:var(--r5);margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.panel-title::after{content:'';flex:1;height:1px;background:rgba(233,30,140,.15)}
+.scard{background:rgba(255,255,255,.65);border:1px solid var(--glass-b);border-radius:16px;padding:12px 14px;cursor:pointer;transition:all .2s;box-shadow:0 2px 10px var(--shadow)}
+.scard:hover,.scard.on{background:white;box-shadow:0 8px 24px rgba(233,30,140,.13)}
+.scard.on{border-color:rgba(233,30,140,.3)}
+.sc-hdr{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.sc-num{width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,var(--r5),var(--r6));color:white;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sc-t{font-size:11.5px;font-weight:600;color:var(--text)}
+.sc-d{font-size:10.5px;color:var(--text-s);line-height:1.45}
+</style>
+</head>
+<body>
+
+<!-- CHAT WINDOW -->
+<div class="chat-win">
+  <div class="ch">
+    <div class="ch-av">✦</div>
+    <div><div class="ch-nm">Miss M AI</div><div class="ch-st">● Active · Sonnet 4.6</div></div>
+    <div class="ch-acts"><div class="cib">🎙</div><div class="cib">📎</div><div class="cib">⋯</div></div>
+  </div>
+  <div class="msgs" id="msgs">
+    <div class="mtime">Today · 9:31 AM</div>
+    <!-- Initial user message always visible -->
+    <div class="mrow u">
+      <div class="mav" style="background:linear-gradient(135deg,#F8BBD9,#E91E8C)">M</div>
+      <div class="bbl u">What's on my calendar today and remind me about my essay!</div>
+    </div>
+    <!-- STATE 1: normal reply (default) -->
+    <div id="s0" class="mrow">
+      <div class="mav">✦</div>
+      <div class="bbl ai">Hey Miss M! 🩷 You have <strong>3 events today</strong> — Marketing lecture at 9am, study group at 12:30, and Digital Marketing at 3pm. Your essay is due <strong>Friday</strong> — want me to set a reminder?</div>
+    </div>
+    <!-- STATE 2: thinking -->
+    <div id="s1" class="mrow" style="display:none">
+      <div class="mav">✦</div>
+      <div class="think"><div class="think-ic">🧠</div><div><div class="tdots"><div class="td"></div><div class="td"></div><div class="td"></div></div><div class="think-txt" style="margin-top:4px">Miss M AI is thinking…</div></div></div>
+    </div>
+    <!-- STATE 3: tool running -->
+    <div id="s2" class="mrow" style="display:none">
+      <div class="mav">✦</div>
+      <div style="display:flex;flex-direction:column;gap:3px">
+        <div class="tp"><div class="tp-ic">📅</div>Reading Apple Calendar…<div class="tp-spin"></div></div>
+        <div class="tp" style="animation-delay:.4s"><div class="tp-ic">🔔</div>Checking Reminders…<div class="tp-spin"></div></div>
+        <div class="tp"><div class="tp-ic">🌤</div>Fetching weather…<div class="tp-spin"></div></div>
+      </div>
+    </div>
+    <!-- STATE 4: tools done + rich card -->
+    <div id="s3" class="mrow" style="display:none">
+      <div class="mav">✦</div>
+      <div>
+        <div class="tp done"><div class="tp-ic">📅</div>Read 3 calendar events<div class="tp-chk">✓</div></div>
+        <div class="tp done"><div class="tp-ic">🔔</div>Checked reminders<div class="tp-chk">✓</div></div>
+        <div class="tp done"><div class="tp-ic">🌤</div>Weather: 22°C, sunny<div class="tp-chk">✓</div></div>
+        <div class="rcard">
+          <div class="rcard-hdr">📅 Today's Events</div>
+          <div class="rr"><div class="rr-dot" style="background:#E91E8C"></div><div class="rr-info">Marketing Lecture · Room 204</div><div class="rr-time">9:00 AM</div></div>
+          <div class="rr"><div class="rr-dot" style="background:#FF9500"></div><div class="rr-info">Study Group · Library</div><div class="rr-time">12:30 PM</div></div>
+          <div class="rr"><div class="rr-dot" style="background:#9C27B0"></div><div class="rr-info">Digital Marketing · Zoom</div><div class="rr-time">3:00 PM</div></div>
+        </div>
+      </div>
+    </div>
+    <!-- STATE 5: streaming -->
+    <div id="s4" class="mrow" style="display:none">
+      <div class="mav">✦</div>
+      <div class="bbl ai"><span id="stream-txt"></span><span class="cur" id="cur"></span></div>
+    </div>
+    <!-- STATE 6: write-back action -->
+    <div id="s5" class="mrow" style="display:none">
+      <div class="mav">✦</div>
+      <div>
+        <div class="tp"><div class="tp-ic">➕</div>Adding reminder to Apple Reminders…<div class="tp-spin"></div></div>
+        <div class="tp" style="margin-top:3px"><div class="tp-ic">📅</div>Blocking study time in Calendar…<div class="tp-spin"></div></div>
+      </div>
+    </div>
+    <!-- STATE 6 done -->
+    <div id="s5b" class="mrow" style="display:none">
+      <div class="mav">✦</div>
+      <div>
+        <div class="tp done"><div class="tp-ic">✅</div>Reminder set · Essay Friday 5pm<div class="tp-chk">✓</div></div>
+        <div class="tp done" style="margin-top:3px"><div class="tp-ic">📅</div>Blocked 10:30–12:00 as Essay Time<div class="tp-chk">✓</div></div>
+        <div class="bbl ai" style="margin-top:7px;max-width:320px">Done! ✅ Reminder set for <strong>Friday 5pm</strong> and I've blocked <strong>10:30–12:00 today</strong> as essay study time in your calendar. You've got this! 💪</div>
+      </div>
+    </div>
+    <!-- STATE 7: voice -->
+    <div id="s6" style="display:none;margin:6px 0">
+      <div class="vrow">
+        <div class="v-ic">🎙</div>
+        <div class="wf"><div class="wv"></div><div class="wv"></div><div class="wv"></div><div class="wv"></div><div class="wv"></div><div class="wv"></div><div class="wv"></div></div>
+        <span class="v-txt">Listening to Miss M…</span>
+        <span class="v-timer" id="vtimer">0:00</span>
+      </div>
+    </div>
+  </div>
+  <div class="inp-area">
+    <div class="chips">
+      <div class="chip" onclick="nextState()">📅 My calendar</div>
+      <div class="chip" onclick="nextState()">✍️ Help my essay</div>
+      <div class="chip" onclick="nextState()">🎯 Quiz me</div>
+      <div class="chip" onclick="nextState()">🛒 Shopping list</div>
+    </div>
+    <div class="inp-row">
+      <input class="inp" placeholder="Ask me anything, Miss M…" id="inp" onkeydown="if(event.key==='Enter')nextState()">
+      <div class="vbtn" id="vbtn" onclick="toggleVoice()">🎙</div>
+      <button class="sbtn" onclick="nextState()">↑</button>
+    </div>
+  </div>
+</div>
+
+<!-- STATES PANEL -->
+<div class="panel">
+  <div class="panel-title">7 Live Chat States</div>
+  <div class="scard on" id="card0" onclick="goState(0)">
+    <div class="sc-hdr"><div class="sc-num">1</div><div class="sc-t">💬 Normal Reply</div></div>
+    <div class="sc-d">Standard conversation — clean AI bubble with formatted text and bold highlights.</div>
+  </div>
+  <div class="scard" id="card1" onclick="goState(1)">
+    <div class="sc-hdr"><div class="sc-num">2</div><div class="sc-t">🧠 Thinking…</div></div>
+    <div class="sc-d">Animated brain + bouncing dots. Shows AI processing a complex multi-step request.</div>
+  </div>
+  <div class="scard" id="card2" onclick="goState(2)">
+    <div class="sc-hdr"><div class="sc-num">3</div><div class="sc-t">🔧 Tool Use — Active</div></div>
+    <div class="sc-d">Blue pills with spinners. Shows exactly which Apple system is being read live.</div>
+  </div>
+  <div class="scard" id="card3" onclick="goState(3)">
+    <div class="sc-hdr"><div class="sc-num">4</div><div class="sc-t">✅ Tools Done + Rich Card</div></div>
+    <div class="sc-d">Green pills confirm success. Results embedded as a tappable card right in chat.</div>
+  </div>
+  <div class="scard" id="card4" onclick="goState(4)">
+    <div class="sc-hdr"><div class="sc-num">5</div><div class="sc-t">⌨️ Streaming Response</div></div>
+    <div class="sc-d">Text types out word-by-word with a pink blinking cursor. Feels completely alive.</div>
+  </div>
+  <div class="scard" id="card5" onclick="goState(5)">
+    <div class="sc-hdr"><div class="sc-num">6</div><div class="sc-t">➕ Write-Back Actions</div></div>
+    <div class="sc-d">AI doesn't just read — it adds reminders, blocks calendar time, sends messages.</div>
+  </div>
+  <div class="scard" id="card6" onclick="goState(6)">
+    <div class="sc-hdr"><div class="sc-num">7</div><div class="sc-t">🎙 Voice Input</div></div>
+    <div class="sc-d">Live animated waveform. Miss M speaks — AI transcribes and acts instantly.</div>
+  </div>
+</div>
+
+<script>
+const stateIds = ['s0','s1','s2','s3','s4','s5','s5b','s6'];
+let cur = 0;
+let streamTimer, voiceTimer, voiceOn = false, vsec = 0;
+
+function hideAll(){
+  stateIds.forEach(id => { const e = document.getElementById(id); if(e) e.style.display='none'; });
+}
+function goState(n){
+  hideAll();
+  clearInterval(streamTimer); clearInterval(voiceTimer);
+  document.querySelectorAll('.scard').forEach((c,i) => c.classList.toggle('on', i===n));
+  cur = n;
+  if(n===0){ document.getElementById('s0').style.display=''; }
+  else if(n===1){ document.getElementById('s1').style.display=''; }
+  else if(n===2){ document.getElementById('s2').style.display=''; }
+  else if(n===3){ document.getElementById('s3').style.display=''; }
+  else if(n===4){ document.getElementById('s4').style.display=''; startStream(); }
+  else if(n===5){ document.getElementById('s5').style.display=''; setTimeout(()=>{ document.getElementById('s5').style.display='none'; document.getElementById('s5b').style.display=''; scroll(); },2200); }
+  else if(n===6){ document.getElementById('s6').style.display=''; startVoice(); }
+  scroll();
+}
+function nextState(){ goState((cur+1) % 7); }
+function startStream(){
+  const el = document.getElementById('stream-txt');
+  const c = document.getElementById('cur');
+  if(!el) return;
+  el.textContent='';
+  const msg = "You have 3 events today: Marketing lecture at 9am, study group at 12:30, and Digital Marketing at 3pm. Your Consumer Behaviour essay is due Friday — want me to set a reminder and block study time in your calendar? 📅";
+  let i=0;
+  streamTimer = setInterval(()=>{
+    if(i<msg.length){ el.textContent+=msg[i++]; scroll(); }
+    else { clearInterval(streamTimer); if(c) c.style.display='none'; }
+  }, 26);
+}
+function startVoice(){
+  vsec=0;
+  const t = document.getElementById('vtimer');
+  voiceTimer = setInterval(()=>{ vsec++; if(t) t.textContent = '0:'+String(vsec).padStart(2,'0'); }, 1000);
+}
+function toggleVoice(){
+  voiceOn = !voiceOn;
+  const btn = document.getElementById('vbtn');
+  if(voiceOn){ goState(6); btn.classList.add('on'); }
+  else { btn.classList.remove('on'); clearInterval(voiceTimer); document.getElementById('s6').style.display='none'; }
+}
+function scroll(){ const m = document.getElementById('msgs'); if(m) m.scrollTop = m.scrollHeight; }
+</script>
+</body>
+</html>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Miss M — Essay Writer</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=Playfair+Display:ital,wght@0,400;0,700&display=swap" rel="stylesheet">
+<style>
+:root{--r5:#E91E8C;--r6:#C2185B;--r2:#F8BBD9;--r3:#F48FB1;--text:#1A0A10;--text-m:#5C3049;--text-s:#9A6B80;--text-xs:#C4A0B2;--glass-b:rgba(255,255,255,.82);--shadow:rgba(194,24,91,.13);--green:#34C759;--blue:#007AFF}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:linear-gradient(155deg,#FFF0F8,#FCE4EC 40%,#F8BBD9 70%,#FDE8F3);min-height:100vh;padding:28px;display:grid;grid-template-columns:260px 1fr 260px;gap:16px;align-items:start;color:var(--text)}
+@media(max-width:900px){body{grid-template-columns:1fr}}
+body::before{content:'';position:fixed;top:-150px;right:-150px;width:500px;height:500px;background:radial-gradient(circle,rgba(233,30,140,.11),transparent 70%);border-radius:50%;pointer-events:none}
+
+.panel{background:rgba(255,255,255,.65);border:1px solid var(--glass-b);border-radius:20px;padding:16px;box-shadow:0 2px 12px var(--shadow)}
+.plbl{font-family:'Cormorant Garamond',serif;font-size:10px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:var(--r5);margin-bottom:12px;display:flex;align-items:center;gap:7px}
+.plbl::after{content:'';flex:1;height:1px;background:rgba(233,30,140,.14)}
+
+/* OUTLINE */
+.oi{display:flex;align-items:flex-start;gap:9px;padding:9px;border-radius:11px;margin-bottom:5px;cursor:pointer;transition:all .18s}
+.oi.on{background:rgba(233,30,140,.08);border:1px solid rgba(233,30,140,.15)}
+.oi:hover:not(.on){background:rgba(255,255,255,.75)}
+.oi-n{width:21px;height:21px;border-radius:50%;background:linear-gradient(135deg,var(--r5),var(--r6));color:white;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.oi-t{font-size:11.5px;font-weight:500;color:var(--text)}
+.oi-s{font-size:10px;color:var(--text-s);margin-top:2px;line-height:1.4}
+.oi.done .oi-t{text-decoration:line-through;color:var(--text-s)}
+.oi.done .oi-n{background:linear-gradient(135deg,var(--green),#81C784)}
+
+/* TOOLBAR */
+.toolbar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid rgba(233,30,140,.08)}
+.tb{background:rgba(255,255,255,.8);border:1px solid var(--r2);border-radius:10px;padding:6px 12px;font-size:11px;color:var(--text-m);cursor:pointer;font-weight:500;transition:all .18s;font-family:'DM Sans',sans-serif}
+.tb:hover{background:white;border-color:var(--r3);color:var(--r5)}
+.tb.on{background:var(--r5);color:white;border-color:var(--r5)}
+
+/* EDITOR */
+.editor{background:rgba(255,255,255,.72);border:1px solid var(--glass-b);border-radius:20px;padding:22px;box-shadow:0 4px 20px var(--shadow)}
+.editor-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.ed-title{font-family:'Playfair Display',serif;font-size:16px;font-style:italic;color:var(--text)}
+.ed-badge{font-size:10px;background:rgba(255,149,0,.12);color:#C65200;border-radius:8px;padding:3px 8px;font-weight:600}
+.essay-body{font-size:13px;color:var(--text);line-height:1.9;font-weight:300;min-height:340px;outline:none}
+.essay-body h3{font-family:'Playfair Display',serif;font-size:16px;font-weight:400;font-style:italic;color:var(--text-m);margin-bottom:10px;margin-top:18px}
+.hl{background:rgba(233,30,140,.07);border-radius:3px;padding:1px 3px;color:var(--r6)}
+.cur{display:inline-block;width:2px;height:14px;background:var(--r5);border-radius:1px;vertical-align:middle;animation:blk .75s ease infinite;margin-left:1px}
+@keyframes blk{0%,100%{opacity:1}50%{opacity:0}}
+.estats{display:flex;gap:16px;padding:12px 0 0;border-top:1px solid rgba(233,30,140,.07);flex-wrap:wrap}
+.est{font-size:10px;color:var(--text-s)}
+.est span{color:var(--r5);font-weight:600}
+
+/* RIGHT PANEL: TOOLS */
+.tool-item{background:rgba(255,255,255,.7);border:1px solid var(--glass-b);border-radius:13px;padding:11px 13px;margin-bottom:8px;cursor:pointer;transition:all .18s}
+.tool-item:hover{background:white;transform:translateX(2px);box-shadow:0 4px 14px var(--shadow)}
+.ti-name{font-size:12px;font-weight:500;color:var(--text);margin-bottom:2px;display:flex;align-items:center;gap:7px}
+.ti-desc{font-size:10px;color:var(--text-s);line-height:1.4}
+.cite-item{display:flex;align-items:flex-start;gap:8px;padding:9px;background:rgba(255,255,255,.7);border:1px solid var(--glass-b);border-radius:11px;margin-bottom:6px;cursor:pointer;transition:all .15s}
+.cite-item:hover{background:white}
+.cite-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:3px}
+.cite-t{font-size:10.5px;font-weight:500;color:var(--text);line-height:1.35}
+.cite-s{font-size:9px;color:var(--text-s);margin-top:1px}
+.cite-tag{font-size:9px;background:rgba(0,122,255,.09);color:var(--blue);border-radius:6px;padding:1px 7px;font-weight:500;margin-top:4px;display:inline-block}
+.btn-p{background:linear-gradient(135deg,var(--r5),var(--r6));color:white;border:none;border-radius:11px;padding:9px 16px;font-size:11px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;box-shadow:0 4px 12px rgba(233,30,140,.3);transition:all .2s;width:100%;margin-top:6px}
+.btn-p:hover{transform:translateY(-1px)}
+.btn-g{background:rgba(255,255,255,.75);border:1.5px solid var(--r2);color:var(--text-m);border-radius:11px;padding:8px 14px;font-size:11px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;width:100%;margin-top:6px}
+.btn-g:hover{background:white;border-color:var(--r3);color:var(--r5)}
+</style>
+</head>
+<body>
+
+<!-- LEFT: OUTLINE -->
+<div class="panel">
+  <div class="plbl">Essay Outline</div>
+  <div style="font-size:11px;color:var(--text-s);margin-bottom:12px;padding:0 2px">Consumer Behaviour Case Study<br>MKT302 · 2,500 words · Due Fri</div>
+  <div class="oi on"><div class="oi-n">1</div><div><div class="oi-t">Introduction</div><div class="oi-s">Background · thesis · scope · 300 words</div></div></div>
+  <div class="oi"><div class="oi-n">2</div><div><div class="oi-t">Theoretical Framework</div><div class="oi-s">STP model · Maslow's hierarchy · 400 words</div></div></div>
+  <div class="oi"><div class="oi-n">3</div><div><div class="oi-t">Nike Case Analysis</div><div class="oi-s">Segmentation examples · evidence · 600 words</div></div></div>
+  <div class="oi"><div class="oi-n">4</div><div><div class="oi-t">Consumer Insights</div><div class="oi-s">Primary research · data · 400 words</div></div></div>
+  <div class="oi"><div class="oi-n">5</div><div><div class="oi-t">Conclusion</div><div class="oi-s">Summary · recommendations · 300 words</div></div></div>
+  <div style="margin-top:14px;display:flex;flex-direction:column;gap:7px">
+    <button class="btn-p">✦ Generate Full Draft</button>
+    <button class="btn-g">📚 Add All Citations</button>
+    <button class="btn-g">🔄 Rewrite in My Voice</button>
+    <button class="btn-g">📥 Export as Word Doc</button>
+  </div>
+  <div style="margin-top:16px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+      <div style="font-size:10px;color:var(--text-s)">Overall Progress</div>
+      <div style="font-size:10px;font-weight:600;color:var(--r5)">15%</div>
+    </div>
+    <div style="height:5px;background:rgba(233,30,140,.1);border-radius:4px;overflow:hidden"><div style="width:15%;height:100%;background:linear-gradient(90deg,var(--r5),var(--r3));border-radius:4px"></div></div>
+  </div>
+</div>
+
+<!-- CENTRE: EDITOR -->
+<div class="editor">
+  <div class="editor-head">
+    <div class="ed-title">Consumer Behaviour Case Study</div>
+    <div class="ed-badge">AI Draft Mode</div>
+  </div>
+  <div class="toolbar">
+    <button class="tb on" onclick="setTb(this)">✦ AI Draft</button>
+    <button class="tb" onclick="setTb(this)">📝 Edit</button>
+    <button class="tb" onclick="setTb(this)">📚 Citations</button>
+    <button class="tb" onclick="setTb(this)">🎨 Tone</button>
+    <button class="tb" onclick="setTb(this)">✅ Check</button>
+    <button class="tb" onclick="setTb(this)">📥 Export</button>
+  </div>
+  <div class="essay-body" contenteditable="true">
+    <h3>1. Introduction</h3>
+    Consumer behaviour has long been recognised as a cornerstone of effective marketing strategy. In an increasingly fragmented marketplace, understanding <span class="hl">how and why consumers make purchasing decisions</span> enables organisations to develop targeted campaigns that resonate deeply with their intended audience.<br><br>
+    This essay examines Nike's application of the <span class="hl">Segmentation, Targeting and Positioning (STP) framework</span> within the global sportswear market. By analysing Nike's strategic decisions across demographic, psychographic and behavioural dimensions, this paper argues that its segmentation approach has been central to sustaining brand dominance across diverse consumer cohorts (Kotler &amp; Keller, 2016).<br><br>
+    Furthermore, this analysis will draw upon Maslow's Hierarchy of Needs to contextualise Nike's positioning strategy within broader theories of consumer motivation, before presenting recommendations for how these approaches might evolve in response to shifting digital consumption patterns.<span class="cur"></span>
+  </div>
+  <div class="estats">
+    <div class="est">Words: <span>287 / 2,500</span></div>
+    <div class="est">Section: <span>Intro ✓</span></div>
+    <div class="est">Reading level: <span>University</span></div>
+    <div class="est">Tone: <span>Academic ✓</span></div>
+    <div class="est">Citations: <span>1 / 8</span></div>
+    <div class="est">Plagiarism: <span>0% ✓</span></div>
+  </div>
+</div>
+
+<!-- RIGHT: TOOLS + CITATIONS -->
+<div>
+  <div class="panel" style="margin-bottom:14px">
+    <div class="plbl">AI Writing Tools</div>
+    <div class="tool-item"><div class="ti-name">✦ Continue Writing</div><div class="ti-desc">AI writes the next paragraph in your academic voice</div></div>
+    <div class="tool-item"><div class="ti-name">🎨 Adjust Tone</div><div class="ti-desc">Academic · Formal · Persuasive · Analytical</div></div>
+    <div class="tool-item"><div class="ti-name">🔄 Rephrase Selection</div><div class="ti-desc">Rewrite selected text while keeping meaning</div></div>
+    <div class="tool-item"><div class="ti-name">📖 Expand Section</div><div class="ti-desc">Add depth, examples and evidence to any paragraph</div></div>
+    <div class="tool-item"><div class="ti-name">✂️ Make Concise</div><div class="ti-desc">Reduce word count without losing substance</div></div>
+    <div class="tool-item"><div class="ti-name">🔬 Add Evidence</div><div class="ti-desc">Insert supporting research and academic sources</div></div>
+  </div>
+  <div class="panel">
+    <div class="plbl">Citations Added</div>
+    <div class="cite-item"><div class="cite-dot" style="background:var(--blue)"></div><div><div class="cite-t">Kotler &amp; Keller (2016)</div><div class="cite-s">Marketing Management, 15th Edition</div><div class="cite-tag">APA · Used ×2</div></div></div>
+    <div class="cite-item" style="opacity:.5"><div class="cite-dot" style="background:var(--text-xs)"></div><div><div class="cite-t">Add next citation…</div><div class="cite-s">7 more needed</div></div></div>
+    <button class="btn-p">📚 Find Sources with AI</button>
+    <button class="btn-g">📋 Generate Reference List</button>
+  </div>
+</div>
+
+<script>
+function setTb(el){
+  document.querySelectorAll('.tb').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+}
+</script>
+</body>
+</html>
