@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Miss M — File Command Centre</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=Playfair+Display:ital,wght@0,400;0,700&display=swap" rel="stylesheet">
+<style>
+:root{--r5:#E91E8C;--r6:#C2185B;--r2:#F8BBD9;--text:#1A0A10;--text-m:#5C3049;--text-s:#9A6B80;--text-xs:#C4A0B2;--glass-b:rgba(255,255,255,.82);--shadow:rgba(194,24,91,.13);--green:#34C759;--blue:#007AFF;--orange:#FF9500;--red:#FF3B30}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:linear-gradient(155deg,#FFF0F8,#FCE4EC 40%,#F8BBD9 70%,#FDE8F3);min-height:100vh;padding:28px;display:flex;gap:20px;flex-wrap:wrap;align-items:start;color:var(--text)}
+body::before{content:'';position:fixed;top:-150px;right:-150px;width:500px;height:500px;background:radial-gradient(circle,rgba(233,30,140,.11),transparent 70%);border-radius:50%;pointer-events:none}
+.panel{background:rgba(255,255,255,.65);border:1px solid var(--glass-b);border-radius:20px;padding:18px;box-shadow:0 2px 12px var(--shadow);margin-bottom:14px}
+.plbl{font-family:'Cormorant Garamond',serif;font-size:10px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:var(--r5);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.plbl::after{content:'';flex:1;height:1px;background:rgba(233,30,140,.14)}
+.btn-p{background:linear-gradient(135deg,var(--r5),var(--r6));color:white;border:none;border-radius:12px;padding:10px 20px;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;box-shadow:0 4px 14px rgba(233,30,140,.32);transition:all .2s}
+.btn-p:hover{transform:translateY(-1px)}
+.btn-g{background:rgba(255,255,255,.75);border:1.5px solid var(--r2);color:var(--text-m);border-radius:12px;padding:9px 16px;font-size:11px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+.btn-g:hover{background:white;color:var(--r5)}
+
+.drop-zone{border:2.5px dashed rgba(233,30,140,.3);border-radius:18px;padding:32px 20px;text-align:center;cursor:pointer;transition:all .25s;background:rgba(255,255,255,.35)}
+.drop-zone:hover{border-color:var(--r5);background:rgba(233,30,140,.03)}
+.dz-icon{font-size:40px;margin-bottom:12px;display:block}
+.dz-title{font-family:'Playfair Display',serif;font-size:17px;font-style:italic;color:var(--text);margin-bottom:5px}
+.dz-sub{font-size:11px;color:var(--text-s);line-height:1.6}
+.file-types{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:12px}
+.ft{background:rgba(233,30,140,.08);border:1px solid rgba(233,30,140,.16);border-radius:7px;padding:3px 9px;font-size:10px;color:var(--r5);font-weight:600}
+
+.file-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+.file-card{background:rgba(255,255,255,.7);border:1px solid var(--glass-b);border-radius:14px;padding:14px;text-align:center;cursor:pointer;transition:all .2s;position:relative}
+.file-card:hover{background:white;transform:translateY(-2px);box-shadow:0 8px 22px var(--shadow)}
+.fc-icon{font-size:28px;margin-bottom:8px;display:block}
+.fc-name{font-size:11px;font-weight:500;color:var(--text);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fc-type{font-size:9px;font-weight:600;border-radius:6px;padding:2px 7px;display:inline-block;margin-top:3px}
+.fc-size{font-size:9px;color:var(--text-xs);margin-top:3px}
+.fc-new{position:absolute;top:-6px;right:-6px;background:var(--r5);color:white;font-size:8px;font-weight:700;border-radius:8px;padding:2px 6px}
+
+.action-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.ar-btn{background:rgba(255,255,255,.75);border:1px solid var(--glass-b);border-radius:11px;padding:10px 14px;font-size:11px;color:var(--text-m);cursor:pointer;transition:all .18s;display:flex;align-items:center;gap:6px;font-weight:500}
+.ar-btn:hover{background:white;border-color:rgba(233,30,140,.25);color:var(--r5);box-shadow:0 4px 12px var(--shadow)}
+
+.ai-result{background:rgba(255,255,255,.82);border:1px solid rgba(233,30,140,.15);border-radius:16px;padding:14px}
+.ar-hdr{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--r5);font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:7px}
+.ar-body{font-size:12px;color:var(--text-m);line-height:1.7}
+</style>
+</head>
+<body>
+<div style="width:380px">
+  <div style="font-family:'Playfair Display',serif;font-size:22px;font-style:italic;color:var(--text);margin-bottom:14px">File <span style="color:var(--r5)">Command Centre</span></div>
+  <div class="panel">
+    <div class="drop-zone">
+      <span class="dz-icon">🗂️</span>
+      <div class="dz-title">Drop any file here</div>
+      <div class="dz-sub">AI reads it and asks what you want to do — summarise, edit, extract, convert or understand</div>
+      <div class="file-types"><span class="ft">PDF</span><span class="ft">DOCX</span><span class="ft">PPTX</span><span class="ft">XLSX</span><span class="ft">TXT</span><span class="ft">IMG</span><span class="ft">CSV</span></div>
+    </div>
+    <div style="text-align:center;margin:12px 0;font-size:11px;color:var(--text-xs)">— or browse recent files —</div>
+    <div class="file-grid">
+      <div class="file-card"><span class="fc-icon">📄</span><div class="fc-name">Essay_Draft_v2</div><span class="fc-type" style="background:rgba(255,59,48,.1);color:#B71C1C">DOCX</span><div class="fc-size">24 KB</div><span class="fc-new">NEW</span></div>
+      <div class="file-card"><span class="fc-icon">📊</span><div class="fc-name">MKT302_Lecture7</div><span class="fc-type" style="background:rgba(255,59,48,.12);color:#B71C1C">PDF</span><div class="fc-size">2.4 MB</div></div>
+      <div class="file-card"><span class="fc-icon">📑</span><div class="fc-name">Assignment_Brief</div><span class="fc-type" style="background:rgba(0,122,255,.09);color:var(--blue)">PDF</span><div class="fc-size">340 KB</div></div>
+      <div class="file-card"><span class="fc-icon">📈</span><div class="fc-name">Budget_April</div><span class="fc-type" style="background:rgba(52,199,89,.1);color:#2E7D32">XLSX</span><div class="fc-size">18 KB</div></div>
+      <div class="file-card"><span class="fc-icon">🖼️</span><div class="fc-name">Campus_Map</div><span class="fc-type" style="background:rgba(255,149,0,.1);color:#C65200">PNG</span><div class="fc-size">1.1 MB</div></div>
+      <div class="file-card"><span class="fc-icon">📋</span><div class="fc-name">Grocery_List</div><span class="fc-type" style="background:rgba(156,39,176,.1);color:#6A1B9A">TXT</span><div class="fc-size">2 KB</div></div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="plbl">What AI Can Do</div>
+    <div class="action-row">
+      <div class="ar-btn">📝 Summarise</div>
+      <div class="ar-btn">✍️ Edit & Improve</div>
+      <div class="ar-btn">📚 Add Citations</div>
+      <div class="ar-btn">🔍 Extract Data</div>
+      <div class="ar-btn">🃏 Flashcards</div>
+      <div class="ar-btn">📅 Find Deadlines</div>
+      <div class="ar-btn">🌐 Translate</div>
+      <div class="ar-btn">📊 Analyse Data</div>
+    </div>
+  </div>
+</div>
+<div style="width:360px">
+  <div class="panel">
+    <div class="plbl">AI Reading: Essay_Draft_v2.docx</div>
+    <div class="ai-result">
+      <div class="ar-hdr">✦ Miss M AI</div>
+      <div class="ar-body">I've read your essay draft! 🩷 You're at <strong>287 words out of 2,500</strong> — the introduction is solid but the <strong>STP theory section</strong> needs more depth. You're missing citations for Kotler & Keller and your Nike examples section hasn't been started yet.<br><br>Want me to continue writing from where you left off?</div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <button class="btn-p" style="flex:1;font-size:11px">✦ Continue Writing</button>
+      <button class="btn-g" style="font-size:11px">Open in Word</button>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="plbl">File Actions</div>
+    <div style="display:flex;flex-direction:column;gap:7px">
+      <div style="background:rgba(255,255,255,.7);border:1px solid var(--glass-b);border-radius:11px;padding:9px 12px;font-size:12px;color:var(--text-m);cursor:pointer;transition:all .14s" onmouseover="this.style.background='white'" onmouseout="this.style.background='rgba(255,255,255,.7)'">📤 <strong>Export to Word</strong> — save AI output as .docx</div>
+      <div style="background:rgba(255,255,255,.7);border:1px solid var(--glass-b);border-radius:11px;padding:9px 12px;font-size:12px;color:var(--text-m);cursor:pointer;transition:all .14s" onmouseover="this.style.background='white'" onmouseout="this.style.background='rgba(255,255,255,.7)'">📋 <strong>Copy to Clipboard</strong> — paste anywhere</div>
+      <div style="background:rgba(255,255,255,.7);border:1px solid var(--glass-b);border-radius:11px;padding:9px 12px;font-size:12px;color:var(--text-m);cursor:pointer;transition:all .14s" onmouseover="this.style.background='white'" onmouseout="this.style.background='rgba(255,255,255,.7)'">📝 <strong>Save to Notes</strong> — add to Apple Notes</div>
+      <div style="background:rgba(255,255,255,.7);border:1px solid var(--glass-b);border-radius:11px;padding:9px 12px;font-size:12px;color:var(--text-m);cursor:pointer;transition:all .14s" onmouseover="this.style.background='white'" onmouseout="this.style.background='rgba(255,255,255,.7)'">☁️ <strong>Save to Google Drive</strong> — sync to cloud</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
