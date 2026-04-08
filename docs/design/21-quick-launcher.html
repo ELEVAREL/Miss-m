@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Miss M — Quick Launcher</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=Playfair+Display:ital,wght@0,400;0,700&display=swap" rel="stylesheet">
+<style>
+:root{--r5:#E91E8C;--r6:#C2185B;--r2:#F8BBD9;--text:#1A0A10;--text-m:#5C3049;--text-s:#9A6B80;--text-xs:#C4A0B2;--glass-b:rgba(255,255,255,.82);--shadow:rgba(194,24,91,.13);--green:#34C759;--blue:#007AFF;--orange:#FF9500}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:#0D0D1A;min-height:100vh;padding:32px;display:flex;gap:28px;flex-wrap:wrap;align-items:center;justify-content:center;color:white}
+body::before{content:'';position:fixed;top:-200px;left:50%;transform:translateX(-50%);width:600px;height:600px;background:radial-gradient(circle,rgba(233,30,140,.1),transparent 70%);border-radius:50%;pointer-events:none}
+
+/* SPOTLIGHT STYLE LAUNCHER */
+.launcher{width:580px;background:rgba(28,28,40,.97);border:1px solid rgba(255,255,255,.12);border-radius:20px;overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,.7),0 0 0 0.5px rgba(233,30,140,.2)}
+.search-row{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid rgba(255,255,255,.07)}
+.search-icon{font-size:18px;color:rgba(233,30,140,.8)}
+.search-input{flex:1;background:transparent;border:none;font-size:16px;color:white;font-family:'DM Sans',sans-serif;outline:none;letter-spacing:.2px}
+.search-input::placeholder{color:rgba(255,255,255,.25)}
+.search-shortcut{display:flex;gap:4px;align-items:center}
+.key{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:5px;padding:2px 6px;font-size:10px;font-weight:700;color:rgba(255,255,255,.5)}
+
+/* SUGGESTIONS */
+.suggestions{max-height:380px;overflow-y:auto;scrollbar-width:none}
+.suggestions::-webkit-scrollbar{display:none}
+.sg-section{padding:8px 18px 4px;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.25);font-weight:600}
+.sg-item{display:flex;align-items:center;gap:12px;padding:10px 18px;cursor:pointer;transition:all .14s}
+.sg-item:hover,.sg-item.on{background:rgba(233,30,140,.12)}
+.sg-item.on{background:rgba(233,30,140,.15)}
+.sg-ic{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.sg-info{flex:1}
+.sg-name{font-size:13px;color:rgba(255,255,255,.9);font-weight:500}
+.sg-sub{font-size:10px;color:rgba(255,255,255,.35);margin-top:1px}
+.sg-badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:7px;white-space:nowrap}
+.sg-action{font-size:10px;color:rgba(255,255,255,.3);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:2px 8px;white-space:nowrap}
+.divider{height:1px;background:rgba(255,255,255,.05);margin:4px 0}
+
+/* FOOTER */
+.launcher-footer{display:flex;align-items:center;gap:16px;padding:10px 18px;border-top:1px solid rgba(255,255,255,.06);background:rgba(0,0,0,.2)}
+.lf-hint{display:flex;align-items:center;gap:5px;font-size:10px;color:rgba(255,255,255,.25)}
+.lf-key{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:4px;padding:1px 5px;font-size:9px;font-weight:700;color:rgba(255,255,255,.35)}
+
+/* CONTEXT PANEL */
+.ctx-panel{width:280px}
+.ctx-card{background:rgba(28,28,40,.95);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px;margin-bottom:12px}
+.ctx-t{font-size:12px;font-weight:600;color:white;margin-bottom:4px}
+.ctx-d{font-size:10.5px;color:rgba(255,255,255,.4);line-height:1.6}
+.kbdrow{display:flex;gap:6px;align-items:center;margin-top:10px}
+.kbd{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:6px;padding:3px 8px;font-size:10px;font-weight:700;color:rgba(255,255,255,.6)}
+.kbd-desc{font-size:10px;color:rgba(255,255,255,.3)}
+</style>
+</head>
+<body>
+
+<!-- LAUNCHER -->
+<div>
+  <div style="text-align:center;margin-bottom:16px">
+    <div style="font-family:'Playfair Display',serif;font-size:22px;font-style:italic;color:white;margin-bottom:6px">Quick <span style="color:var(--r5)">Launcher</span></div>
+    <div style="font-size:12px;color:rgba(255,255,255,.35)">Press ⌘⇧M from any app to open Miss M instantly</div>
+  </div>
+
+  <div class="launcher">
+    <div class="search-row">
+      <span class="search-icon">♛</span>
+      <input class="search-input" value="remind" placeholder="Ask Miss M anything…">
+      <div class="search-shortcut"><span class="key">⌘</span><span class="key">⇧</span><span class="key">M</span></div>
+    </div>
+
+    <div class="suggestions">
+      <div class="sg-section">Suggested Actions</div>
+      <div class="sg-item on">
+        <div class="sg-ic" style="background:rgba(255,149,0,.15)">🔔</div>
+        <div class="sg-info"><div class="sg-name">Remind me to study at 6pm</div><div class="sg-sub">Add to Apple Reminders · Due today</div></div>
+        <span class="sg-action">↵ Create</span>
+      </div>
+      <div class="sg-item">
+        <div class="sg-ic" style="background:rgba(233,30,140,.15)">📅</div>
+        <div class="sg-info"><div class="sg-name">Remind me about my essay</div><div class="sg-sub">Consumer Behaviour · Due Friday</div></div>
+        <span class="sg-action">↵ Create</span>
+      </div>
+      <div class="sg-item">
+        <div class="sg-ic" style="background:rgba(52,199,89,.15)">✅</div>
+        <div class="sg-info"><div class="sg-name">Remind NyRiian about dinner</div><div class="sg-sub">Send iMessage to husband</div></div>
+        <span class="sg-action">↵ Send</span>
+      </div>
+
+      <div class="divider"></div>
+      <div class="sg-section">Quick Open</div>
+      <div class="sg-item">
+        <div class="sg-ic" style="background:rgba(233,30,140,.15)">💬</div>
+        <div class="sg-info"><div class="sg-name">AI Chat</div><div class="sg-sub">Open full chat window</div></div>
+        <span class="sg-badge" style="background:rgba(233,30,140,.12);color:var(--r5)">Chat</span>
+      </div>
+      <div class="sg-item">
+        <div class="sg-ic" style="background:rgba(156,39,176,.15)">✍️</div>
+        <div class="sg-info"><div class="sg-name">Essay Writer</div><div class="sg-sub">Consumer Behaviour · 15% complete</div></div>
+        <span class="sg-badge" style="background:rgba(255,59,48,.1);color:#FF3B30">Due Fri</span>
+      </div>
+      <div class="sg-item">
+        <div class="sg-ic" style="background:rgba(0,122,255,.15)">📅</div>
+        <div class="sg-info"><div class="sg-name">Calendar</div><div class="sg-sub">Next: Marketing Lecture 9:00 AM</div></div>
+        <span class="sg-action">Open</span>
+      </div>
+
+      <div class="divider"></div>
+      <div class="sg-section">Recent</div>
+      <div class="sg-item">
+        <div class="sg-ic" style="background:rgba(255,149,0,.12)">📄</div>
+        <div class="sg-info"><div class="sg-name">Essay_Draft_v2.docx</div><div class="sg-sub">Opened 2 hours ago</div></div>
+        <span class="sg-action">Open</span>
+      </div>
+      <div class="sg-item">
+        <div class="sg-ic" style="background:rgba(52,199,89,.12)">🃏</div>
+        <div class="sg-info"><div class="sg-name">Consumer Behaviour Flashcards</div><div class="sg-sub">12 cards · Studied yesterday</div></div>
+        <span class="sg-action">Study</span>
+      </div>
+    </div>
+
+    <div class="launcher-footer">
+      <div class="lf-hint"><span class="lf-key">↵</span><span>Select</span></div>
+      <div class="lf-hint"><span class="lf-key">↑↓</span><span>Navigate</span></div>
+      <div class="lf-hint"><span class="lf-key">⌘K</span><span>Commands</span></div>
+      <div class="lf-hint"><span class="lf-key">Esc</span><span>Close</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- CONTEXT -->
+<div class="ctx-panel">
+  <div class="ctx-card">
+    <div class="ctx-t">♛ Global Shortcut</div>
+    <div class="ctx-d">Works from any app on her Mac — Word, Safari, Zoom, anywhere. Miss M is always one keystroke away.</div>
+    <div style="margin-top:10px;display:flex;flex-direction:column;gap:6px">
+      <div class="kbdrow"><kbd class="kbd">⌘⇧M</kbd><span class="kbd-desc">Open Miss M</span></div>
+      <div class="kbdrow"><kbd class="kbd">⌘⇧S</kbd><span class="kbd-desc">Screenshot + OCR</span></div>
+      <div class="kbdrow"><kbd class="kbd">⌘⇧R</kbd><span class="kbd-desc">Read current Safari page</span></div>
+      <div class="kbdrow"><kbd class="kbd">⌘⇧N</kbd><span class="kbd-desc">Quick new reminder</span></div>
+    </div>
+  </div>
+  <div class="ctx-card">
+    <div class="ctx-t">⚡ Instant Actions</div>
+    <div class="ctx-d">Type natural language — Miss M understands intent and suggests the right action. No need to navigate menus.</div>
+    <div style="margin-top:10px;display:flex;flex-direction:column;gap:6px;font-size:11px;color:rgba(255,255,255,.4)">
+      <div style="padding:6px 8px;background:rgba(255,255,255,.04);border-radius:8px">"text husband I'm on my way" → iMessage</div>
+      <div style="padding:6px 8px;background:rgba(255,255,255,.04);border-radius:8px">"add eggs to shopping" → Grocery list</div>
+      <div style="padding:6px 8px;background:rgba(255,255,255,.04);border-radius:8px">"start pomodoro" → Timer begins</div>
+      <div style="padding:6px 8px;background:rgba(255,255,255,.04);border-radius:8px">"open my essay" → Essay Writer</div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
