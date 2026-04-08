@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleName</key>
+	<string>Miss M</string>
+	<key>CFBundleDisplayName</key>
+	<string>Miss M</string>
+	<key>CFBundleIdentifier</key>
+	<string>com.missm.assistant</string>
+	<key>CFBundleVersion</key>
+	<string>1</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.0</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>LSMinimumSystemVersion</key>
+	<string>14.0</string>
+	<key>LSUIElement</key>
+	<true/>
+	<key>NSCalendarsUsageDescription</key>
+	<string>Miss M reads your calendar to give you daily briefings and smart scheduling suggestions.</string>
+	<key>NSRemindersUsageDescription</key>
+	<string>Miss M manages your reminders so you never miss a deadline or important task.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Miss M listens when you want to speak your request instead of typing.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Miss M uses your microphone to hear your voice commands.</string>
+	<key>NSHealthShareUsageDescription</key>
+	<string>Miss M reads your health data to give personalised wellness and energy insights.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>Miss M logs your mood and wellness data to HealthKit.</string>
+	<key>NSAppleEventsUsageDescription</key>
+	<string>Miss M uses AppleScript to send and read iMessages on your behalf.</string>
+	<key>NSContactsUsageDescription</key>
+	<string>Miss M looks up contacts to send messages and resolve names like NyRiian.</string>
+</dict>
+</plist>

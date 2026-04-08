@@ -366,20 +366,4 @@ struct WellnessView: View {
         ScrollView { Text("Wellness — Claude Code will build this") .padding() }
     }
 }
-struct SettingsView: View {
-    var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
-                Text("Settings")
-                    .font(.custom("PlayfairDisplay-Italic", size: 22))
-                    .foregroundColor(Theme.Colors.rosePrimary)
-                    .padding(.horizontal, 16)
-                Text("API key, integrations, and notifications — Claude Code will expand this in Phase 1.")
-                    .font(.system(size: 12))
-                    .foregroundColor(Theme.Colors.textSoft)
-                    .padding(.horizontal, 16)
-            }
-            .padding(.top, 16)
-        }
-    }
-}
+// SettingsView moved to MissM/Features/Settings/SettingsView.swift
