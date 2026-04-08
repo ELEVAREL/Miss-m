@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Miss M — Cycle & Mood Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=Playfair+Display:ital,wght@0,400;0,700&display=swap" rel="stylesheet">
+<style>
+:root{--r5:#E91E8C;--r6:#C2185B;--r2:#F8BBD9;--r3:#F48FB1;--text:#1A0A10;--text-m:#5C3049;--text-s:#9A6B80;--text-xs:#C4A0B2;--glass-b:rgba(255,255,255,.82);--shadow:rgba(194,24,91,.13);--green:#34C759;--purple:#9C27B0}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:linear-gradient(155deg,#FFF0F8,#FCE4EC 40%,#F8BBD9 70%,#FDE8F3);min-height:100vh;padding:28px;color:var(--text)}
+body::before{content:'';position:fixed;top:-150px;right:-150px;width:600px;height:600px;background:radial-gradient(circle,rgba(233,30,140,.1),transparent 70%);border-radius:50%;pointer-events:none}
+.gc{background:rgba(255,255,255,.65);border:1px solid var(--glass-b);border-radius:18px;padding:16px;box-shadow:0 2px 12px var(--shadow);margin-bottom:14px}
+.plbl{font-family:'Cormorant Garamond',serif;font-size:10px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:var(--r5);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.plbl::after{content:'';flex:1;height:1px;background:rgba(233,30,140,.14)}
+.btn-p{background:linear-gradient(135deg,var(--r5),var(--r6));color:white;border:none;border-radius:11px;padding:9px 16px;font-size:11px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;box-shadow:0 4px 12px rgba(233,30,140,.3);transition:all .2s}
+
+/* CYCLE RING */
+.cycle-center{text-align:center;padding:20px 0}
+.cycle-ring-wrap{position:relative;width:200px;height:200px;margin:0 auto}
+.phase-label{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center}
+.pl-day{font-family:'Cormorant Garamond',serif;font-size:48px;font-weight:600;color:var(--r5);line-height:1}
+.pl-phase{font-size:11px;color:var(--text-m);font-weight:500;margin-top:3px}
+.pl-emoji{font-size:22px;margin-top:4px;display:block}
+
+/* PHASE CARDS */
+.phases{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+.phase-card{border-radius:14px;padding:11px 8px;text-align:center;cursor:pointer;transition:all .2s;border:2px solid transparent}
+.phase-card.active{transform:translateY(-2px);box-shadow:0 6px 18px rgba(194,24,91,.15)}
+.pc-icon{font-size:20px;margin-bottom:5px;display:block}
+.pc-name{font-size:10px;font-weight:600;margin-bottom:2px}
+.pc-days{font-size:9px;opacity:.7}
+
+/* MOOD CORRELATION */
+.corr-row{display:flex;align-items:center;gap:10px;padding:9px 12px;background:rgba(255,255,255,.6);border:1px solid var(--glass-b);border-radius:12px;margin-bottom:7px}
+.corr-phase{font-size:11px;font-weight:600;color:var(--text);min-width:90px}
+.corr-bar{flex:1;height:6px;background:rgba(233,30,140,.08);border-radius:4px}
+.corr-fill{height:100%;border-radius:4px}
+.corr-mood{font-size:16px;margin-left:6px}
+.corr-note{font-size:10px;color:var(--text-s);margin-left:6px}
+
+/* CALENDAR DOTS */
+.cycle-cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cc-day{aspect-ratio:1;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;cursor:pointer;transition:all .15s}
+.cc-day:hover{transform:scale(1.1)}
+
+/* SYMPTOMS */
+.symptom-grid{display:flex;gap:7px;flex-wrap:wrap}
+.sym-chip{background:rgba(255,255,255,.75);border:1.5px solid var(--r2);border-radius:20px;padding:6px 12px;font-size:11px;color:var(--text-m);cursor:pointer;transition:all .15s}
+.sym-chip:hover,.sym-chip.on{background:rgba(233,30,140,.08);border-color:var(--r3);color:var(--r5)}
+
+/* AI INSIGHTS */
+.phase-insight{border-radius:14px;padding:13px;font-size:12px;line-height:1.65}
+</style>
+</head>
+<body>
+<div style="margin-bottom:20px">
+  <h1 style="font-family:'Playfair Display',serif;font-size:28px;font-style:italic;color:var(--text)">Cycle & <span style="color:var(--r5)">Mood Tracker</span></h1>
+  <p style="font-size:12px;color:var(--text-s);margin-top:4px">HealthKit CycleTracking · Private · All data stays on device · Helps AI understand energy + mood patterns</p>
+</div>
+
+<div style="display:grid;grid-template-columns:280px 1fr;gap:20px;align-items:start">
+
+<!-- LEFT: CYCLE RING -->
+<div>
+  <div class="gc">
+    <div class="plbl">Current Cycle</div>
+    <div class="cycle-center">
+      <div class="cycle-ring-wrap">
+        <svg width="200" height="200" viewBox="0 0 200 200">
+          <!-- Background track -->
+          <circle cx="100" cy="100" r="86" fill="none" stroke="rgba(233,30,140,.08)" stroke-width="16"/>
+          <!-- Menstruation (days 1-5) -->
+          <circle cx="100" cy="100" r="86" fill="none" stroke="#FF2D55" stroke-width="16" stroke-dasharray="75 465" stroke-dashoffset="135" transform="rotate(-90 100 100)" opacity=".9"/>
+          <!-- Follicular (days 6-13) -->
+          <circle cx="100" cy="100" r="86" fill="none" stroke="#FF9500" stroke-width="16" stroke-dasharray="120 420" stroke-dashoffset="60" transform="rotate(-90 100 100)" opacity=".8"/>
+          <!-- Ovulation (days 14-16) -->
+          <circle cx="100" cy="100" r="86" fill="none" stroke="#34C759" stroke-width="16" stroke-dasharray="45 495" stroke-dashoffset="-60" transform="rotate(-90 100 100)" opacity=".9"/>
+          <!-- Luteal (days 17-28) -->
+          <circle cx="100" cy="100" r="86" fill="none" stroke="#9C27B0" stroke-width="16" stroke-dasharray="180 360" stroke-dashoffset="-105" transform="rotate(-90 100 100)" opacity=".7"/>
+          <!-- Current day marker -->
+          <circle cx="100" cy="14" r="8" fill="var(--r5)" transform="rotate(165 100 100)"/>
+        </svg>
+        <div class="phase-label">
+          <div class="pl-day">14</div>
+          <div class="pl-phase">Luteal Phase</div>
+          <span class="pl-emoji">🌙</span>
+        </div>
+      </div>
+      <div style="font-size:11px;color:var(--text-s);margin-top:10px">Day 14 of 28 · Next period in <strong style="color:var(--r5)">14 days</strong></div>
+    </div>
+  </div>
+
+  <!-- PHASES -->
+  <div class="gc">
+    <div class="plbl">Cycle Phases</div>
+    <div class="phases">
+      <div class="phase-card" style="background:rgba(255,45,85,.08);border-color:rgba(255,45,85,.2)">
+        <span class="pc-icon">🔴</span>
+        <div class="pc-name" style="color:#C62828">Menstrual</div>
+        <div class="pc-days">Days 1–5</div>
+      </div>
+      <div class="phase-card" style="background:rgba(255,149,0,.08);border-color:rgba(255,149,0,.2)">
+        <span class="pc-icon">🌸</span>
+        <div class="pc-name" style="color:#C65200">Follicular</div>
+        <div class="pc-days">Days 6–13</div>
+      </div>
+      <div class="phase-card active" style="background:rgba(52,199,89,.08);border-color:rgba(52,199,89,.3)">
+        <span class="pc-icon">⭐️</span>
+        <div class="pc-name" style="color:#2E7D32">Ovulation</div>
+        <div class="pc-days">Days 14–16</div>
+      </div>
+      <div class="phase-card" style="background:rgba(156,39,176,.08);border-color:rgba(156,39,176,.2)">
+        <span class="pc-icon">🌙</span>
+        <div class="pc-name" style="color:#6A1B9A">Luteal</div>
+        <div class="pc-days">Days 17–28</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RIGHT: INSIGHTS + MOOD + CALENDAR -->
+<div>
+  <!-- AI PHASE INSIGHT -->
+  <div class="gc">
+    <div class="plbl">AI Phase Insight for Miss M</div>
+    <div class="phase-insight" style="background:rgba(52,199,89,.06);border:1px solid rgba(52,199,89,.2)">
+      🌟 <strong>You're in your Ovulation phase</strong> — this is typically your highest energy and focus period. Perfect timing for tackling that essay and big study sessions!<br><br>
+      Your HRV is strong (42ms) and your mood logged as 😊 Good. Expect naturally higher confidence and motivation over the next 2 days. Great time for presentations, group work and creative tasks.
+    </div>
+    <div style="margin-top:10px;padding:11px;background:rgba(156,39,176,.06);border:1px solid rgba(156,39,176,.15);border-radius:12px;font-size:11px;color:var(--text-m);line-height:1.6">
+      📅 <strong>Heads up:</strong> Your luteal phase starts in ~2 days. Energy may dip slightly — I'll schedule lighter tasks then and remind you to take extra rest and hydrate.
+    </div>
+  </div>
+
+  <!-- MOOD CORRELATION -->
+  <div class="gc">
+    <div class="plbl">Mood × Cycle Correlation · This Month</div>
+    <div class="corr-row"><div class="corr-phase">🔴 Menstrual</div><div class="corr-bar"><div class="corr-fill" style="width:45%;background:linear-gradient(90deg,#FF2D55,#FF8A80)"></div></div><div class="corr-mood">😔</div><div class="corr-note">Low energy · rest days</div></div>
+    <div class="corr-row"><div class="corr-phase">🌸 Follicular</div><div class="corr-bar"><div class="corr-fill" style="width:75%;background:linear-gradient(90deg,#FF9500,#FFCC80)"></div></div><div class="corr-mood">😊</div><div class="corr-note">Rising energy</div></div>
+    <div class="corr-row"><div class="corr-phase">⭐ Ovulation</div><div class="corr-bar"><div class="corr-fill" style="width:95%;background:linear-gradient(90deg,#34C759,#A5D6A7)"></div></div><div class="corr-mood">😄</div><div class="corr-note">Peak energy · now</div></div>
+    <div class="corr-row"><div class="corr-phase">🌙 Luteal</div><div class="corr-bar"><div class="corr-fill" style="width:55%;background:linear-gradient(90deg,#9C27B0,#CE93D8)"></div></div><div class="corr-mood">😐</div><div class="corr-note">Variable · self-care</div></div>
+  </div>
+
+  <!-- CYCLE CALENDAR -->
+  <div class="gc">
+    <div class="plbl">April Cycle Calendar</div>
+    <div class="cycle-cal">
+      <div style="text-align:center;font-size:9px;color:var(--text-xs);font-weight:600;padding:2px">S</div>
+      <div style="text-align:center;font-size:9px;color:var(--text-xs);font-weight:600;padding:2px">M</div>
+      <div style="text-align:center;font-size:9px;color:var(--text-xs);font-weight:600;padding:2px">T</div>
+      <div style="text-align:center;font-size:9px;color:var(--text-xs);font-weight:600;padding:2px">W</div>
+      <div style="text-align:center;font-size:9px;color:var(--text-xs);font-weight:600;padding:2px">T</div>
+      <div style="text-align:center;font-size:9px;color:var(--text-xs);font-weight:600;padding:2px">F</div>
+      <div style="text-align:center;font-size:9px;color:var(--text-xs);font-weight:600;padding:2px">S</div>
+      <!-- Days 1-5: menstrual -->
+      <div class="cc-day" style="background:rgba(255,45,85,.2);color:#C62828">1</div>
+      <div class="cc-day" style="background:rgba(255,45,85,.2);color:#C62828">2</div>
+      <div class="cc-day" style="background:rgba(255,45,85,.2);color:#C62828">3</div>
+      <div class="cc-day" style="background:rgba(255,45,85,.2);color:#C62828">4</div>
+      <div class="cc-day" style="background:rgba(255,45,85,.2);color:#C62828">5</div>
+      <!-- Days 6-13: follicular -->
+      <div class="cc-day" style="background:rgba(255,149,0,.15);color:#C65200">6</div>
+      <div class="cc-day" style="background:rgba(255,149,0,.15);color:#C65200">7</div>
+      <div class="cc-day" style="background:rgba(255,149,0,.15);color:#C65200">8</div>
+      <div class="cc-day" style="background:rgba(255,149,0,.15);color:#C65200">9</div>
+      <div class="cc-day" style="background:rgba(255,149,0,.15);color:#C65200">10</div>
+      <div class="cc-day" style="background:rgba(255,149,0,.15);color:#C65200">11</div>
+      <div class="cc-day" style="background:rgba(255,149,0,.15);color:#C65200">12</div>
+      <div class="cc-day" style="background:rgba(255,149,0,.15);color:#C65200">13</div>
+      <!-- Days 14-16: ovulation (today = 14) -->
+      <div class="cc-day" style="background:linear-gradient(135deg,var(--r5),var(--r6));color:white;font-weight:700">14</div>
+      <div class="cc-day" style="background:rgba(52,199,89,.2);color:#2E7D32">15</div>
+      <div class="cc-day" style="background:rgba(52,199,89,.2);color:#2E7D32">16</div>
+      <!-- Days 17-28: luteal -->
+      <div class="cc-day" style="background:rgba(156,39,176,.12);color:#6A1B9A">17</div>
+      <div class="cc-day" style="background:rgba(156,39,176,.12);color:#6A1B9A">18</div>
+      <div class="cc-day" style="background:rgba(156,39,176,.12);color:#6A1B9A">19</div>
+      <div class="cc-day" style="background:rgba(156,39,176,.12);color:#6A1B9A">20</div>
+      <div class="cc-day" style="background:rgba(156,39,176,.12);color:#6A1B9A">21</div>
+      <div class="cc-day" style="background:rgba(156,39,176,.12);color:#6A1B9A">22</div>
+      <div class="cc-day" style="background:rgba(156,39,176,.12);color:#6A1B9A">23</div>
+      <div class="cc-day" style="background:rgba(156,39,176,.12);color:#6A1B9A">24</div>
+      <div class="cc-day" style="background:rgba(156,39,176,.12);color:#6A1B9A">25</div>
+      <div class="cc-day" style="background:rgba(156,39,176,.12);color:#6A1B9A">26</div>
+      <div class="cc-day" style="background:rgba(156,39,176,.12);color:#6A1B9A">27</div>
+      <div class="cc-day" style="background:rgba(156,39,176,.12);color:#6A1B9A">28</div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap">
+      <span style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--text-s)"><span style="width:8px;height:8px;border-radius:50%;background:#FF2D55;display:inline-block"></span>Menstrual</span>
+      <span style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--text-s)"><span style="width:8px;height:8px;border-radius:50%;background:#FF9500;display:inline-block"></span>Follicular</span>
+      <span style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--text-s)"><span style="width:8px;height:8px;border-radius:50%;background:#34C759;display:inline-block"></span>Ovulation</span>
+      <span style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--text-s)"><span style="width:8px;height:8px;border-radius:50%;background:#9C27B0;display:inline-block"></span>Luteal</span>
+    </div>
+  </div>
+
+  <!-- LOG SYMPTOMS -->
+  <div class="gc">
+    <div class="plbl">Log Today</div>
+    <div style="font-size:11px;color:var(--text-s);margin-bottom:8px">How are you feeling?</div>
+    <div class="symptom-grid">
+      <div class="sym-chip">😴 Tired</div><div class="sym-chip on">😊 Good</div><div class="sym-chip">💪 Energetic</div><div class="sym-chip">😰 Anxious</div><div class="sym-chip">🤕 Cramps</div><div class="sym-chip">🌊 Bloated</div><div class="sym-chip">🧠 Focused</div><div class="sym-chip">😔 Low mood</div><div class="sym-chip">🔥 Motivated</div><div class="sym-chip">💤 Insomnia</div>
+    </div>
+    <button class="btn-p" style="width:100%;margin-top:10px;font-size:11px">Save to HealthKit</button>
+  </div>
+</div>
+</div>
+
+<script>
+document.querySelectorAll('.sym-chip').forEach(c => c.onclick = () => c.classList.toggle('on'));
+</script>
+</body>
+</html>

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Miss M — Siri Shortcuts</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=Playfair+Display:ital,wght@0,400;0,700&display=swap" rel="stylesheet">
+<style>
+:root{--r5:#E91E8C;--r6:#C2185B;--r2:#F8BBD9;--r3:#F48FB1;--text:#1A0A10;--text-m:#5C3049;--text-s:#9A6B80;--text-xs:#C4A0B2;--glass-b:rgba(255,255,255,.82);--shadow:rgba(194,24,91,.13);--green:#34C759;--siri:#0A84FF}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:linear-gradient(155deg,#FFF0F8,#FCE4EC 40%,#F8BBD9 70%,#FDE8F3);min-height:100vh;padding:28px;color:var(--text)}
+body::before{content:'';position:fixed;top:-150px;right:-150px;width:600px;height:600px;background:radial-gradient(circle,rgba(233,30,140,.1),transparent 70%);border-radius:50%;pointer-events:none}
+.gc{background:rgba(255,255,255,.65);border:1px solid var(--glass-b);border-radius:18px;padding:16px;box-shadow:0 2px 12px var(--shadow);margin-bottom:14px}
+.plbl{font-family:'Cormorant Garamond',serif;font-size:10px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:var(--r5);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.plbl::after{content:'';flex:1;height:1px;background:rgba(233,30,140,.14)}
+.btn-p{background:linear-gradient(135deg,var(--r5),var(--r6));color:white;border:none;border-radius:11px;padding:9px 16px;font-size:11px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;box-shadow:0 4px 12px rgba(233,30,140,.3);transition:all .2s}
+
+/* SIRI HERO */
+.siri-hero{background:linear-gradient(145deg,#0A84FF,#0066CC 55%,#004499);border-radius:22px;padding:22px 20px;margin-bottom:16px;position:relative;overflow:hidden;box-shadow:0 12px 36px rgba(10,132,255,.25)}
+.siri-hero::before{content:'';position:absolute;top:-40px;right:-40px;width:160px;height:160px;background:rgba(255,255,255,.1);border-radius:50%}
+.siri-wave{display:flex;align-items:center;gap:3px;height:32px;position:relative;z-index:1;margin-bottom:12px}
+.sw{width:4px;border-radius:4px;background:white;animation:sw-a 1.2s ease infinite}
+.sw:nth-child(1){height:10px;animation-delay:0s}.sw:nth-child(2){height:20px;animation-delay:.1s}.sw:nth-child(3){height:28px;animation-delay:.2s}.sw:nth-child(4){height:18px;animation-delay:.3s}.sw:nth-child(5){height:26px;animation-delay:.2s}.sw:nth-child(6){height:14px;animation-delay:.1s}.sw:nth-child(7){height:22px;animation-delay:.2s}.sw:nth-child(8){height:10px;animation-delay:.3s}
+@keyframes sw-a{0%,100%{transform:scaleY(.4)}50%{transform:scaleY(1.4)}}
+.siri-listening{font-family:'Playfair Display',serif;font-size:22px;font-style:italic;color:white;position:relative;z-index:1}
+.siri-sub{font-size:11px;color:rgba(255,255,255,.75);margin-top:5px;position:relative;z-index:1}
+
+/* SHORTCUT ITEM */
+.shortcut-item{display:flex;align-items:flex-start;gap:12px;padding:14px;background:rgba(255,255,255,.65);border:1px solid var(--glass-b);border-radius:16px;margin-bottom:9px;cursor:pointer;transition:all .18s}
+.shortcut-item:hover{background:white;transform:translateX(3px);box-shadow:0 4px 16px var(--shadow)}
+.si-icon{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.si-body{flex:1}
+.si-phrase{font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px}
+.si-phrase span{color:var(--siri)}
+.si-action{font-size:11px;color:var(--text-s);line-height:1.5}
+.si-badge{font-size:9px;font-weight:700;border-radius:8px;padding:2px 8px;margin-left:auto;white-space:nowrap;align-self:flex-start;margin-top:2px}
+
+/* SETUP STEPS */
+.setup-step{display:flex;align-items:flex-start;gap:11px;padding:11px 13px;background:rgba(255,255,255,.6);border:1px solid var(--glass-b);border-radius:13px;margin-bottom:7px}
+.ss-num{width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,var(--siri),#0066CC);color:white;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ss-t{font-size:12px;font-weight:500;color:var(--text);margin-bottom:2px}
+.ss-d{font-size:10px;color:var(--text-s);line-height:1.5}
+
+/* APP INTENTS PILL */
+.intent-row{display:flex;align-items:center;gap:9px;padding:9px 12px;background:rgba(10,132,255,.06);border:1px solid rgba(10,132,255,.2);border-radius:12px;margin-bottom:7px;font-size:11px;color:#1565C0}
+.ir-icon{font-size:16px}
+.ir-code{font-family:monospace;font-size:10px;background:rgba(10,132,255,.1);border-radius:6px;padding:2px 7px;color:#0066CC;margin-left:auto}
+</style>
+</head>
+<body>
+<div style="margin-bottom:20px">
+  <h1 style="font-family:'Playfair Display',serif;font-size:28px;font-style:italic;color:var(--text)">Siri <span style="color:var(--siri)">Shortcuts</span></h1>
+  <p style="font-size:12px;color:var(--text-s);margin-top:4px">App Intents framework · "Hey Siri, ask Miss M…" · Trigger any feature by voice from anywhere</p>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 340px;gap:20px;align-items:start">
+<div>
+
+  <!-- SIRI DEMO -->
+  <div class="siri-hero">
+    <div class="siri-wave"><div class="sw"></div><div class="sw"></div><div class="sw"></div><div class="sw"></div><div class="sw"></div><div class="sw"></div><div class="sw"></div><div class="sw"></div></div>
+    <div class="siri-listening">"Hey Siri, ask Miss M what's on my calendar today"</div>
+    <div class="siri-sub">Miss M App Intent · Responding in 1.2s…</div>
+  </div>
+
+  <!-- SHORTCUT COMMANDS -->
+  <div class="gc">
+    <div class="plbl">Voice Commands — Say These Anywhere</div>
+
+    <div class="shortcut-item">
+      <div class="si-icon" style="background:rgba(233,30,140,.1)">📅</div>
+      <div class="si-body">
+        <div class="si-phrase"><span>"Hey Siri,</span> ask Miss M what's on my calendar"</div>
+        <div class="si-action">Reads today's Apple Calendar events and speaks them back aloud via text-to-speech</div>
+      </div>
+      <div class="si-badge" style="background:rgba(52,199,89,.1);color:#2E7D32">Active</div>
+    </div>
+
+    <div class="shortcut-item">
+      <div class="si-icon" style="background:rgba(255,149,0,.1)">🔔</div>
+      <div class="si-body">
+        <div class="si-phrase"><span>"Hey Siri,</span> tell Miss M to remind me to study at 7"</div>
+        <div class="si-action">Claude parses the natural language, creates a reminder in Apple Reminders at 7pm tonight</div>
+      </div>
+      <div class="si-badge" style="background:rgba(52,199,89,.1);color:#2E7D32">Active</div>
+    </div>
+
+    <div class="shortcut-item">
+      <div class="si-icon" style="background:rgba(233,30,140,.1)">💬</div>
+      <div class="si-body">
+        <div class="si-phrase"><span>"Hey Siri,</span> ask Miss M to text NyRiian I'm on my way"</div>
+        <div class="si-action">Finds NyRiian in Contacts, Claude drafts the message warm and natural, sends via iMessage</div>
+      </div>
+      <div class="si-badge" style="background:rgba(52,199,89,.1);color:#2E7D32">Active</div>
+    </div>
+
+    <div class="shortcut-item">
+      <div class="si-icon" style="background:rgba(52,199,89,.1)">📚</div>
+      <div class="si-body">
+        <div class="si-phrase"><span>"Hey Siri,</span> ask Miss M to start a Pomodoro"</div>
+        <div class="si-action">Starts a 25-min Pomodoro session, enables Focus Mode, plays study playlist via Apple Music</div>
+      </div>
+      <div class="si-badge" style="background:rgba(52,199,89,.1);color:#2E7D32">Active</div>
+    </div>
+
+    <div class="shortcut-item">
+      <div class="si-icon" style="background:rgba(156,39,176,.1)">✍️</div>
+      <div class="si-body">
+        <div class="si-phrase"><span>"Hey Siri,</span> ask Miss M to help me write my essay"</div>
+        <div class="si-action">Opens the Essay Writer feature and starts an AI drafting session automatically</div>
+      </div>
+      <div class="si-badge" style="background:rgba(255,149,0,.1);color:#C65200">Phase 2</div>
+    </div>
+
+    <div class="shortcut-item">
+      <div class="si-icon" style="background:rgba(0,122,255,.1)">🌅</div>
+      <div class="si-body">
+        <div class="si-phrase"><span>"Hey Siri,</span> ask Miss M for my morning briefing"</div>
+        <div class="si-action">Reads out the morning briefing aloud — schedule, deadlines, weather — hands-free</div>
+      </div>
+      <div class="si-badge" style="background:rgba(52,199,89,.1);color:#2E7D32">Active</div>
+    </div>
+
+    <div class="shortcut-item">
+      <div class="si-icon" style="background:rgba(255,59,48,.1)">🛒</div>
+      <div class="si-body">
+        <div class="si-phrase"><span>"Hey Siri,</span> tell Miss M to add milk to shopping"</div>
+        <div class="si-action">Parses the item and quantity, adds to the Grocery List in Miss M's DataStore instantly</div>
+      </div>
+      <div class="si-badge" style="background:rgba(52,199,89,.1);color:#2E7D32">Active</div>
+    </div>
+
+    <div class="shortcut-item">
+      <div class="si-icon" style="background:rgba(212,175,122,.2)">🎯</div>
+      <div class="si-body">
+        <div class="si-phrase"><span>"Hey Siri,</span> ask Miss M to quiz me on marketing"</div>
+        <div class="si-action">Starts a Siri-based flashcard quiz — questions spoken aloud, she answers by voice, Claude marks it</div>
+      </div>
+      <div class="si-badge" style="background:rgba(255,149,0,.1);color:#C65200">Phase 2</div>
+    </div>
+  </div>
+</div>
+
+<!-- RIGHT: SETUP + INTENTS -->
+<div>
+  <div class="gc">
+    <div class="plbl">How to Set Up</div>
+    <div class="setup-step"><div class="ss-num">1</div><div><div class="ss-t">App Intents Framework</div><div class="ss-d">Miss M registers AppIntent structs — Xcode 15, macOS 14+. Siri discovers them automatically.</div></div></div>
+    <div class="setup-step"><div class="ss-num">2</div><div><div class="ss-t">No config needed</div><div class="ss-d">Once the app is built, "Hey Siri, ask Miss M…" works immediately. No Shortcuts app setup required.</div></div></div>
+    <div class="setup-step"><div class="ss-num">3</div><div><div class="ss-t">Works from anywhere</div><div class="ss-d">iPhone, Mac, AirPods, HomePod, Apple Watch, CarPlay — any Apple device she owns.</div></div></div>
+    <div class="setup-step"><div class="ss-num">4</div><div><div class="ss-t">Custom phrases</div><div class="ss-d">She can create custom shortcut phrases in the Shortcuts app: "Ask Miss M my day" → morning briefing</div></div></div>
+  </div>
+
+  <div class="gc">
+    <div class="plbl">App Intents Registered</div>
+    <div class="intent-row"><span class="ir-icon">📅</span><span>GetCalendarIntent</span><span class="ir-code">calendar</span></div>
+    <div class="intent-row"><span class="ir-icon">🔔</span><span>AddReminderIntent</span><span class="ir-code">reminder</span></div>
+    <div class="intent-row"><span class="ir-icon">💬</span><span>SendMessageIntent</span><span class="ir-code">message</span></div>
+    <div class="intent-row"><span class="ir-icon">⏱</span><span>StartPomodoroIntent</span><span class="ir-code">pomodoro</span></div>
+    <div class="intent-row"><span class="ir-icon">🌅</span><span>GetBriefingIntent</span><span class="ir-code">briefing</span></div>
+    <div class="intent-row"><span class="ir-icon">🛒</span><span>AddGroceryIntent</span><span class="ir-code">grocery</span></div>
+    <div class="intent-row"><span class="ir-icon">🎯</span><span>StartQuizIntent</span><span class="ir-code">quiz</span></div>
+    <div class="intent-row"><span class="ir-icon">✦</span><span>AskMissMIntent (general)</span><span class="ir-code">ask</span></div>
+    <div style="margin-top:10px"><button class="btn-p" style="width:100%;font-size:11px">+ Add Custom Intent</button></div>
+  </div>
+
+  <div class="gc">
+    <div class="plbl">Shortcut Trigger Widget</div>
+    <div style="background:linear-gradient(135deg,#1C1C1E,#2C2C2E);border-radius:16px;padding:16px">
+      <div style="font-size:10px;color:#8E8E93;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px">Miss M · Lock Screen Widget</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div style="background:rgba(233,30,140,.25);border-radius:11px;padding:10px;text-align:center;cursor:pointer"><div style="font-size:18px;margin-bottom:3px">📅</div><div style="font-size:10px;color:white;font-weight:500">My Day</div></div>
+        <div style="background:rgba(0,122,255,.25);border-radius:11px;padding:10px;text-align:center;cursor:pointer"><div style="font-size:18px;margin-bottom:3px">💬</div><div style="font-size:10px;color:white;font-weight:500">Chat</div></div>
+        <div style="background:rgba(52,199,89,.25);border-radius:11px;padding:10px;text-align:center;cursor:pointer"><div style="font-size:18px;margin-bottom:3px">⏱</div><div style="font-size:10px;color:white;font-weight:500">Pomodoro</div></div>
+        <div style="background:rgba(255,149,0,.25);border-radius:11px;padding:10px;text-align:center;cursor:pointer"><div style="font-size:18px;margin-bottom:3px">🔔</div><div style="font-size:10px;color:white;font-weight:500">Remind Me</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</body>
+</html>

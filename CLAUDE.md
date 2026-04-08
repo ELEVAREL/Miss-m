@@ -812,3 +812,67 @@ docs/design/15-people-hub.html — shows all states:
   - AI relationship intelligence explanation
   - Add card for manual pins
 
+
+---
+
+## 🍎 APPLE-ONLY INTEGRATIONS — ADDED FEATURES
+
+### HealthKit (Phase 6)
+Framework: HealthKit — HKHealthStore
+```swift
+let typesToRead: Set<HKObjectType> = [
+    HKObjectType.quantityType(forIdentifier: .stepCount)!,
+    HKObjectType.quantityType(forIdentifier: .heartRate)!,
+    HKObjectType.quantityType(forIdentifier: .heartRateVariabilitySDNN)!,
+    HKObjectType.categoryType(forIdentifier: .sleepAnalysis)!,
+    HKObjectType.categoryType(forIdentifier: .menstrualFlow)!,
+    HKObjectType.quantityType(forIdentifier: .activeEnergyBurned)!,
+    HKObjectType.categoryType(forIdentifier: .mindfulSession)!,
+]
+healthStore.requestAuthorization(toShare: nil, read: typesToRead) { ... }
+```
+Add to Info.plist: NSHealthUpdateUsageDescription + NSHealthShareUsageDescription
+Design file: docs/design/22-apple-health.html
+
+### Cycle Tracking — HealthKit CycleTracking (Phase 6)
+Framework: HealthKit — HKCategoryTypeIdentifierMenstrualFlow
+- Read cycle data to infer current phase (menstrual/follicular/ovulation/luteal)
+- Correlate phase with mood logs and energy levels
+- AI adjusts study schedule recommendations based on phase
+- Predicts next period — warns Miss M 3 days before
+- ALL data stays on device — completely private
+- Design file: docs/design/23-cycle-tracker.html
+
+### App Intents / Siri Shortcuts (Phase 7)
+Framework: AppIntents — iOS 16+ / macOS 13+
+```swift
+struct GetCalendarIntent: AppIntent {
+    static var title: LocalizedStringResource = "Get Miss M Calendar"
+    static var description = IntentDescription("Ask Miss M what's on your calendar")
+    func perform() async throws -> some IntentResult & ProvidesDialog {
+        let events = await CalendarService.shared.getEventsToday()
+        let summary = try await claudeService.ask("Summarise these events: \(events)")
+        return .result(dialog: IntentDialog(summary))
+    }
+}
+// Register all intents: Calendar, Reminder, Message, Pomodoro, Briefing, Grocery, Quiz
+```
+Design file: docs/design/24-siri-shortcuts.html
+
+### Smart Writing — NSSpellChecker + NaturalLanguage (Phase 2)
+Frameworks: AppKit NSSpellChecker, NaturalLanguage, Claude API
+```swift
+// Real-time grammar check as she types
+let checker = NSSpellChecker.shared
+checker.setLanguage("en")
+let grammarRange = checker.checkGrammar(of: text, startingAt: 0,
+    language: "en", wrap: false, inSpellDocumentWithTag: 0,
+    details: &grammarDetails)
+
+// Sentiment + style via NaturalLanguage
+let tagger = NLTagger(tagSchemes: [.sentimentScore, .lexicalClass])
+tagger.string = text
+// Claude API for academic tone + style suggestions
+```
+Design file: docs/design/25-smart-writing.html
+Privacy: text never leaves device except Claude API calls for style suggestions

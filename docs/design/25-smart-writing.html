@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Miss M — Smart Writing Assistant</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=Playfair+Display:ital,wght@0,400;0,700&display=swap" rel="stylesheet">
+<style>
+:root{--r5:#E91E8C;--r6:#C2185B;--r2:#F8BBD9;--r3:#F48FB1;--text:#1A0A10;--text-m:#5C3049;--text-s:#9A6B80;--text-xs:#C4A0B2;--glass-b:rgba(255,255,255,.82);--shadow:rgba(194,24,91,.13);--green:#34C759;--blue:#007AFF;--orange:#FF9500;--red:#FF3B30}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:linear-gradient(155deg,#FFF0F8,#FCE4EC 40%,#F8BBD9 70%,#FDE8F3);min-height:100vh;padding:28px;display:grid;grid-template-columns:1fr 300px;gap:20px;color:var(--text);align-items:start}
+body::before{content:'';position:fixed;top:-150px;right:-150px;width:600px;height:600px;background:radial-gradient(circle,rgba(233,30,140,.1),transparent 70%);border-radius:50%;pointer-events:none}
+.gc{background:rgba(255,255,255,.65);border:1px solid var(--glass-b);border-radius:18px;padding:16px;box-shadow:0 2px 12px var(--shadow);margin-bottom:14px}
+.plbl{font-family:'Cormorant Garamond',serif;font-size:10px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:var(--r5);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.plbl::after{content:'';flex:1;height:1px;background:rgba(233,30,140,.14)}
+.btn-p{background:linear-gradient(135deg,var(--r5),var(--r6));color:white;border:none;border-radius:11px;padding:9px 16px;font-size:11px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;box-shadow:0 4px 12px rgba(233,30,140,.3);transition:all .2s}
+.btn-g{background:rgba(255,255,255,.75);border:1.5px solid var(--r2);color:var(--text-m);border-radius:11px;padding:8px 14px;font-size:11px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+
+/* EDITOR */
+.editor-wrap{background:white;border:1px solid rgba(233,30,140,.1);border-radius:20px;overflow:hidden;box-shadow:0 4px 20px var(--shadow)}
+.editor-toolbar{padding:10px 14px;border-bottom:1px solid rgba(233,30,140,.07);display:flex;gap:7px;flex-wrap:wrap;align-items:center;background:rgba(255,255,255,.9)}
+.et-btn{background:rgba(255,255,255,.8);border:1px solid var(--r2);border-radius:8px;padding:5px 10px;font-size:10px;color:var(--text-m);cursor:pointer;font-weight:500;transition:all .18s;font-family:'DM Sans',sans-serif}
+.et-btn:hover{background:white;border-color:var(--r3);color:var(--r5)}
+.et-btn.on{background:var(--r5);color:white;border-color:var(--r5)}
+.editor-score{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text-s)}
+.score-ring{width:32px;height:32px}
+
+/* TEXT WITH UNDERLINES */
+.editor-body{padding:20px 22px;font-size:13px;line-height:1.9;font-weight:300;min-height:340px;color:var(--text)}
+.editor-body p{margin-bottom:12px}
+/* Grammar error - red wavy underline */
+.err-grammar{text-decoration:underline wavy #FF3B30;text-decoration-thickness:1.5px;cursor:pointer;position:relative}
+.err-grammar:hover::after{content:attr(data-fix);position:absolute;bottom:100%;left:0;background:#FF3B30;color:white;border-radius:8px;padding:4px 10px;font-size:10px;white-space:nowrap;z-index:10;margin-bottom:3px}
+/* Spell error - orange wavy */
+.err-spell{text-decoration:underline wavy #FF9500;text-decoration-thickness:1.5px;cursor:pointer}
+/* Style suggestion - blue underline */
+.sug-style{text-decoration:underline 1.5px rgba(0,122,255,.5);cursor:pointer}
+/* Good writing - no underline */
+.highlight-good{background:rgba(52,199,89,.08);border-radius:3px;padding:1px 2px}
+
+.editor-footer{padding:10px 14px;border-top:1px solid rgba(233,30,140,.06);background:rgba(255,255,255,.9);display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.ef-stat{font-size:10px;color:var(--text-s)}
+.ef-stat span{color:var(--r5);font-weight:600}
+
+/* SUGGESTIONS PANEL */
+.suggestion-item{background:rgba(255,255,255,.72);border:1px solid var(--glass-b);border-radius:14px;padding:12px;margin-bottom:8px;cursor:pointer;transition:all .18s}
+.suggestion-item:hover{background:white;transform:translateX(2px);box-shadow:0 4px 14px var(--shadow)}
+.sug-type{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:5px;display:flex;align-items:center;gap:5px}
+.sug-original{font-size:11px;color:var(--text-s);text-decoration:line-through;margin-bottom:3px;line-height:1.5}
+.sug-fix{font-size:12px;color:var(--text);font-weight:500;line-height:1.5}
+.sug-reason{font-size:10px;color:var(--text-xs);margin-top:4px;line-height:1.4}
+.sug-actions{display:flex;gap:6px;margin-top:8px}
+.sa-accept{background:rgba(52,199,89,.1);border:1px solid rgba(52,199,89,.25);color:#2E7D32;border-radius:8px;padding:4px 12px;font-size:10px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif}
+.sa-ignore{background:rgba(255,255,255,.7);border:1px solid var(--r2);color:var(--text-s);border-radius:8px;padding:4px 12px;font-size:10px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif}
+
+/* SCORE GAUGE */
+.score-gauge{text-align:center;padding:16px 0}
+.sg-num{font-family:'Cormorant Garamond',serif;font-size:48px;font-weight:600;color:var(--green)}
+.sg-label{font-size:11px;color:var(--text-s);margin-top:4px}
+.score-bars{display:flex;flex-direction:column;gap:7px;margin-top:12px}
+.sb2-row{display:flex;align-items:center;gap:9px}
+.sb2-label{font-size:10px;color:var(--text-s);min-width:80px;font-weight:500}
+.sb2-track{flex:1;height:6px;background:rgba(233,30,140,.08);border-radius:4px}
+.sb2-fill{height:100%;border-radius:4px}
+.sb2-val{font-size:10px;font-weight:600;color:var(--text);min-width:28px;text-align:right}
+
+/* FRAMEWORKS USED */
+.fw-item{display:flex;align-items:center;gap:9px;padding:8px 11px;background:rgba(255,255,255,.6);border:1px solid var(--glass-b);border-radius:11px;margin-bottom:6px}
+.fw-ic{font-size:16px}
+.fw-name{font-size:11px;font-weight:500;color:var(--text);flex:1}
+.fw-tag{font-size:9px;background:rgba(0,122,255,.09);color:var(--blue);border-radius:7px;padding:2px 7px;font-weight:500}
+</style>
+</head>
+<body>
+
+<!-- EDITOR -->
+<div>
+  <div style="margin-bottom:16px">
+    <h1 style="font-family:'Playfair Display',serif;font-size:26px;font-style:italic;color:var(--text)">Smart <span style="color:var(--r5)">Writing Assistant</span></h1>
+    <p style="font-size:12px;color:var(--text-s);margin-top:4px">NSSpellChecker · NaturalLanguage · Claude API · Real-time as she types · No third-party apps</p>
+  </div>
+
+  <div class="editor-wrap">
+    <div class="editor-toolbar">
+      <button class="et-btn on">✦ AI Check</button>
+      <button class="et-btn">📝 Grammar</button>
+      <button class="et-btn">🎨 Style</button>
+      <button class="et-btn">📊 Readability</button>
+      <button class="et-btn">🔄 Rephrase</button>
+      <div class="editor-score">
+        <span>Writing Score:</span>
+        <svg class="score-ring" viewBox="0 0 32 32">
+          <circle cx="16" cy="16" r="13" fill="none" stroke="rgba(52,199,89,.15)" stroke-width="4"/>
+          <circle cx="16" cy="16" r="13" fill="none" stroke="#34C759" stroke-width="4" stroke-dasharray="66 16" stroke-dashoffset="20" transform="rotate(-90 16 16)"/>
+        </svg>
+        <strong style="color:var(--green)">82/100</strong>
+      </div>
+    </div>
+
+    <div class="editor-body">
+      <p><strong>Introduction</strong></p>
+      <p>Consumer behaviour has long been recognised as a cornerstone of <span class="highlight-good">effective marketing strategy</span>. In an increasingly fragmented marketplace, understanding how and why consumers <span class="err-grammar" data-fix="→ make purchasing decisions">makes purchasing decision</span> enables organisations to develop targeted campaigns that resonate deeply with their <span class="sug-style">intended audience</span>.</p>
+      <p>This essay examines Nike's application of the Segmentation, Targeting and Positioning (STP) framework within the global <span class="err-spell">sportswear</span> market. By <span class="sug-style">analysing</span> Nike's strategic decisions across demographic, psychographic and behavioural dimensions, this paper argues that its <span class="highlight-good">segmentation approach has been central to sustaining brand dominance</span> across diverse consumer cohorts (Kotler &amp; Keller, 2016).</p>
+      <p>Furthermore, this analysis will draw upon Maslow's Hierarchy of Needs to contextualise Nike's positioning strategy within broader theories of consumer motivation, before <span class="err-grammar" data-fix="→ presenting recommendations">present recommendations</span> for how these approaches might evolve in response to shifting <span class="sug-style">digital consumption patterns</span>.</p>
+    </div>
+
+    <div class="editor-footer">
+      <div class="ef-stat">Words: <span>287 / 2,500</span></div>
+      <div class="ef-stat">Errors: <span style="color:var(--red)">2</span></div>
+      <div class="ef-stat">Suggestions: <span style="color:var(--orange)">3</span></div>
+      <div class="ef-stat">Readability: <span>University</span></div>
+      <div class="ef-stat">Sentiment: <span>Academic ✓</span></div>
+      <div style="margin-left:auto;display:flex;gap:6px">
+        <button class="btn-g" style="font-size:10px;padding:6px 12px">Accept All</button>
+        <button class="btn-p" style="font-size:10px;padding:6px 12px">✦ AI Improve</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- LEGEND -->
+  <div style="display:flex;gap:14px;margin-top:10px;flex-wrap:wrap;padding:0 4px">
+    <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-s)"><span style="width:20px;height:3px;background:#FF3B30;border-radius:3px;display:inline-block"></span>Grammar error</div>
+    <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-s)"><span style="width:20px;height:3px;background:#FF9500;border-radius:3px;display:inline-block"></span>Spelling</div>
+    <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-s)"><span style="width:20px;height:3px;background:rgba(0,122,255,.6);border-radius:3px;display:inline-block"></span>Style suggestion</div>
+    <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-s)"><span style="width:20px;height:8px;background:rgba(52,199,89,.12);border-radius:3px;display:inline-block"></span>Strong writing</div>
+  </div>
+</div>
+
+<!-- RIGHT: SUGGESTIONS + SCORE -->
+<div>
+
+  <div class="gc">
+    <div class="plbl">Suggestions (5)</div>
+
+    <div class="suggestion-item">
+      <div class="sug-type" style="color:var(--red)">🔴 Grammar Error</div>
+      <div class="sug-original">...consumers makes purchasing decision...</div>
+      <div class="sug-fix">...consumers make purchasing decisions...</div>
+      <div class="sug-reason">Subject-verb agreement + missing plural — detected by NSSpellChecker grammar check</div>
+      <div class="sug-actions"><div class="sa-accept">✓ Accept</div><div class="sa-ignore">Ignore</div></div>
+    </div>
+
+    <div class="suggestion-item">
+      <div class="sug-type" style="color:var(--red)">🔴 Grammar Error</div>
+      <div class="sug-original">...before present recommendations...</div>
+      <div class="sug-fix">...before presenting recommendations...</div>
+      <div class="sug-reason">Parallel structure — "draw upon" and "present" should both be gerunds</div>
+      <div class="sug-actions"><div class="sa-accept">✓ Accept</div><div class="sa-ignore">Ignore</div></div>
+    </div>
+
+    <div class="suggestion-item">
+      <div class="sug-type" style="color:var(--blue)">🔵 Style — Claude AI</div>
+      <div class="sug-original">...intended audience...</div>
+      <div class="sug-fix">...target consumer segments...</div>
+      <div class="sug-reason">More academically precise language — aligns with marketing terminology</div>
+      <div class="sug-actions"><div class="sa-accept">✓ Accept</div><div class="sa-ignore">Ignore</div></div>
+    </div>
+
+    <div class="suggestion-item">
+      <div class="sug-type" style="color:var(--blue)">🔵 Style — Claude AI</div>
+      <div class="sug-original">...digital consumption patterns...</div>
+      <div class="sug-fix">...evolving digital consumer behaviour...</div>
+      <div class="sug-reason">Stronger marketing-specific terminology for an academic essay</div>
+      <div class="sug-actions"><div class="sa-accept">✓ Accept</div><div class="sa-ignore">Ignore</div></div>
+    </div>
+
+    <div class="suggestion-item">
+      <div class="sug-type" style="color:var(--orange)">🟠 Readability — NaturalLanguage</div>
+      <div class="sug-original">Paragraph 3 is 68 words — very long sentence detected</div>
+      <div class="sug-fix">Split into two sentences at "...before presenting recommendations..."</div>
+      <div class="sug-reason">NLTokenizer detected complex nested clause — breaking improves clarity</div>
+      <div class="sug-actions"><div class="sa-accept">✓ Split</div><div class="sa-ignore">Ignore</div></div>
+    </div>
+  </div>
+
+  <!-- WRITING SCORE -->
+  <div class="gc">
+    <div class="plbl">Writing Score</div>
+    <div class="score-gauge">
+      <div class="sg-num">82</div>
+      <div class="sg-label">Good academic writing</div>
+    </div>
+    <div class="score-bars">
+      <div class="sb2-row"><div class="sb2-label">Grammar</div><div class="sb2-track"><div class="sb2-fill" style="width:82%;background:linear-gradient(90deg,var(--green),#A5D6A7)"></div></div><div class="sb2-val">82%</div></div>
+      <div class="sb2-row"><div class="sb2-label">Clarity</div><div class="sb2-track"><div class="sb2-fill" style="width:78%;background:linear-gradient(90deg,var(--blue),#64B5F6)"></div></div><div class="sb2-val">78%</div></div>
+      <div class="sb2-row"><div class="sb2-label">Academic tone</div><div class="sb2-track"><div class="sb2-fill" style="width:90%;background:linear-gradient(90deg,var(--r5),var(--r3))"></div></div><div class="sb2-val">90%</div></div>
+      <div class="sb2-row"><div class="sb2-label">Vocabulary</div><div class="sb2-track"><div class="sb2-fill" style="width:85%;background:linear-gradient(90deg,#FF9500,#FFCC80)"></div></div><div class="sb2-val">85%</div></div>
+      <div class="sb2-row"><div class="sb2-label">Sentence variety</div><div class="sb2-track"><div class="sb2-fill" style="width:65%;background:linear-gradient(90deg,#9C27B0,#CE93D8)"></div></div><div class="sb2-val">65%</div></div>
+    </div>
+  </div>
+
+  <!-- APPLE FRAMEWORKS -->
+  <div class="gc">
+    <div class="plbl">Apple Frameworks Used</div>
+    <div class="fw-item"><div class="fw-ic">📝</div><div class="fw-name">NSSpellChecker</div><div class="fw-tag">Grammar + Spell</div></div>
+    <div class="fw-item"><div class="fw-ic">🧠</div><div class="fw-name">NaturalLanguage</div><div class="fw-tag">Sentiment · Tokens</div></div>
+    <div class="fw-item"><div class="fw-ic">✦</div><div class="fw-name">Claude Sonnet API</div><div class="fw-tag">Style · Tone · AI fixes</div></div>
+    <div class="fw-item"><div class="fw-ic">📊</div><div class="fw-name">NLTagger</div><div class="fw-tag">Parts of speech</div></div>
+    <div style="margin-top:8px;font-size:10px;color:var(--text-xs);line-height:1.5">All Apple-native. No Grammarly, no third-party SDK. Privacy-first — text never leaves her Mac except for Claude API calls.</div>
+  </div>
+</div>
+
+</body>
+</html>

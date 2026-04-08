@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Miss M — Apple Health</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=Playfair+Display:ital,wght@0,400;0,700&display=swap" rel="stylesheet">
+<style>
+:root{--r5:#E91E8C;--r6:#C2185B;--r2:#F8BBD9;--r3:#F48FB1;--text:#1A0A10;--text-m:#5C3049;--text-s:#9A6B80;--text-xs:#C4A0B2;--glass-b:rgba(255,255,255,.82);--shadow:rgba(194,24,91,.13);--green:#34C759;--blue:#007AFF;--orange:#FF9500;--red:#FF3B30;--purple:#9C27B0}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:linear-gradient(155deg,#FFF0F8,#FCE4EC 40%,#F8BBD9 70%,#FDE8F3);min-height:100vh;padding:28px;color:var(--text)}
+body::before{content:'';position:fixed;top:-150px;right:-150px;width:600px;height:600px;background:radial-gradient(circle,rgba(233,30,140,.1),transparent 70%);border-radius:50%;pointer-events:none}
+.gc{background:rgba(255,255,255,.65);border:1px solid var(--glass-b);border-radius:18px;padding:16px;box-shadow:0 2px 12px var(--shadow);margin-bottom:14px}
+.plbl{font-family:'Cormorant Garamond',serif;font-size:10px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:var(--r5);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.plbl::after{content:'';flex:1;height:1px;background:rgba(233,30,140,.14)}
+.btn-p{background:linear-gradient(135deg,var(--r5),var(--r6));color:white;border:none;border-radius:11px;padding:9px 16px;font-size:11px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;box-shadow:0 4px 12px rgba(233,30,140,.3);transition:all .2s}
+.btn-p:hover{transform:translateY(-1px)}
+
+/* HERO */
+.health-hero{background:linear-gradient(145deg,#FF2D55,#C2185B 55%,#880E4F);border-radius:22px;padding:22px 20px;margin-bottom:16px;position:relative;overflow:hidden;box-shadow:0 12px 36px rgba(194,24,91,.22)}
+.health-hero::before{content:'';position:absolute;top:-40px;right:-40px;width:160px;height:160px;background:rgba(255,255,255,.1);border-radius:50%}
+.hh-row{display:flex;align-items:center;gap:14px;position:relative;z-index:1;margin-bottom:14px}
+.hh-icon{width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,.2);border:2px solid rgba(255,255,255,.35);display:flex;align-items:center;justify-content:center;font-size:24px}
+.hh-title{font-family:'Playfair Display',serif;font-size:22px;font-style:italic;color:white}
+.hh-sub{font-size:11px;color:rgba(255,255,255,.75);margin-top:3px}
+.hh-stats{display:flex;gap:14px;position:relative;z-index:1;flex-wrap:wrap}
+.hhs{text-align:center;background:rgba(255,255,255,.15);border-radius:12px;padding:10px 14px}
+.hhs-n{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;color:white}
+.hhs-l{font-size:9px;color:rgba(255,255,255,.7);letter-spacing:.5px;text-transform:uppercase;margin-top:2px}
+
+/* RINGS */
+.rings-row{display:flex;justify-content:center;gap:20px;padding:16px 0}
+.ring-wrap{text-align:center}
+.ring-svg{width:80px;height:80px}
+.ring-lbl{font-size:10px;color:var(--text-s);font-weight:500;margin-top:4px;letter-spacing:.3px}
+.ring-val{font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--text);font-weight:600}
+
+/* SLEEP */
+.sleep-bar{margin-bottom:8px}
+.sb-row{display:flex;align-items:center;gap:10px;margin-bottom:5px}
+.sb-label{font-size:10px;color:var(--text-s);min-width:60px;font-weight:500}
+.sb-track{flex:1;height:8px;background:rgba(156,39,176,.1);border-radius:6px;overflow:hidden}
+.sb-fill{height:100%;border-radius:6px}
+.sb-val{font-size:11px;font-weight:600;color:var(--text);min-width:36px;text-align:right}
+
+/* HEART RATE GRAPH */
+.hr-graph{height:64px;display:flex;align-items:flex-end;gap:3px;padding:0 4px}
+.hr-bar{flex:1;border-radius:3px 3px 0 0;background:linear-gradient(180deg,#FF2D55,rgba(255,45,85,.3));transition:height .3s}
+
+/* METRICS GRID */
+.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.metric-card{background:rgba(255,255,255,.65);border:1px solid var(--glass-b);border-radius:16px;padding:14px;text-align:center;cursor:pointer;transition:all .2s}
+.metric-card:hover{background:white;transform:translateY(-2px);box-shadow:0 8px 20px var(--shadow)}
+.mc-icon{font-size:24px;margin-bottom:6px;display:block}
+.mc-val{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;line-height:1;margin-bottom:3px}
+.mc-label{font-size:9px;color:var(--text-s);font-weight:500;letter-spacing:.5px;text-transform:uppercase}
+.mc-bar{height:3px;background:rgba(233,30,140,.1);border-radius:3px;margin-top:7px}
+.mc-fill{height:100%;border-radius:3px}
+
+/* AI INSIGHT */
+.ai-insight{background:rgba(233,30,140,.05);border:1px solid rgba(233,30,140,.14);border-radius:14px;padding:13px;font-size:12px;color:var(--text-m);line-height:1.65}
+</style>
+</head>
+<body>
+<div style="display:flex;align-items:baseline;gap:14px;margin-bottom:20px">
+  <div>
+    <h1 style="font-family:'Playfair Display',serif;font-size:28px;font-style:italic;color:var(--text)">Apple <span style="color:#FF2D55">Health</span></h1>
+    <p style="font-size:12px;color:var(--text-s);margin-top:4px">HealthKit · Real data from her iPhone + Apple Watch · All stays on device</p>
+  </div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start">
+<div>
+  <!-- HERO -->
+  <div class="health-hero">
+    <div class="hh-row">
+      <div class="hh-icon">❤️</div>
+      <div><div class="hh-title">Miss M's Health</div><div class="hh-sub">Today · Wednesday April 7th</div></div>
+    </div>
+    <div class="hh-stats">
+      <div class="hhs"><div class="hhs-n">7h 20m</div><div class="hhs-l">Sleep</div></div>
+      <div class="hhs"><div class="hhs-n">6,240</div><div class="hhs-l">Steps</div></div>
+      <div class="hhs"><div class="hhs-n">72 bpm</div><div class="hhs-l">Heart Rate</div></div>
+      <div class="hhs"><div class="hhs-n">Good</div><div class="hhs-l">HRV Score</div></div>
+    </div>
+  </div>
+
+  <!-- ACTIVITY RINGS -->
+  <div class="gc">
+    <div class="plbl">Activity Rings · Today</div>
+    <div class="rings-row">
+      <div class="ring-wrap">
+        <svg class="ring-svg" viewBox="0 0 80 80">
+          <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(255,45,85,.15)" stroke-width="8"/>
+          <circle cx="40" cy="40" r="34" fill="none" stroke="#FF2D55" stroke-width="8" stroke-dasharray="147 67" stroke-dashoffset="53" transform="rotate(-90 40 40)"/>
+        </svg>
+        <div class="ring-val" style="color:#FF2D55">420 cal</div>
+        <div class="ring-lbl">Move</div>
+      </div>
+      <div class="ring-wrap">
+        <svg class="ring-svg" viewBox="0 0 80 80">
+          <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(52,199,89,.15)" stroke-width="8"/>
+          <circle cx="40" cy="40" r="34" fill="none" stroke="#34C759" stroke-width="8" stroke-dasharray="120 94" stroke-dashoffset="53" transform="rotate(-90 40 40)"/>
+        </svg>
+        <div class="ring-val" style="color:#34C759">32 min</div>
+        <div class="ring-lbl">Exercise</div>
+      </div>
+      <div class="ring-wrap">
+        <svg class="ring-svg" viewBox="0 0 80 80">
+          <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(0,184,195,.15)" stroke-width="8"/>
+          <circle cx="40" cy="40" r="34" fill="none" stroke="#00B8C3" stroke-width="8" stroke-dasharray="176 38" stroke-dashoffset="53" transform="rotate(-90 40 40)"/>
+        </svg>
+        <div class="ring-val" style="color:#00B8C3">10/12 hr</div>
+        <div class="ring-lbl">Stand</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLEEP -->
+  <div class="gc">
+    <div class="plbl">Sleep Analysis · Last 7 Days</div>
+    <div class="sleep-bar">
+      <div class="sb-row"><div class="sb-label">Mon</div><div class="sb-track"><div class="sb-fill" style="width:88%;background:linear-gradient(90deg,#9C27B0,#CE93D8)"></div></div><div class="sb-val">7h 3m</div></div>
+      <div class="sb-row"><div class="sb-label">Tue</div><div class="sb-track"><div class="sb-fill" style="width:95%;background:linear-gradient(90deg,#9C27B0,#CE93D8)"></div></div><div class="sb-val">7h 36m</div></div>
+      <div class="sb-row"><div class="sb-label">Wed (today)</div><div class="sb-track"><div class="sb-fill" style="width:92%;background:linear-gradient(90deg,var(--r5),var(--r3))"></div></div><div class="sb-val">7h 20m</div></div>
+      <div class="sb-row"><div class="sb-label">Thu</div><div class="sb-track"><div class="sb-fill" style="width:70%;background:rgba(233,30,140,.3)"></div></div><div class="sb-val">—</div></div>
+      <div class="sb-row"><div class="sb-label">Fri</div><div class="sb-track"><div class="sb-fill" style="width:0;background:rgba(233,30,140,.3)"></div></div><div class="sb-val">—</div></div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:10px">
+      <div style="flex:1;background:rgba(156,39,176,.07);border-radius:12px;padding:10px;text-align:center"><div style="font-family:'Cormorant Garamond',serif;font-size:20px;color:#7B1FA2;font-weight:600">7h 16m</div><div style="font-size:9px;color:var(--text-s);text-transform:uppercase;letter-spacing:.5px">Avg this week</div></div>
+      <div style="flex:1;background:rgba(52,199,89,.07);border-radius:12px;padding:10px;text-align:center"><div style="font-family:'Cormorant Garamond',serif;font-size:20px;color:#2E7D32;font-weight:600">8h 0m</div><div style="font-size:9px;color:var(--text-s);text-transform:uppercase;letter-spacing:.5px">Target</div></div>
+      <div style="flex:1;background:rgba(0,122,255,.07);border-radius:12px;padding:10px;text-align:center"><div style="font-family:'Cormorant Garamond',serif;font-size:20px;color:#1565C0;font-weight:600">10:48</div><div style="font-size:9px;color:var(--text-s);text-transform:uppercase;letter-spacing:.5px">Avg bedtime</div></div>
+    </div>
+  </div>
+</div>
+
+<div>
+  <!-- METRICS -->
+  <div class="gc">
+    <div class="plbl">Today's Metrics · HealthKit</div>
+    <div class="metrics">
+      <div class="metric-card"><span class="mc-icon">👣</span><div class="mc-val" style="color:#FF9500">6,240</div><div class="mc-label">Steps</div><div class="mc-bar"><div class="mc-fill" style="width:62%;background:linear-gradient(90deg,#FF9500,#FFCC80)"></div></div></div>
+      <div class="metric-card"><span class="mc-icon">❤️</span><div class="mc-val" style="color:#FF2D55">72 bpm</div><div class="mc-label">Heart Rate</div><div class="mc-bar"><div class="mc-fill" style="width:72%;background:linear-gradient(90deg,#FF2D55,#FF9F9F)"></div></div></div>
+      <div class="metric-card"><span class="mc-icon">🧘</span><div class="mc-val" style="color:#9C27B0">18 min</div><div class="mc-label">Mindful</div><div class="mc-bar"><div class="mc-fill" style="width:60%;background:linear-gradient(90deg,#9C27B0,#CE93D8)"></div></div></div>
+      <div class="metric-card"><span class="mc-icon">🔥</span><div class="mc-val" style="color:#FF2D55">420</div><div class="mc-label">Calories</div><div class="mc-bar"><div class="mc-fill" style="width:70%;background:linear-gradient(90deg,#FF2D55,#FF7043)"></div></div></div>
+      <div class="metric-card"><span class="mc-icon">💧</span><div class="mc-val" style="color:#007AFF">1.2L</div><div class="mc-label">Hydration</div><div class="mc-bar"><div class="mc-fill" style="width:60%;background:linear-gradient(90deg,#007AFF,#64B5F6)"></div></div></div>
+      <div class="metric-card"><span class="mc-icon">🩺</span><div class="mc-val" style="color:#34C759">42 ms</div><div class="mc-label">HRV</div><div class="mc-bar"><div class="mc-fill" style="width:82%;background:linear-gradient(90deg,#34C759,#A5D6A7)"></div></div></div>
+    </div>
+  </div>
+
+  <!-- HEART RATE TREND -->
+  <div class="gc">
+    <div class="plbl">Heart Rate Today</div>
+    <div class="hr-graph" id="hrGraph"></div>
+    <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--text-xs);margin-top:4px;padding:0 4px">
+      <span>6am</span><span>9am</span><span>12pm</span><span>3pm</span><span>6pm</span><span>Now</span>
+    </div>
+    <div style="display:flex;gap:12px;margin-top:10px">
+      <div style="font-size:11px;color:var(--text-s)">Min: <strong style="color:#FF2D55">58 bpm</strong></div>
+      <div style="font-size:11px;color:var(--text-s)">Avg: <strong style="color:#FF2D55">72 bpm</strong></div>
+      <div style="font-size:11px;color:var(--text-s)">Max: <strong style="color:#FF2D55">134 bpm</strong></div>
+    </div>
+  </div>
+
+  <!-- AI HEALTH INSIGHT -->
+  <div class="gc">
+    <div class="plbl">AI Health Insight</div>
+    <div class="ai-insight">
+      ✦ Your sleep average this week is <strong>7h 16m</strong> — slightly under your 8h target. Your HRV of 42ms suggests moderate recovery. Consider an earlier bedtime tonight — you have a 9am lecture tomorrow.<br><br>
+      Your step count is at 62% of your daily goal. A 20-min walk after study group would close the ring. 🌿
+    </div>
+    <div style="display:flex;gap:8px;margin-top:10px">
+      <button class="btn-p" style="flex:1;font-size:11px">📋 Full Health Report</button>
+      <button style="background:rgba(255,255,255,.75);border:1.5px solid var(--r2);color:var(--text-m);border-radius:11px;padding:9px 14px;font-size:11px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif">⚙ Goals</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+// Draw heart rate bars
+const bars = [52,58,65,71,88,95,72,68,134,110,78,72,68,65,70,74,71,69];
+const graph = document.getElementById('hrGraph');
+const max = Math.max(...bars);
+bars.forEach(v => {
+  const b = document.createElement('div');
+  b.className = 'hr-bar';
+  b.style.height = (v/max*100)+'%';
+  graph.appendChild(b);
+});
+</script>
+</body>
+</html>
