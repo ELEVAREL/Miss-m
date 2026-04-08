@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Miss M — Google Drive</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=Playfair+Display:ital,wght@0,400;0,700&display=swap" rel="stylesheet">
+<style>
+:root{--r5:#E91E8C;--r6:#C2185B;--r2:#F8BBD9;--text:#1A0A10;--text-m:#5C3049;--text-s:#9A6B80;--text-xs:#C4A0B2;--glass-b:rgba(255,255,255,.82);--shadow:rgba(194,24,91,.13);--green:#34C759;--blue:#007AFF;--orange:#FF9500;--gblue:#4285F4;--ggreen:#34A853;--gyellow:#FBBC04;--gred:#EA4335}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:linear-gradient(155deg,#FFF0F8,#FCE4EC 40%,#F8BBD9 70%,#FDE8F3);min-height:100vh;padding:28px;display:flex;gap:20px;flex-wrap:wrap;align-items:start;color:var(--text)}
+body::before{content:'';position:fixed;top:-150px;right:-150px;width:500px;height:500px;background:radial-gradient(circle,rgba(233,30,140,.11),transparent 70%);border-radius:50%;pointer-events:none}
+.panel{background:rgba(255,255,255,.65);border:1px solid var(--glass-b);border-radius:20px;padding:18px;box-shadow:0 2px 12px var(--shadow);margin-bottom:14px}
+.plbl{font-family:'Cormorant Garamond',serif;font-size:10px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:var(--r5);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.plbl::after{content:'';flex:1;height:1px;background:rgba(233,30,140,.14)}
+.btn-p{background:linear-gradient(135deg,var(--r5),var(--r6));color:white;border:none;border-radius:12px;padding:10px 20px;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;box-shadow:0 4px 14px rgba(233,30,140,.32);transition:all .2s}
+.btn-p:hover{transform:translateY(-1px)}
+.btn-g{background:rgba(255,255,255,.75);border:1.5px solid var(--r2);color:var(--text-m);border-radius:12px;padding:9px 16px;font-size:11px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+.btn-g:hover{background:white;color:var(--r5)}
+
+/* DRIVE HEADER */
+.drive-header{background:rgba(255,255,255,.75);border:1px solid var(--glass-b);border-radius:16px;padding:14px 16px;margin-bottom:14px;display:flex;align-items:center;gap:12px}
+.drive-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--gblue),var(--ggreen));display:flex;align-items:center;justify-content:center;font-size:18px}
+.drive-info{flex:1}
+.drive-name{font-size:13px;font-weight:600;color:var(--text)}
+.drive-email{font-size:10px;color:var(--text-s)}
+.drive-storage{font-size:10px;color:var(--text-s);margin-top:4px}
+.storage-bar{height:4px;background:rgba(0,0,0,.06);border-radius:4px;margin-top:3px;width:120px}
+.storage-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--gblue),var(--ggreen));width:35%}
+
+/* SEARCH */
+.search-row{display:flex;gap:8px;margin-bottom:14px}
+.search-inp{flex:1;background:rgba(255,255,255,.8);border:1.5px solid var(--r2);border-radius:13px;padding:10px 14px;font-size:12px;font-family:'DM Sans',sans-serif;color:var(--text);outline:none;transition:all .2s}
+.search-inp:focus{border-color:var(--r5)}
+
+/* FILE LIST */
+.file-row{display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(255,255,255,.6);border:1px solid var(--glass-b);border-radius:13px;margin-bottom:6px;cursor:pointer;transition:all .18s}
+.file-row:hover{background:white;transform:translateX(2px);box-shadow:0 4px 14px var(--shadow)}
+.fr-ic{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.fr-name{font-size:12px;font-weight:500;color:var(--text);flex:1}
+.fr-size{font-size:10px;color:var(--text-xs);margin-right:6px}
+.fr-date{font-size:10px;color:var(--text-s);white-space:nowrap}
+.folder-row{display:flex;align-items:center;gap:10px;padding:9px 12px;background:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.7);border-radius:11px;margin-bottom:5px;cursor:pointer;transition:all .15s}
+.folder-row:hover{background:rgba(255,255,255,.75)}
+.folder-ic{font-size:18px;flex-shrink:0}
+.folder-name{font-size:12px;font-weight:500;color:var(--text);flex:1}
+.folder-count{font-size:10px;color:var(--text-xs)}
+
+/* AI DRIVE ROW */
+.ai-drive{background:rgba(233,30,140,.06);border:1px solid rgba(233,30,140,.15);border-radius:13px;padding:12px 14px;margin-top:10px;font-size:12px;color:var(--text-m);line-height:1.65}
+</style>
+</head>
+<body>
+<div style="width:380px">
+  <div style="font-family:'Playfair Display',serif;font-size:22px;font-style:italic;color:var(--text);margin-bottom:14px">Google <span style="color:var(--r5)">Drive</span></div>
+
+  <div class="drive-header">
+    <div class="drive-avatar">📁</div>
+    <div class="drive-info">
+      <div class="drive-name">Miss M's Drive</div>
+      <div class="drive-email">missm@student.university.edu</div>
+      <div class="drive-storage">5.2 GB used of 15 GB</div>
+      <div class="storage-bar"><div class="storage-fill"></div></div>
+    </div>
+    <div style="text-align:center">
+      <div style="width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 8px rgba(52,199,89,.6);margin:0 auto 4px"></div>
+      <div style="font-size:9px;color:var(--green);font-weight:600">Synced</div>
+    </div>
+  </div>
+
+  <div class="search-row">
+    <input class="search-inp" placeholder="Search Drive with AI…" value="MKT302">
+    <button class="btn-p" style="padding:10px 16px;font-size:11px">✦ Search</button>
+  </div>
+
+  <div class="panel">
+    <div class="plbl">University Folders</div>
+    <div class="folder-row"><span class="folder-ic">📂</span><div class="folder-name">MKT302 — Consumer Behaviour</div><div class="folder-count">14 files</div></div>
+    <div class="folder-row"><span class="folder-ic">📂</span><div class="folder-name">MKT210 — Brand Management</div><div class="folder-count">8 files</div></div>
+    <div class="folder-row"><span class="folder-ic">📂</span><div class="folder-name">MKT150 — Digital Marketing</div><div class="folder-count">11 files</div></div>
+    <div class="folder-row"><span class="folder-ic">📂</span><div class="folder-name">Group Projects</div><div class="folder-count">6 files</div></div>
+  </div>
+
+  <div class="panel">
+    <div class="plbl">Recent Files</div>
+    <div class="file-row"><div class="fr-ic" style="background:rgba(66,133,244,.1)">📄</div><div class="fr-name">Nike_Case_Study_Draft.docx</div><div class="fr-size">24 KB</div><div class="fr-date">Today</div></div>
+    <div class="file-row"><div class="fr-ic" style="background:rgba(234,67,53,.1)">📊</div><div class="fr-name">MKT302_Lecture_7_Slides.pdf</div><div class="fr-size">4.2 MB</div><div class="fr-date">Yesterday</div></div>
+    <div class="file-row"><div class="fr-ic" style="background:rgba(52,168,83,.1)">📋</div><div class="fr-name">Group_Project_Brief.pdf</div><div class="fr-size">890 KB</div><div class="fr-date">3 days ago</div></div>
+    <div class="file-row"><div class="fr-ic" style="background:rgba(251,188,4,.12)">📑</div><div class="fr-name">Marketing_Research_Notes.docx</div><div class="fr-size">18 KB</div><div class="fr-date">1 week ago</div></div>
+  </div>
+</div>
+
+<div style="width:360px">
+  <div class="panel">
+    <div class="plbl">AI Searched: "MKT302"</div>
+    <div style="background:rgba(255,255,255,.8);border:1px solid rgba(233,30,140,.15);border-radius:14px;padding:12px 14px;margin-bottom:12px">
+      <div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--r5);font-weight:600;margin-bottom:8px">✦ 8 files found in your Drive</div>
+      <div class="file-row" style="margin-bottom:6px"><div class="fr-ic" style="background:rgba(66,133,244,.1)">📄</div><div class="fr-name">Nike_Case_Study_Draft.docx</div><div style="display:flex;gap:5px"><button class="btn-p" style="font-size:9px;padding:4px 10px">✦ AI Read</button></div></div>
+      <div class="file-row" style="margin-bottom:6px"><div class="fr-ic" style="background:rgba(234,67,53,.1)">📊</div><div class="fr-name">Week_7_Consumer_Behaviour.pdf</div><div style="display:flex;gap:5px"><button class="btn-p" style="font-size:9px;padding:4px 10px">✦ AI Read</button></div></div>
+      <div class="file-row"><div class="fr-ic" style="background:rgba(52,168,83,.1)">📋</div><div class="fr-name">Assignment_Brief_MKT302.pdf</div><div style="display:flex;gap:5px"><button class="btn-p" style="font-size:9px;padding:4px 10px">✦ AI Read</button></div></div>
+    </div>
+    <div class="ai-drive">
+      ✦ <strong>Miss M AI found</strong> your Nike Case Study draft. It's 15% complete — want me to continue writing it? I can also read the Assignment Brief to make sure you're hitting all the marking criteria.
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="plbl">What AI Can Do With Drive</div>
+    <div style="display:flex;flex-direction:column;gap:7px">
+      <div style="background:rgba(255,255,255,.7);border:1px solid var(--glass-b);border-radius:11px;padding:9px 12px;font-size:12px;color:var(--text-m);cursor:pointer;transition:all .14s" onmouseover="this.style.background='white'" onmouseout="this.style.background='rgba(255,255,255,.7)'">🔍 <strong>Search</strong> — find any file by name or topic</div>
+      <div style="background:rgba(255,255,255,.7);border:1px solid var(--glass-b);border-radius:11px;padding:9px 12px;font-size:12px;color:var(--text-m);cursor:pointer;transition:all .14s" onmouseover="this.style.background='white'" onmouseout="this.style.background='rgba(255,255,255,.7)'">📖 <strong>Read & Summarise</strong> — Google Docs, PDFs, Word files</div>
+      <div style="background:rgba(255,255,255,.7);border:1px solid var(--glass-b);border-radius:11px;padding:9px 12px;font-size:12px;color:var(--text-m);cursor:pointer;transition:all .14s" onmouseover="this.style.background='white'" onmouseout="this.style.background='rgba(255,255,255,.7)'">💾 <strong>Save outputs</strong> — save essays and summaries back to Drive</div>
+      <div style="background:rgba(255,255,255,.7);border:1px solid var(--glass-b);border-radius:11px;padding:9px 12px;font-size:12px;color:var(--text-m);cursor:pointer;transition:all .14s" onmouseover="this.style.background='white'" onmouseout="this.style.background='rgba(255,255,255,.7)'">📤 <strong>Share files</strong> — send Drive links via iMessage</div>
+      <div style="background:rgba(255,255,255,.7);border:1px solid var(--glass-b);border-radius:11px;padding:9px 12px;font-size:12px;color:var(--text-m);cursor:pointer;transition:all .14s" onmouseover="this.style.background='white'" onmouseout="this.style.background='rgba(255,255,255,.7)'">📋 <strong>Extract deadlines</strong> — from assignment briefs, add to Reminders</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
