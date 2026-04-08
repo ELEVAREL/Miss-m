@@ -12,6 +12,7 @@ struct HomeHubView: View {
         case grocery = "Grocery List"
         case budget = "Budget"
         case email = "Email Drafter"
+        case messages = "Messages"
 
         var icon: String {
             switch self {
@@ -19,6 +20,7 @@ struct HomeHubView: View {
             case .grocery: return "🛒"
             case .budget: return "💰"
             case .email: return "📧"
+            case .messages: return "💬"
             }
         }
 
@@ -28,6 +30,7 @@ struct HomeHubView: View {
             case .grocery: return "Tap to check off"
             case .budget: return "Track spending & save"
             case .email: return "Draft with tone selector"
+            case .messages: return "iMessage & NyRiian"
             }
         }
     }
@@ -102,6 +105,7 @@ struct HomeHubView: View {
         case .grocery: GroceryListView()
         case .budget: BudgetView()
         case .email: EmailDrafterView(claudeService: claudeService)
+        case .messages: MessagesView(claudeService: claudeService)
         }
     }
 }

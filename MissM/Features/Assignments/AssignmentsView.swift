@@ -232,18 +232,13 @@ struct AssignmentCard: View {
 
 // MARK: - Add Assignment Sheet
 struct AddAssignmentSheet: View {
-    @ObservedObject var viewModel: AssignmentsViewModelWrapper
+    let viewModel: AssignmentsViewModel
     let claudeService: ClaudeService
     @State private var title = ""
     @State private var course = ""
     @State private var dueDate = Date().addingTimeInterval(7 * 86400)
     @State private var priority: Assignment.AssignmentPriority = .medium
     @Environment(\.dismiss) private var dismiss
-
-    init(viewModel: AssignmentsViewModel, claudeService: ClaudeService) {
-        self._viewModel = ObservedObject(wrappedValue: AssignmentsViewModelWrapper(vm: viewModel))
-        self.claudeService = claudeService
-    }
 
     var body: some View {
         VStack(spacing: 16) {
@@ -283,7 +278,7 @@ struct AddAssignmentSheet: View {
                     .foregroundColor(Theme.Colors.textSoft)
                 Button("Add Assignment") {
                     let assignment = Assignment(title: title, course: course, dueDate: dueDate, priority: priority)
-                    viewModel.vm.addAssignment(assignment)
+                    viewModel.addAssignment(assignment)
                     dismiss()
                 }
                 .buttonStyle(RoseButtonStyle())
@@ -294,12 +289,6 @@ struct AddAssignmentSheet: View {
         .frame(width: 350)
         .background(Theme.Colors.roseUltra)
     }
-}
-
-// Wrapper for sheet presentation (sheets need ObservableObject)
-class AssignmentsViewModelWrapper: ObservableObject {
-    let vm: AssignmentsViewModel
-    init(vm: AssignmentsViewModel) { self.vm = vm }
 }
 
 // MARK: - Assignments ViewModel

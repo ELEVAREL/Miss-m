@@ -357,6 +357,7 @@ struct SchoolView: View {
         case flashcards = "Flashcards"
         case marketing = "Marketing Tools"
         case calendar = "Calendar"
+        case macTools = "Mac Tools"
 
         var icon: String {
             switch self {
@@ -366,6 +367,7 @@ struct SchoolView: View {
             case .flashcards: return "🃏"
             case .marketing: return "📊"
             case .calendar: return "📅"
+            case .macTools: return "🖥"
             }
         }
 
@@ -377,6 +379,7 @@ struct SchoolView: View {
             case .flashcards: return "Study with flip cards"
             case .marketing: return "SWOT, STP, Persona & more"
             case .calendar: return "Full calendar view"
+            case .macTools: return "PDF reader & screenshot OCR"
             }
         }
     }
@@ -464,6 +467,8 @@ struct SchoolView: View {
             MarketingView(claudeService: claudeService)
         case .calendar:
             CalendarFullView()
+        case .macTools:
+            MacToolsView(claudeService: claudeService)
         }
     }
 }
