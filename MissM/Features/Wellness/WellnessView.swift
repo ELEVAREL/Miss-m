@@ -48,19 +48,54 @@ struct WellnessView: View {
 
     // MARK: - Hero Header
 
+    // MARK: - Health Hero (per design: gradient card with icon, title, quick stats)
     private var wellnessHeader: some View {
-        VStack(spacing: Theme.Spacing.xs) {
-            Text("Wellness")
-                .font(.custom("PlayfairDisplay-Italic", size: 20))
-                .foregroundColor(Theme.Colors.rosePrimary)
+        VStack(spacing: 0) {
+            HStack(spacing: 14) {
+                // Health icon
+                Text("❤️")
+                    .font(.system(size: 24))
+                    .frame(width: 52, height: 52)
+                    .background(Color.white.opacity(0.2))
+                    .clipShape(Circle())
+                    .overlay(Circle().stroke(Color.white.opacity(0.35), lineWidth: 2))
 
-            Text("YOUR DAILY HEALTH")
-                .font(.custom("CormorantGaramond-SemiBold", size: 11))
-                .tracking(2.5)
-                .foregroundColor(Theme.Colors.textSoft)
+                VStack(alignment: .leading, spacing: 3) {
+                    Text("Miss M's Health")
+                        .font(.custom("PlayfairDisplay-Italic", size: 20))
+                        .foregroundColor(.white)
+                    Text("Today · \(todayDateString)")
+                        .font(.system(size: 11))
+                        .foregroundColor(.white.opacity(0.75))
+                }
+                Spacer()
+            }
+            .padding(.bottom, 14)
+
+            // Quick stats row
+            HStack(spacing: 14) {
+                HealthHeroStat(value: formatSleepHours(healthService.todaySleepHours), label: "Sleep")
+                HealthHeroStat(value: "\(Int(healthService.todaySteps))", label: "Steps")
+                HealthHeroStat(value: healthService.latestHeartRate > 0 ? "\(Int(healthService.latestHeartRate))" : "--", label: "Heart Rate")
+                HealthHeroStat(value: "\(Int(healthService.todayActiveCalories))", label: "Calories")
+            }
         }
-        .frame(maxWidth: .infinity)
-        .padding(.top, Theme.Spacing.sm)
+        .padding(22)
+        .background(
+            LinearGradient(
+                colors: [Color(hex: "#FF2D55"), Theme.Colors.roseDeep, Theme.Colors.roseDark],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        )
+        .cornerRadius(22)
+        .shadow(color: Color(hex: "#C2185B").opacity(0.22), radius: 18, x: 0, y: 6)
+    }
+
+    private var todayDateString: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "EEEE MMMM d"
+        return formatter.string(from: Date())
     }
 
     // MARK: - Permission Request Card
@@ -528,5 +563,29 @@ struct WellnessView: View {
             // Mood save failed — silently reset
             selectedMood = nil
         }
+    }
+}
+
+// MARK: - Health Hero Stat (per design: glass pill on gradient)
+struct HealthHeroStat: View {
+    let value: String
+    let label: String
+
+    var body: some View {
+        VStack(spacing: 2) {
+            Text(value)
+                .font(.custom("CormorantGaramond-SemiBold", size: 20))
+                .foregroundColor(.white)
+            Text(label)
+                .font(.system(size: 9))
+                .foregroundColor(.white.opacity(0.7))
+                .tracking(0.5)
+                .textCase(.uppercase)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 10)
+        .padding(.horizontal, 8)
+        .background(Color.white.opacity(0.15))
+        .cornerRadius(12)
     }
 }

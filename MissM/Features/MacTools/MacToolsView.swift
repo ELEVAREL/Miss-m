@@ -66,23 +66,9 @@ struct MacToolsView: View {
 
                     LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
                         ForEach(MacToolFeature.allCases, id: \.self) { feature in
-                            Button(action: { selectedFeature = feature }) {
-                                VStack(spacing: 8) {
-                                    Text(feature.icon)
-                                        .font(.system(size: 24))
-                                    Text(feature.rawValue)
-                                        .font(.system(size: 11, weight: .medium))
-                                        .foregroundColor(Theme.Colors.textPrimary)
-                                    Text(feature.description)
-                                        .font(.system(size: 9))
-                                        .foregroundColor(Theme.Colors.textSoft)
-                                        .multilineTextAlignment(.center)
-                                }
-                                .frame(maxWidth: .infinity)
-                                .padding(14)
-                                .glassCard(padding: 0)
+                            MacToolCard(feature: feature) {
+                                selectedFeature = feature
                             }
-                            .buttonStyle(.plain)
                         }
                     }
                     .padding(.horizontal, 16)
@@ -101,6 +87,39 @@ struct MacToolsView: View {
     }
 }
 
+// MARK: - Mac Tool Card (per design: hover translateY)
+struct MacToolCard: View {
+    let feature: MacToolsView.MacToolFeature
+    let action: () -> Void
+    @State private var isHovered = false
+
+    var body: some View {
+        Button(action: action) {
+            VStack(spacing: 8) {
+                Text(feature.icon)
+                    .font(.system(size: 26))
+                Text(feature.rawValue)
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundColor(Theme.Colors.textPrimary)
+                Text(feature.description)
+                    .font(.system(size: 10))
+                    .foregroundColor(Theme.Colors.textSoft)
+                    .multilineTextAlignment(.center)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(16)
+            .background(isHovered ? Color.white : Theme.Colors.glassWhite)
+            .cornerRadius(Theme.Radius.md)
+            .overlay(RoundedRectangle(cornerRadius: Theme.Radius.md).stroke(isHovered ? Theme.Colors.roseLight : Theme.Colors.glassBorder, lineWidth: 1))
+            .shadow(color: Theme.Colors.shadow, radius: isHovered ? 16 : 10, x: 0, y: isHovered ? 6 : 4)
+            .offset(y: isHovered ? -2 : 0)
+            .animation(.easeOut(duration: 0.18), value: isHovered)
+        }
+        .buttonStyle(.plain)
+        .onHover { isHovered = $0 }
+    }
+}
+
 // MARK: - PDF Drop Zone View
 
 struct PDFDropZoneView: View {
@@ -109,63 +128,138 @@ struct PDFDropZoneView: View {
     @State private var aiSummary: String = ""
     @State private var fileName: String = ""
     @State private var pageCount: Int = 0
+    @State private var fileSize: String = ""
     @State private var isExtracting = false
     @State private var isSummarising = false
     @State private var errorMessage: String? = nil
+    @State private var isDragHovered = false
+
+    private let fileTypes = ["PDF", "DOCX", "TXT", "PPTX", "Images"]
 
     var body: some View {
         ScrollView {
             VStack(spacing: 12) {
-                // Header
-                HStack {
-                    Text("PDF READER")
-                        .font(.custom("CormorantGaramond-SemiBold", size: 11))
+                // Header (per design: plbl with line)
+                HStack(spacing: 8) {
+                    Text("PDF DROP ZONE")
+                        .font(.custom("CormorantGaramond-SemiBold", size: 10))
                         .tracking(2.5)
-                        .foregroundColor(Theme.Colors.textSoft)
-                    Spacer()
+                        .foregroundColor(Theme.Colors.rosePrimary)
+                    Rectangle()
+                        .fill(Theme.Colors.rosePrimary.opacity(0.14))
+                        .frame(height: 1)
                 }
                 .padding(.horizontal, 16)
 
-                // Drop zone / file picker
+                // Drop zone / file picker (per design: dashed border, file type badges)
                 if extractedText.isEmpty && !isExtracting {
                     Button(action: { openPDFPicker() }) {
                         VStack(spacing: 10) {
-                            Image(systemName: "doc.text.fill")
-                                .font(.system(size: 32))
-                                .foregroundColor(Theme.Colors.roseMid)
-                            Text("Select a PDF")
-                                .font(.custom("PlayfairDisplay-Italic", size: 16))
-                                .foregroundColor(Theme.Colors.rosePrimary)
-                            Text("Choose a file to extract text and get an AI summary")
-                                .font(.system(size: 10))
+                            Text("📄")
+                                .font(.system(size: 48))
+
+                            Text("Drop your lecture PDF here")
+                                .font(.custom("PlayfairDisplay-Italic", size: 18))
+                                .foregroundColor(Theme.Colors.textPrimary)
+
+                            Text("Miss M AI reads it instantly — summaries, flashcards, deadlines, key concepts")
+                                .font(.system(size: 12))
                                 .foregroundColor(Theme.Colors.textSoft)
                                 .multilineTextAlignment(.center)
+                                .lineSpacing(4)
+
+                            // File type badges
+                            HStack(spacing: 7) {
+                                ForEach(fileTypes, id: \.self) { type in
+                                    Text(type)
+                                        .font(.system(size: 10, weight: .semibold))
+                                        .foregroundColor(Theme.Colors.rosePrimary)
+                                        .padding(.horizontal, 10)
+                                        .padding(.vertical, 3)
+                                        .background(Theme.Colors.rosePrimary.opacity(0.08))
+                                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(Theme.Colors.rosePrimary.opacity(0.18), lineWidth: 1))
+                                        .cornerRadius(8)
+                                }
+                            }
+
+                            Text("— or —")
+                                .font(.system(size: 11))
+                                .foregroundColor(Theme.Colors.textXSoft)
+
+                            Text("Browse Files")
+                                .font(.system(size: 12, weight: .semibold))
+                                .foregroundColor(.white)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 10)
+                                .background(Theme.Gradients.rosePrimary)
+                                .cornerRadius(12)
+                                .shadow(color: Theme.Colors.rosePrimary.opacity(0.32), radius: 14, x: 0, y: 4)
                         }
                         .frame(maxWidth: .infinity)
-                        .padding(.vertical, 36)
-                        .glassCard(padding: 14)
+                        .padding(.vertical, 30)
+                        .padding(.horizontal, 24)
+                        .background(isDragHovered ? Theme.Colors.rosePrimary.opacity(0.04) : Color.white.opacity(0.4))
+                        .cornerRadius(20)
                         .overlay(
-                            RoundedRectangle(cornerRadius: Theme.Radius.md)
-                                .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [8, 4]))
-                                .foregroundColor(Theme.Colors.roseLight)
+                            RoundedRectangle(cornerRadius: 20)
+                                .strokeBorder(style: StrokeStyle(lineWidth: 2.5, dash: [10, 6]))
+                                .foregroundColor(isDragHovered ? Theme.Colors.rosePrimary : Theme.Colors.rosePrimary.opacity(0.3))
                         )
                     }
                     .buttonStyle(.plain)
                     .padding(.horizontal, 16)
                 }
 
-                // Extracting state
+                // Processing state (per design: file icon, name, progress bar)
                 if isExtracting {
-                    VStack(spacing: 8) {
-                        ProgressView()
-                            .scaleEffect(0.8)
-                        Text("Extracting text...")
-                            .font(.system(size: 11))
-                            .foregroundColor(Theme.Colors.textSoft)
+                    VStack(spacing: 12) {
+                        HStack(spacing: 12) {
+                            // File icon (per design: 44px, gradient bg)
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 12)
+                                    .fill(Color.red.opacity(0.1))
+                                    .frame(width: 44, height: 44)
+                                Text("📄")
+                                    .font(.system(size: 22))
+                            }
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(fileName)
+                                    .font(.system(size: 13, weight: .medium))
+                                    .foregroundColor(Theme.Colors.textPrimary)
+                                    .lineLimit(1)
+                                Text(fileSize)
+                                    .font(.system(size: 10))
+                                    .foregroundColor(Theme.Colors.textSoft)
+                            }
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+
+                        // Progress bar
+                        GeometryReader { geo in
+                            ZStack(alignment: .leading) {
+                                RoundedRectangle(cornerRadius: 4)
+                                    .fill(Theme.Colors.rosePrimary.opacity(0.1))
+                                RoundedRectangle(cornerRadius: 4)
+                                    .fill(LinearGradient(colors: [Theme.Colors.rosePrimary, Theme.Colors.roseMid], startPoint: .leading, endPoint: .trailing))
+                                    .frame(width: geo.size.width * 0.75)
+                            }
+                        }
+                        .frame(height: 4)
+
+                        HStack(spacing: 6) {
+                            ProgressView()
+                                .scaleEffect(0.5)
+                                .frame(width: 12, height: 12)
+                            Text("Miss M AI is reading your PDF…")
+                                .font(.system(size: 11, weight: .medium))
+                                .foregroundColor(Theme.Colors.rosePrimary)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     }
-                    .frame(maxWidth: .infinity)
-                    .padding(20)
-                    .glassCard(padding: 0)
+                    .padding(16)
+                    .background(Color.white.opacity(0.82))
+                    .cornerRadius(16)
+                    .overlay(RoundedRectangle(cornerRadius: 16).stroke(Theme.Colors.rosePrimary.opacity(0.2), lineWidth: 1))
                     .padding(.horizontal, 16)
                 }
 
@@ -184,20 +278,24 @@ struct PDFDropZoneView: View {
                     .padding(.horizontal, 16)
                 }
 
-                // File info + extracted text
+                // AI Actions grid (per design: 2-col, 6 actions)
                 if !extractedText.isEmpty {
                     // File info card
-                    HStack(spacing: 10) {
-                        Image(systemName: "doc.text.fill")
-                            .font(.system(size: 18))
-                            .foregroundColor(Theme.Colors.rosePrimary)
+                    HStack(spacing: 12) {
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(Color.red.opacity(0.1))
+                                .frame(width: 44, height: 44)
+                            Text("📄")
+                                .font(.system(size: 22))
+                        }
                         VStack(alignment: .leading, spacing: 2) {
                             Text(fileName)
-                                .font(.system(size: 12, weight: .medium))
+                                .font(.system(size: 13, weight: .medium))
                                 .foregroundColor(Theme.Colors.textPrimary)
                                 .lineLimit(1)
                             Text("\(pageCount) page\(pageCount == 1 ? "" : "s") · \(extractedText.count) characters")
-                                .font(.system(size: 9))
+                                .font(.system(size: 10))
                                 .foregroundColor(Theme.Colors.textSoft)
                         }
                         Spacer()
@@ -208,21 +306,36 @@ struct PDFDropZoneView: View {
                         }
                         .buttonStyle(.plain)
                     }
-                    .padding(10)
+                    .padding(14)
                     .glassCard(padding: 0)
                     .padding(.horizontal, 16)
 
-                    // Summarise button
-                    if aiSummary.isEmpty && !isSummarising {
-                        Button(action: { Task { await summarisePDF() } }) {
-                            HStack(spacing: 4) {
-                                Image(systemName: "sparkles")
-                                Text("AI Summary")
-                            }
-                            .font(.system(size: 11, weight: .medium))
+                    // AI Actions (per design: "What should I do with it?")
+                    VStack(spacing: 10) {
+                        HStack(spacing: 8) {
+                            Text("WHAT SHOULD I DO WITH IT?")
+                                .font(.custom("CormorantGaramond-SemiBold", size: 10))
+                                .tracking(2.5)
+                                .foregroundColor(Theme.Colors.rosePrimary)
+                            Rectangle()
+                                .fill(Theme.Colors.rosePrimary.opacity(0.14))
+                                .frame(height: 1)
                         }
-                        .buttonStyle(RoseButtonStyle())
+
+                        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 8) {
+                            PDFActionCard(icon: "📝", name: "Summarise", desc: "Key points in plain English") {
+                                Task { await summarisePDF() }
+                            }
+                            PDFActionCard(icon: "🃏", name: "Flashcards", desc: "Auto-generate quiz cards") {}
+                            PDFActionCard(icon: "📅", name: "Find Deadlines", desc: "Extract dates & tasks") {}
+                            PDFActionCard(icon: "✍️", name: "Essay Help", desc: "Use as essay source") {}
+                            PDFActionCard(icon: "🔍", name: "Explain Concepts", desc: "Break down hard parts") {}
+                            PDFActionCard(icon: "📚", name: "Add Citations", desc: "APA / Harvard refs") {}
+                        }
                     }
+                    .padding(14)
+                    .glassCard(padding: 0)
+                    .padding(.horizontal, 16)
 
                     // Summarising state
                     if isSummarising {
@@ -237,36 +350,46 @@ struct PDFDropZoneView: View {
                         .padding(.horizontal, 16)
                     }
 
-                    // AI Summary card
+                    // AI Summary result card (per design: icon header, body, tags)
                     if !aiSummary.isEmpty {
-                        VStack(alignment: .leading, spacing: 6) {
-                            HStack {
-                                Text("AI SUMMARY")
-                                    .font(.custom("CormorantGaramond-SemiBold", size: 10))
-                                    .tracking(2)
-                                    .foregroundColor(Theme.Colors.textSoft)
-                                Spacer()
-                                Button(action: {
-                                    NSPasteboard.general.clearContents()
-                                    NSPasteboard.general.setString(aiSummary, forType: .string)
-                                }) {
-                                    HStack(spacing: 3) {
-                                        Image(systemName: "doc.on.doc")
-                                        Text("Copy")
-                                    }
-                                    .font(.system(size: 9))
-                                    .foregroundColor(Theme.Colors.rosePrimary)
-                                }
-                                .buttonStyle(.plain)
-                            }
+                        PDFResultCard(icon: "📝", iconBg: Theme.Colors.rosePrimary.opacity(0.1),
+                                      title: "Summary", subtitle: fileName) {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text(aiSummary)
+                                    .font(.system(size: 12))
+                                    .foregroundColor(Theme.Colors.textMedium)
+                                    .textSelection(.enabled)
+                                    .lineSpacing(4)
 
-                            Text(aiSummary)
-                                .font(.system(size: 11))
-                                .foregroundColor(Theme.Colors.textPrimary)
-                                .textSelection(.enabled)
+                                HStack(spacing: 8) {
+                                    Button(action: {
+                                        NSPasteboard.general.clearContents()
+                                        NSPasteboard.general.setString(aiSummary, forType: .string)
+                                    }) {
+                                        Text("Copy to Essay")
+                                            .font(.system(size: 11, weight: .semibold))
+                                            .foregroundColor(.white)
+                                            .frame(maxWidth: .infinity)
+                                            .padding(.vertical, 8)
+                                            .background(Theme.Gradients.rosePrimary)
+                                            .cornerRadius(11)
+                                    }
+                                    .buttonStyle(.plain)
+
+                                    Button(action: {}) {
+                                        Text("Expand")
+                                            .font(.system(size: 11, weight: .medium))
+                                            .foregroundColor(Theme.Colors.textMedium)
+                                            .padding(.horizontal, 14)
+                                            .padding(.vertical, 8)
+                                            .background(Color.white.opacity(0.75))
+                                            .overlay(RoundedRectangle(cornerRadius: 11).stroke(Theme.Colors.roseLight, lineWidth: 1.5))
+                                            .cornerRadius(11)
+                                    }
+                                    .buttonStyle(.plain)
+                                }
+                            }
                         }
-                        .padding(12)
-                        .glassCard(padding: 0)
                         .padding(.horizontal, 16)
                     }
 
@@ -319,6 +442,13 @@ struct PDFDropZoneView: View {
         isExtracting = true
         errorMessage = nil
         fileName = url.lastPathComponent
+
+        // Get file size
+        if let attrs = try? FileManager.default.attributesOfItem(atPath: url.path),
+           let size = attrs[.size] as? Int64 {
+            let mb = Double(size) / 1_048_576
+            fileSize = mb >= 1.0 ? String(format: "%.1f MB", mb) : String(format: "%.0f KB", Double(size) / 1024)
+        }
 
         Task {
             await extractPDFText(from: url)
@@ -433,7 +563,85 @@ struct PDFDropZoneView: View {
         aiSummary = ""
         fileName = ""
         pageCount = 0
+        fileSize = ""
         errorMessage = nil
+    }
+}
+
+// MARK: - PDF Action Card (per design: 2-col grid, hover translateY)
+struct PDFActionCard: View {
+    let icon: String
+    let name: String
+    let desc: String
+    let action: () -> Void
+    @State private var isHovered = false
+
+    var body: some View {
+        Button(action: action) {
+            VStack(spacing: 6) {
+                Text(icon)
+                    .font(.system(size: 22))
+                Text(name)
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundColor(Theme.Colors.textPrimary)
+                Text(desc)
+                    .font(.system(size: 10))
+                    .foregroundColor(Theme.Colors.textSoft)
+                    .lineSpacing(2)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(12)
+            .background(isHovered ? Color.white : Color.white.opacity(0.8))
+            .cornerRadius(13)
+            .overlay(RoundedRectangle(cornerRadius: 13).stroke(Theme.Colors.glassBorder, lineWidth: 1))
+            .shadow(color: isHovered ? Theme.Colors.shadow : .clear, radius: 16, x: 0, y: 6)
+            .offset(y: isHovered ? -2 : 0)
+            .animation(.easeOut(duration: 0.18), value: isHovered)
+        }
+        .buttonStyle(.plain)
+        .onHover { isHovered = $0 }
+    }
+}
+
+// MARK: - PDF Result Card (per design: icon header + body + tags)
+struct PDFResultCard<Content: View>: View {
+    let icon: String
+    let iconBg: Color
+    let title: String
+    let subtitle: String
+    @ViewBuilder let content: () -> Content
+    @State private var isHovered = false
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 9) {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(iconBg)
+                        .frame(width: 32, height: 32)
+                    Text(icon)
+                        .font(.system(size: 16))
+                }
+                VStack(alignment: .leading, spacing: 1) {
+                    Text(title)
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundColor(Theme.Colors.textPrimary)
+                    Text(subtitle)
+                        .font(.system(size: 10))
+                        .foregroundColor(Theme.Colors.textSoft)
+                        .lineLimit(1)
+                }
+            }
+            content()
+        }
+        .padding(14)
+        .background(isHovered ? Color.white : Theme.Colors.glassWhite)
+        .cornerRadius(16)
+        .overlay(RoundedRectangle(cornerRadius: 16).stroke(Theme.Colors.glassBorder, lineWidth: 1))
+        .shadow(color: Theme.Colors.shadow, radius: isHovered ? 18 : 10, x: 0, y: isHovered ? 6 : 4)
+        .offset(y: isHovered ? -1 : 0)
+        .animation(.easeOut(duration: 0.2), value: isHovered)
+        .onHover { isHovered = $0 }
     }
 }
 
@@ -448,58 +656,84 @@ struct ScreenshotOCRView: View {
     @State private var isExplaining = false
     @State private var errorMessage: String? = nil
     @State private var capturedImage: NSImage? = nil
+    @State private var selectedMode = 0
+
+    private let captureModes: [(icon: String, name: String, desc: String)] = [
+        ("✂️", "Select Area", "Draw a box around any text on screen"),
+        ("🖥️", "Full Screen", "Capture and read the entire screen"),
+        ("🪟", "Active Window", "Read whatever app is open"),
+        ("📷", "From Image", "Read text from any photo or image")
+    ]
 
     var body: some View {
         ScrollView {
             VStack(spacing: 12) {
-                // Header
-                HStack {
-                    Text("SCREENSHOT OCR")
-                        .font(.custom("CormorantGaramond-SemiBold", size: 11))
+                // Header (per design: Playfair title)
+                HStack(spacing: 8) {
+                    Text("CAPTURE MODE")
+                        .font(.custom("CormorantGaramond-SemiBold", size: 10))
                         .tracking(2.5)
-                        .foregroundColor(Theme.Colors.textSoft)
-                    Spacer()
+                        .foregroundColor(Theme.Colors.rosePrimary)
+                    Rectangle()
+                        .fill(Theme.Colors.rosePrimary.opacity(0.14))
+                        .frame(height: 1)
                 }
                 .padding(.horizontal, 16)
 
-                // Capture button
+                // Capture modes grid (per design: 2x2, selected has rose tint)
                 if recognizedText.isEmpty && !isRecognizing && !isCapturing {
-                    VStack(spacing: 14) {
-                        Image(systemName: "viewfinder")
-                            .font(.system(size: 32))
-                            .foregroundColor(Theme.Colors.roseMid)
-                        Text("Capture Screen")
-                            .font(.custom("PlayfairDisplay-Italic", size: 16))
-                            .foregroundColor(Theme.Colors.rosePrimary)
-                        Text("Select a region of your screen to extract text with AI")
-                            .font(.system(size: 10))
-                            .foregroundColor(Theme.Colors.textSoft)
-                            .multilineTextAlignment(.center)
-                            .padding(.horizontal, 20)
-
-                        Button(action: { captureScreenRegion() }) {
-                            HStack(spacing: 4) {
-                                Image(systemName: "camera.viewfinder")
-                                Text("Select Region")
+                    VStack(spacing: 12) {
+                        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
+                            ForEach(0..<captureModes.count, id: \.self) { index in
+                                CaptureModeTile(
+                                    icon: captureModes[index].icon,
+                                    name: captureModes[index].name,
+                                    desc: captureModes[index].desc,
+                                    isSelected: selectedMode == index
+                                ) {
+                                    selectedMode = index
+                                }
                             }
-                            .font(.system(size: 11, weight: .medium))
                         }
-                        .buttonStyle(RoseButtonStyle())
 
-                        // Or pick from file
-                        Button(action: { openImagePicker() }) {
+                        // Shortcut badge (per design)
+                        HStack(spacing: 6) {
                             HStack(spacing: 4) {
-                                Image(systemName: "photo")
-                                Text("Open Image File")
+                                KeyBadge(key: "⌘")
+                                KeyBadge(key: "⇧")
+                                KeyBadge(key: "S")
                             }
-                            .font(.system(size: 10))
-                            .foregroundColor(Theme.Colors.rosePrimary)
+                            Text("Capture anywhere")
+                                .font(.system(size: 11, weight: .semibold))
+                                .foregroundColor(Theme.Colors.textMedium)
+                        }
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 5)
+                        .background(Color.black.opacity(0.06))
+                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.black.opacity(0.1), lineWidth: 1))
+                        .cornerRadius(8)
+
+                        // Capture button
+                        Button(action: {
+                            if selectedMode == 3 { openImagePicker() }
+                            else { captureScreenRegion() }
+                        }) {
+                            HStack(spacing: 4) {
+                                Text("📸")
+                                Text("Capture Now")
+                                    .font(.system(size: 12, weight: .semibold))
+                            }
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 10)
+                            .background(Theme.Gradients.rosePrimary)
+                            .cornerRadius(12)
+                            .shadow(color: Theme.Colors.rosePrimary.opacity(0.32), radius: 14, x: 0, y: 4)
                         }
                         .buttonStyle(.plain)
                     }
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 24)
-                    .glassCard(padding: 14)
+                    .padding(16)
+                    .glassCard(padding: 0)
                     .padding(.horizontal, 16)
                 }
 
@@ -508,7 +742,7 @@ struct ScreenshotOCRView: View {
                     VStack(spacing: 8) {
                         ProgressView()
                             .scaleEffect(0.8)
-                        Text(isCapturing ? "Capturing..." : "Recognizing text...")
+                        Text(isCapturing ? "Capturing..." : "Recognizing text with Vision OCR...")
                             .font(.system(size: 11))
                             .foregroundColor(Theme.Colors.textSoft)
                     }
@@ -537,60 +771,83 @@ struct ScreenshotOCRView: View {
                 if !recognizedText.isEmpty {
                     // Image preview (if available)
                     if let image = capturedImage {
-                        Image(nsImage: image)
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(maxHeight: 120)
-                            .cornerRadius(Theme.Radius.sm)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: Theme.Radius.sm)
-                                    .stroke(Theme.Colors.roseLight, lineWidth: 1)
-                            )
-                            .padding(.horizontal, 16)
+                        VStack(spacing: 0) {
+                            // Window chrome (per design: dark preview)
+                            HStack(spacing: 5) {
+                                Circle().fill(Color(hex: "#FF5F57")).frame(width: 10, height: 10)
+                                Circle().fill(Color(hex: "#FEBC2E")).frame(width: 10, height: 10)
+                                Circle().fill(Color(hex: "#27C93F")).frame(width: 10, height: 10)
+                                Spacer()
+                                Text("Screenshot Preview")
+                                    .font(.system(size: 11))
+                                    .foregroundColor(.white.opacity(0.5))
+                                Spacer()
+                            }
+                            .padding(.horizontal, 14)
+                            .padding(.vertical, 8)
+                            .background(Color(hex: "#2D2D44"))
+
+                            Image(nsImage: image)
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(maxHeight: 140)
+                                .frame(maxWidth: .infinity)
+                                .background(Color(hex: "#1A1A2E"))
+                        }
+                        .cornerRadius(16)
+                        .shadow(color: Color.black.opacity(0.2), radius: 28, x: 0, y: 8)
+                        .padding(.horizontal, 16)
                     }
 
-                    // Recognized text
-                    VStack(alignment: .leading, spacing: 6) {
-                        HStack {
-                            Text("RECOGNIZED TEXT")
-                                .font(.custom("CormorantGaramond-SemiBold", size: 10))
-                                .tracking(2)
-                                .foregroundColor(Theme.Colors.textSoft)
-                            Spacer()
-                            Button(action: {
-                                NSPasteboard.general.clearContents()
-                                NSPasteboard.general.setString(recognizedText, forType: .string)
-                            }) {
-                                HStack(spacing: 3) {
-                                    Image(systemName: "doc.on.doc")
-                                    Text("Copy")
-                                }
-                                .font(.system(size: 9))
-                                .foregroundColor(Theme.Colors.rosePrimary)
+                    // OCR result (per design: left border, italic text, action buttons)
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("✦ TEXT EXTRACTED VIA VISION OCR")
+                            .font(.system(size: 10, weight: .semibold))
+                            .tracking(1.5)
+                            .foregroundColor(Theme.Colors.textSoft)
+
+                        // Text with left border (per design)
+                        Text(recognizedText)
+                            .font(.system(size: 12))
+                            .italic()
+                            .foregroundColor(Theme.Colors.textMedium)
+                            .lineSpacing(4)
+                            .textSelection(.enabled)
+                            .padding(.leading, 12)
+                            .overlay(
+                                Rectangle()
+                                    .fill(Theme.Colors.roseMid)
+                                    .frame(width: 3),
+                                alignment: .leading
+                            )
+
+                        // Action buttons (per design: Explain, Copy, Citation, Essay)
+                        HStack(spacing: 8) {
+                            Button(action: { Task { await explainText() } }) {
+                                Text("✦ Explain This")
+                                    .font(.system(size: 10, weight: .semibold))
+                                    .foregroundColor(.white)
+                                    .padding(.horizontal, 14)
+                                    .padding(.vertical, 7)
+                                    .background(Theme.Gradients.rosePrimary)
+                                    .cornerRadius(11)
+                                    .shadow(color: Theme.Colors.rosePrimary.opacity(0.3), radius: 12, x: 0, y: 4)
                             }
                             .buttonStyle(.plain)
-                        }
 
-                        Text(recognizedText)
-                            .font(.system(size: 11))
-                            .foregroundColor(Theme.Colors.textPrimary)
-                            .textSelection(.enabled)
-                    }
-                    .padding(12)
-                    .glassCard(padding: 0)
-                    .padding(.horizontal, 16)
-
-                    // AI Explain button
-                    if aiExplanation.isEmpty && !isExplaining {
-                        Button(action: { Task { await explainText() } }) {
-                            HStack(spacing: 4) {
-                                Image(systemName: "sparkles")
-                                Text("AI Explain")
+                            OCRActionButton(label: "📋 Copy Text") {
+                                NSPasteboard.general.clearContents()
+                                NSPasteboard.general.setString(recognizedText, forType: .string)
                             }
-                            .font(.system(size: 11, weight: .medium))
+                            OCRActionButton(label: "📚 Add Citation") {}
+                            OCRActionButton(label: "✍️ Use in Essay") {}
                         }
-                        .buttonStyle(RoseButtonStyle())
                     }
+                    .padding(14)
+                    .background(Color.white.opacity(0.82))
+                    .cornerRadius(14)
+                    .overlay(RoundedRectangle(cornerRadius: 14).stroke(Theme.Colors.rosePrimary.opacity(0.2), lineWidth: 1))
+                    .padding(.horizontal, 16)
 
                     // Explaining state
                     if isExplaining {
@@ -605,14 +862,14 @@ struct ScreenshotOCRView: View {
                         .padding(.horizontal, 16)
                     }
 
-                    // AI Explanation
+                    // AI Explanation (per design: ai-resp card)
                     if !aiExplanation.isEmpty {
-                        VStack(alignment: .leading, spacing: 6) {
-                            HStack {
-                                Text("AI EXPLANATION")
-                                    .font(.custom("CormorantGaramond-SemiBold", size: 10))
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack(spacing: 7) {
+                                Text("✦ AI RESPONSE")
+                                    .font(.system(size: 9, weight: .semibold))
                                     .tracking(2)
-                                    .foregroundColor(Theme.Colors.textSoft)
+                                    .foregroundColor(Theme.Colors.rosePrimary)
                                 Spacer()
                                 Button(action: {
                                     NSPasteboard.general.clearContents()
@@ -629,29 +886,44 @@ struct ScreenshotOCRView: View {
                             }
 
                             Text(aiExplanation)
-                                .font(.system(size: 11))
-                                .foregroundColor(Theme.Colors.textPrimary)
+                                .font(.system(size: 12))
+                                .foregroundColor(Theme.Colors.textMedium)
+                                .lineSpacing(4)
                                 .textSelection(.enabled)
+
+                            HStack(spacing: 8) {
+                                Button(action: {}) {
+                                    Text("Add to Essay")
+                                        .font(.system(size: 11, weight: .semibold))
+                                        .foregroundColor(.white)
+                                        .frame(maxWidth: .infinity)
+                                        .padding(.vertical, 8)
+                                        .background(Theme.Gradients.rosePrimary)
+                                        .cornerRadius(11)
+                                }
+                                .buttonStyle(.plain)
+
+                                OCRActionButton(label: "+ Citation") {}
+                                OCRActionButton(label: "🃏 Flashcard") {}
+                            }
                         }
-                        .padding(12)
-                        .glassCard(padding: 0)
+                        .padding(14)
+                        .background(Color.white.opacity(0.9))
+                        .cornerRadius(16)
+                        .overlay(RoundedRectangle(cornerRadius: 16).stroke(Theme.Colors.rosePrimary.opacity(0.15), lineWidth: 1))
                         .padding(.horizontal, 16)
                     }
 
-                    // Action buttons
-                    HStack(spacing: 10) {
-                        Button(action: { resetState() }) {
-                            HStack(spacing: 4) {
-                                Image(systemName: "arrow.counterclockwise")
-                                Text("New Capture")
-                            }
-                            .font(.system(size: 10))
-                            .foregroundColor(Theme.Colors.rosePrimary)
+                    // New capture button
+                    Button(action: { resetState() }) {
+                        HStack(spacing: 4) {
+                            Image(systemName: "arrow.counterclockwise")
+                            Text("New Capture")
                         }
-                        .buttonStyle(.plain)
-
-                        Spacer()
+                        .font(.system(size: 10))
+                        .foregroundColor(Theme.Colors.rosePrimary)
                     }
+                    .buttonStyle(.plain)
                     .padding(.horizontal, 16)
                 }
             }
@@ -803,5 +1075,86 @@ struct ScreenshotOCRView: View {
         aiExplanation = ""
         capturedImage = nil
         errorMessage = nil
+    }
+}
+
+// MARK: - Capture Mode Tile (per design: 2x2 grid, selected has rose tint)
+struct CaptureModeTile: View {
+    let icon: String
+    let name: String
+    let desc: String
+    let isSelected: Bool
+    let action: () -> Void
+    @State private var isHovered = false
+
+    var body: some View {
+        Button(action: action) {
+            VStack(spacing: 8) {
+                Text(icon)
+                    .font(.system(size: 26))
+                Text(name)
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundColor(Theme.Colors.textPrimary)
+                Text(desc)
+                    .font(.system(size: 10))
+                    .foregroundColor(Theme.Colors.textSoft)
+                    .lineSpacing(2)
+                    .multilineTextAlignment(.center)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(16)
+            .background(
+                isSelected
+                    ? LinearGradient(colors: [Theme.Colors.rosePrimary.opacity(0.08), Theme.Colors.roseDeep.opacity(0.04)], startPoint: .topLeading, endPoint: .bottomTrailing)
+                    : LinearGradient(colors: [Color.white.opacity(0.7), Color.white.opacity(0.7)], startPoint: .topLeading, endPoint: .bottomTrailing)
+            )
+            .cornerRadius(16)
+            .overlay(
+                RoundedRectangle(cornerRadius: 16)
+                    .stroke(isSelected ? Theme.Colors.rosePrimary.opacity(0.3) : Theme.Colors.glassBorder, lineWidth: 1.5)
+            )
+            .shadow(color: isHovered ? Theme.Colors.shadow : .clear, radius: 18, x: 0, y: 6)
+            .offset(y: isHovered ? -2 : 0)
+            .animation(.easeOut(duration: 0.2), value: isHovered)
+        }
+        .buttonStyle(.plain)
+        .onHover { isHovered = $0 }
+    }
+}
+
+// MARK: - Key Badge (per design: keyboard shortcut display)
+struct KeyBadge: View {
+    let key: String
+
+    var body: some View {
+        Text(key)
+            .font(.system(size: 10, weight: .bold))
+            .foregroundColor(Theme.Colors.textMedium)
+            .padding(.horizontal, 6)
+            .padding(.vertical, 2)
+            .background(Color.white)
+            .overlay(RoundedRectangle(cornerRadius: 5).stroke(Color.black.opacity(0.15), lineWidth: 1))
+            .cornerRadius(5)
+            .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
+    }
+}
+
+// MARK: - OCR Action Button (per design: ghost button style)
+struct OCRActionButton: View {
+    let label: String
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Text(label)
+                .font(.system(size: 10, weight: .medium))
+                .foregroundColor(Theme.Colors.textMedium)
+                .padding(.horizontal, 14)
+                .padding(.vertical, 7)
+                .background(Color.white.opacity(0.75))
+                .overlay(RoundedRectangle(cornerRadius: 11).stroke(Theme.Colors.roseLight, lineWidth: 1.5))
+                .cornerRadius(11)
+        }
+        .buttonStyle(.plain)
     }
 }

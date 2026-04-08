@@ -9,28 +9,42 @@ struct HomeHubView: View {
 
     enum HomeFeature: String, CaseIterable {
         case meals = "Meal Planner"
-        case grocery = "Grocery List"
+        case grocery = "Grocery"
         case budget = "Budget"
+        case chores = "Chores"
+        case messages = "Message"
         case email = "Email Drafter"
-        case messages = "Messages"
 
         var icon: String {
             switch self {
-            case .meals: return "🍽"
+            case .meals: return "🍽️"
             case .grocery: return "🛒"
             case .budget: return "💰"
-            case .email: return "📧"
+            case .chores: return "🧹"
             case .messages: return "💬"
+            case .email: return "📧"
             }
         }
 
         var description: String {
             switch self {
-            case .meals: return "7-day meal plan"
-            case .grocery: return "Tap to check off"
-            case .budget: return "Track spending & save"
-            case .email: return "Draft with tone selector"
-            case .messages: return "iMessage & NyRiian"
+            case .meals: return "This week planned"
+            case .grocery: return "Needs milk + eggs"
+            case .budget: return "Track spending"
+            case .chores: return "2 tasks today"
+            case .messages: return "Send via iMessage"
+            case .email: return "Draft with AI tone"
+            }
+        }
+
+        var badge: String? {
+            switch self {
+            case .meals: return "7 meals"
+            case .grocery: return "14 items"
+            case .budget: return "Apr"
+            case .chores: return "Due"
+            case .email: return nil
+            case .messages: return nil
             }
         }
     }
@@ -58,37 +72,31 @@ struct HomeHubView: View {
         } else {
             ScrollView {
                 VStack(spacing: 12) {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("HOME HUB")
-                            .font(.custom("CormorantGaramond-SemiBold", size: 11))
-                            .tracking(2.5)
-                            .foregroundColor(Theme.Colors.textSoft)
-                        Text("Home & Life")
-                            .font(.custom("PlayfairDisplay-Italic", size: 20))
+                    // Header (per design)
+                    HStack(alignment: .firstTextBaseline) {
+                        Text("Home ")
+                            .font(.custom("PlayfairDisplay-Italic", size: 22))
+                            .foregroundColor(Theme.Colors.textPrimary)
+                        + Text("Hub")
+                            .font(.custom("PlayfairDisplay-Italic", size: 22))
                             .foregroundColor(Theme.Colors.rosePrimary)
+                        Spacer()
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, 16)
 
-                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
+                    Text("Manage everything at home from one place")
+                        .font(.system(size: 12))
+                        .foregroundColor(Theme.Colors.textSoft)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal, 16)
+                        .padding(.bottom, 4)
+
+                    // Hub grid (per design: 3 columns)
+                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
                         ForEach(HomeFeature.allCases, id: \.self) { feature in
-                            Button(action: { selectedFeature = feature }) {
-                                VStack(spacing: 8) {
-                                    Text(feature.icon)
-                                        .font(.system(size: 24))
-                                    Text(feature.rawValue)
-                                        .font(.system(size: 11, weight: .medium))
-                                        .foregroundColor(Theme.Colors.textPrimary)
-                                    Text(feature.description)
-                                        .font(.system(size: 9))
-                                        .foregroundColor(Theme.Colors.textSoft)
-                                        .multilineTextAlignment(.center)
-                                }
-                                .frame(maxWidth: .infinity)
-                                .padding(14)
-                                .glassCard(padding: 0)
+                            HomeHubCard(feature: feature) {
+                                selectedFeature = feature
                             }
-                            .buttonStyle(.plain)
                         }
                     }
                     .padding(.horizontal, 16)
@@ -104,9 +112,57 @@ struct HomeHubView: View {
         case .meals: MealPlannerView(claudeService: claudeService)
         case .grocery: GroceryListView()
         case .budget: BudgetView()
+        case .chores: GroceryListView() // Reuse list view for chores
         case .email: EmailDrafterView(claudeService: claudeService)
         case .messages: MessagesView(claudeService: claudeService)
         }
+    }
+}
+
+// MARK: - Home Hub Card (per design: icon, name, subtitle, badge)
+struct HomeHubCard: View {
+    let feature: HomeHubView.HomeFeature
+    let action: () -> Void
+    @State private var isHovered = false
+
+    var body: some View {
+        Button(action: action) {
+            VStack(spacing: 7) {
+                Text(feature.icon)
+                    .font(.system(size: 24))
+                Text(feature.rawValue)
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundColor(Theme.Colors.textPrimary)
+                Text(feature.description)
+                    .font(.system(size: 9))
+                    .foregroundColor(Theme.Colors.textSoft)
+                    .lineSpacing(2)
+                    .multilineTextAlignment(.center)
+                if let badge = feature.badge {
+                    Text(badge)
+                        .font(.system(size: 9, weight: .bold))
+                        .foregroundColor(Theme.Colors.rosePrimary)
+                        .padding(.horizontal, 7)
+                        .padding(.vertical, 1)
+                        .background(Theme.Colors.rosePrimary.opacity(0.12))
+                        .cornerRadius(8)
+                }
+            }
+            .frame(maxWidth: .infinity)
+            .padding(14)
+            .background(isHovered ? Color.white : Color.white.opacity(0.65))
+            .cornerRadius(16)
+            .overlay(RoundedRectangle(cornerRadius: 16).stroke(Theme.Colors.glassBorder, lineWidth: 1))
+            .shadow(
+                color: isHovered ? Theme.Colors.shadow : Color.clear,
+                radius: isHovered ? 11 : 0,
+                x: 0, y: isHovered ? 4 : 0
+            )
+            .offset(y: isHovered ? -2 : 0)
+            .animation(.easeOut(duration: 0.2), value: isHovered)
+        }
+        .buttonStyle(.plain)
+        .onHover { isHovered = $0 }
     }
 }
 
