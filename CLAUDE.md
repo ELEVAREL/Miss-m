@@ -652,3 +652,21 @@ Phase 6: Battery/WiFi status, Rich notifications with actions, Voice input
 Phase 7: Screenshot OCR, Camera mood detection, Global keyboard shortcut, FaceTime, Location
 
 ---
+
+---
+
+## 👤 CONTACTS & PEOPLE REFERENCE
+
+Miss M's husband contact name in her phone: "Husband"
+When she says "text my husband", "message my husband", "call my husband" etc:
+  → Look up contact named "Husband" via CNContactStore
+  → Use that number for MessagesService.send() or FaceTime URL scheme
+  → Never ask her for his number — always look it up from Contacts
+
+The AI should feel like it knows her life. Examples:
+  "Text my husband I'll be home by 7" → finds "Husband" in Contacts → sends iMessage
+  "Call my husband" → finds number → opens facetime-audio:// URL
+  "What's my husband's number?" → looks up and reads it back to her
+
+Add more named contacts as user provides them.
+Future: Mum, Dad, friends etc can be added to this section.
