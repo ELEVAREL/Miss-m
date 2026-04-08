@@ -86,11 +86,12 @@ class BriefingScheduler {
     }
 
     private func buildContext() async -> BriefingContext {
-        // TODO: Pull real data from CalendarService and RemindersService in Phase 3
+        let schedule = await CalendarService.shared.todaySummary()
+        let deadlines = await RemindersService.shared.todaySummary()
         return BriefingContext(
-            schedule: "Fetching from Calendar…",
-            deadlines: "Fetching from Reminders…",
-            weather: "Fetching weather…"
+            schedule: schedule,
+            deadlines: deadlines,
+            weather: "Check weather outside"
         )
     }
 

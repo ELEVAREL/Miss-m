@@ -71,7 +71,7 @@ struct MainAppView: View {
                 case .school:
                     SchoolView(claudeService: claudeService)
                 case .home:
-                    HomeView()
+                    HomeHubView(claudeService: claudeService)
                 case .wellness:
                     WellnessView()
                 case .settings:
@@ -468,22 +468,5 @@ struct SchoolView: View {
     }
 }
 
-// MARK: - Placeholder Views (future phases)
-struct HomeView: View {
-    var body: some View {
-        ScrollView {
-            VStack(spacing: 16) {
-                Text("🏠").font(.system(size: 36))
-                Text("Home Hub")
-                    .font(.custom("PlayfairDisplay-Italic", size: 20))
-                    .foregroundColor(Theme.Colors.rosePrimary)
-                Text("Meal planning, grocery lists, budget tracking,\nand email drafting — coming in Phase 4.")
-                    .font(.system(size: 12))
-                    .foregroundColor(Theme.Colors.textSoft)
-                    .multilineTextAlignment(.center)
-            }
-            .frame(maxWidth: .infinity)
-            .padding(.top, 40)
-        }
-    }
-}
+// HomeHubView is in MissM/Features/Home/HomeHubView.swift
+// MessagesView is in MissM/Features/Messages/MessagesView.swift
