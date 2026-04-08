@@ -209,20 +209,281 @@ struct OnboardingView: View {
     }
 }
 
-// MARK: - Placeholder Views (Claude Code will fill these in)
+// MARK: - Today View (Phase 1+2)
 struct TodayView: View {
+    @State private var events: [CalendarEvent] = []
+    @State private var reminders: [MissMReminder] = []
+    @State private var greeting: String = ""
+
     var body: some View {
-        ScrollView { Text("Today — Claude Code will build this") .padding() }
+        ScrollView {
+            VStack(spacing: 12) {
+                // Greeting card
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(greetingText)
+                        .font(.custom("PlayfairDisplay-Italic", size: 20))
+                        .foregroundColor(.white)
+                    Text(dateString)
+                        .font(.system(size: 11))
+                        .foregroundColor(.white.opacity(0.8))
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(16)
+                .background(Theme.Gradients.heroCard)
+                .cornerRadius(Theme.Radius.md)
+                .padding(.horizontal, 16)
+
+                // Today's schedule
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        Text("📅").font(.system(size: 12))
+                        Text("TODAY'S SCHEDULE")
+                            .font(.custom("CormorantGaramond-SemiBold", size: 10))
+                            .tracking(2)
+                            .foregroundColor(Theme.Colors.textSoft)
+                        Spacer()
+                        Text("\(events.count) events")
+                            .font(.system(size: 9))
+                            .foregroundColor(Theme.Colors.textXSoft)
+                    }
+
+                    if events.isEmpty {
+                        Text("No events today — enjoy the free time!")
+                            .font(.system(size: 11))
+                            .foregroundColor(Theme.Colors.textSoft)
+                            .padding(.vertical, 8)
+                    } else {
+                        ForEach(events.prefix(5)) { event in
+                            HStack(spacing: 8) {
+                                Text(event.timeString)
+                                    .font(.system(size: 10, weight: .medium, design: .monospaced))
+                                    .foregroundColor(Theme.Colors.rosePrimary)
+                                    .frame(width: 55, alignment: .leading)
+                                RoundedRectangle(cornerRadius: 1.5)
+                                    .fill(Theme.Colors.rosePrimary)
+                                    .frame(width: 2, height: 20)
+                                Text(event.title)
+                                    .font(.system(size: 11))
+                                    .foregroundColor(Theme.Colors.textPrimary)
+                                    .lineLimit(1)
+                            }
+                        }
+                    }
+                }
+                .padding(12)
+                .glassCard(padding: 0)
+                .padding(.horizontal, 16)
+
+                // Reminders
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        Text("✅").font(.system(size: 12))
+                        Text("REMINDERS")
+                            .font(.custom("CormorantGaramond-SemiBold", size: 10))
+                            .tracking(2)
+                            .foregroundColor(Theme.Colors.textSoft)
+                        Spacer()
+                        Text("\(reminders.count) pending")
+                            .font(.system(size: 9))
+                            .foregroundColor(Theme.Colors.textXSoft)
+                    }
+
+                    if reminders.isEmpty {
+                        Text("All clear — no pending reminders!")
+                            .font(.system(size: 11))
+                            .foregroundColor(Theme.Colors.textSoft)
+                            .padding(.vertical, 8)
+                    } else {
+                        ForEach(reminders.prefix(5)) { reminder in
+                            HStack(spacing: 8) {
+                                Circle()
+                                    .fill(reminder.isOverdue ? Color.red : Theme.Colors.roseMid)
+                                    .frame(width: 6, height: 6)
+                                Text(reminder.title)
+                                    .font(.system(size: 11))
+                                    .foregroundColor(Theme.Colors.textPrimary)
+                                    .lineLimit(1)
+                                Spacer()
+                                if let due = reminder.dueDate {
+                                    Text(shortDate(due))
+                                        .font(.system(size: 9))
+                                        .foregroundColor(reminder.isOverdue ? .red : Theme.Colors.textXSoft)
+                                }
+                            }
+                        }
+                    }
+                }
+                .padding(12)
+                .glassCard(padding: 0)
+                .padding(.horizontal, 16)
+            }
+            .padding(.vertical, 10)
+        }
+        .task {
+            events = await CalendarService.shared.getEventsToday()
+            reminders = await RemindersService.shared.getIncompleteReminders()
+        }
+    }
+
+    private var greetingText: String {
+        let hour = Calendar.current.component(.hour, from: Date())
+        if hour < 12 { return "Good Morning, Miss M" }
+        if hour < 17 { return "Good Afternoon, Miss M" }
+        return "Good Evening, Miss M"
+    }
+
+    private var dateString: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "EEEE, d MMMM yyyy"
+        return formatter.string(from: Date())
+    }
+
+    private func shortDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMM d"
+        return formatter.string(from: date)
     }
 }
+
+// MARK: - School View (Phase 2) — Sub-navigation hub
 struct SchoolView: View {
     let claudeService: ClaudeService
+    @State private var selectedFeature: SchoolFeature? = nil
+
+    enum SchoolFeature: String, CaseIterable {
+        case assignments = "Assignments"
+        case essay = "Essay Writer"
+        case study = "Study & Pomodoro"
+        case flashcards = "Flashcards"
+        case marketing = "Marketing Tools"
+        case calendar = "Calendar"
+
+        var icon: String {
+            switch self {
+            case .assignments: return "📋"
+            case .essay: return "✍️"
+            case .study: return "⏱"
+            case .flashcards: return "🃏"
+            case .marketing: return "📊"
+            case .calendar: return "📅"
+            }
+        }
+
+        var description: String {
+            switch self {
+            case .assignments: return "Kanban board for tracking"
+            case .essay: return "Outline, draft & cite"
+            case .study: return "Focus timer & planner"
+            case .flashcards: return "Study with flip cards"
+            case .marketing: return "SWOT, STP, Persona & more"
+            case .calendar: return "Full calendar view"
+            }
+        }
+    }
+
     var body: some View {
-        ScrollView { Text("School — Claude Code will build this") .padding() }
+        if let feature = selectedFeature {
+            VStack(spacing: 0) {
+                // Back button
+                HStack {
+                    Button(action: { selectedFeature = nil }) {
+                        HStack(spacing: 4) {
+                            Image(systemName: "chevron.left")
+                            Text("School")
+                        }
+                        .font(.system(size: 11))
+                        .foregroundColor(Theme.Colors.rosePrimary)
+                    }
+                    .buttonStyle(.plain)
+                    Spacer()
+                }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 6)
+
+                // Feature view
+                featureView(for: feature)
+            }
+        } else {
+            // Feature grid
+            ScrollView {
+                VStack(spacing: 12) {
+                    // Header
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("SCHOOL")
+                            .font(.custom("CormorantGaramond-SemiBold", size: 11))
+                            .tracking(2.5)
+                            .foregroundColor(Theme.Colors.textSoft)
+                        Text("Academic Tools")
+                            .font(.custom("PlayfairDisplay-Italic", size: 20))
+                            .foregroundColor(Theme.Colors.rosePrimary)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 16)
+
+                    // Feature cards
+                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
+                        ForEach(SchoolFeature.allCases, id: \.self) { feature in
+                            Button(action: { selectedFeature = feature }) {
+                                VStack(spacing: 8) {
+                                    Text(feature.icon)
+                                        .font(.system(size: 24))
+                                    Text(feature.rawValue)
+                                        .font(.system(size: 11, weight: .medium))
+                                        .foregroundColor(Theme.Colors.textPrimary)
+                                    Text(feature.description)
+                                        .font(.system(size: 9))
+                                        .foregroundColor(Theme.Colors.textSoft)
+                                        .multilineTextAlignment(.center)
+                                }
+                                .frame(maxWidth: .infinity)
+                                .padding(14)
+                                .glassCard(padding: 0)
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                    .padding(.horizontal, 16)
+                }
+                .padding(.vertical, 10)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func featureView(for feature: SchoolFeature) -> some View {
+        switch feature {
+        case .assignments:
+            AssignmentsView(claudeService: claudeService)
+        case .essay:
+            EssayView(claudeService: claudeService)
+        case .study:
+            StudyView()
+        case .flashcards:
+            FlashcardsView(claudeService: claudeService)
+        case .marketing:
+            MarketingView(claudeService: claudeService)
+        case .calendar:
+            CalendarFullView()
+        }
     }
 }
+
+// MARK: - Placeholder Views (future phases)
 struct HomeView: View {
     var body: some View {
-        ScrollView { Text("Home — Claude Code will build this") .padding() }
+        ScrollView {
+            VStack(spacing: 16) {
+                Text("🏠").font(.system(size: 36))
+                Text("Home Hub")
+                    .font(.custom("PlayfairDisplay-Italic", size: 20))
+                    .foregroundColor(Theme.Colors.rosePrimary)
+                Text("Meal planning, grocery lists, budget tracking,\nand email drafting — coming in Phase 4.")
+                    .font(.system(size: 12))
+                    .foregroundColor(Theme.Colors.textSoft)
+                    .multilineTextAlignment(.center)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.top, 40)
+        }
     }
 }
