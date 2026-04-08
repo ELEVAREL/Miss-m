@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Miss M — System Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=Playfair+Display:ital,wght@0,400;0,700&display=swap" rel="stylesheet">
+<style>
+:root{--r5:#E91E8C;--r6:#C2185B;--r2:#F8BBD9;--text:#1A0A10;--text-m:#5C3049;--text-s:#9A6B80;--text-xs:#C4A0B2;--glass-b:rgba(255,255,255,.82);--shadow:rgba(194,24,91,.13);--green:#34C759;--blue:#007AFF;--orange:#FF9500;--red:#FF3B30;--purple:#9C27B0}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:linear-gradient(155deg,#FFF0F8,#FCE4EC 40%,#F8BBD9 70%,#FDE8F3);min-height:100vh;padding:28px;display:flex;gap:20px;flex-wrap:wrap;align-items:start;color:var(--text)}
+body::before{content:'';position:fixed;top:-150px;right:-150px;width:500px;height:500px;background:radial-gradient(circle,rgba(233,30,140,.11),transparent 70%);border-radius:50%;pointer-events:none}
+.panel{background:rgba(255,255,255,.65);border:1px solid var(--glass-b);border-radius:20px;padding:18px;box-shadow:0 2px 12px var(--shadow);margin-bottom:14px}
+.plbl{font-family:'Cormorant Garamond',serif;font-size:10px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:var(--r5);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.plbl::after{content:'';flex:1;height:1px;background:rgba(233,30,140,.14)}
+.tog{width:40px;height:22px;border-radius:11px;background:var(--green);position:relative;cursor:pointer;transition:all .18s;flex-shrink:0}
+.tog::after{content:'';position:absolute;right:3px;top:3px;width:16px;height:16px;border-radius:50%;background:white;box-shadow:0 2px 4px rgba(0,0,0,.2);transition:all .18s}
+.tog.off{background:rgba(233,30,140,.18)}
+.tog.off::after{right:auto;left:3px}
+
+/* STATUS GRID */
+.status-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat-card{background:rgba(255,255,255,.7);border:1px solid var(--glass-b);border-radius:16px;padding:14px;text-align:center;cursor:pointer;transition:all .2s}
+.stat-card:hover{background:white;transform:translateY(-2px);box-shadow:0 6px 18px var(--shadow)}
+.stat-icon{font-size:24px;margin-bottom:6px;display:block}
+.stat-val{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:600;line-height:1;margin-bottom:3px}
+.stat-label{font-size:10px;color:var(--text-s);font-weight:500;letter-spacing:.5px;text-transform:uppercase}
+.stat-bar{height:4px;background:rgba(0,0,0,.06);border-radius:4px;margin-top:8px}
+.stat-fill{height:100%;border-radius:4px}
+
+/* CONTROLS */
+.ctrl-row{display:flex;align-items:center;gap:12px;padding:12px 14px;background:rgba(255,255,255,.6);border:1px solid var(--glass-b);border-radius:14px;margin-bottom:8px;cursor:pointer;transition:all .15s}
+.ctrl-row:hover{background:white}
+.ctrl-ic{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.ctrl-info{flex:1}
+.ctrl-name{font-size:12px;font-weight:500;color:var(--text)}
+.ctrl-sub{font-size:10px;color:var(--text-s);margin-top:1px}
+.ctrl-val{font-size:11px;font-weight:600;color:var(--text-m);margin-right:8px}
+
+/* VOLUME SLIDER */
+.slider-row{display:flex;align-items:center;gap:10px}
+.vol-slider{flex:1;height:4px;background:rgba(233,30,140,.12);border-radius:4px;position:relative;cursor:pointer}
+.vol-fill{height:100%;background:linear-gradient(90deg,var(--r5),var(--r3));border-radius:4px;width:65%}
+.vol-thumb{width:14px;height:14px;border-radius:50%;background:white;border:2px solid var(--r5);position:absolute;top:-5px;left:calc(65% - 7px);box-shadow:0 2px 6px rgba(233,30,140,.3)}
+
+/* AI SMART ROW */
+.ai-smart{background:rgba(233,30,140,.06);border:1px solid rgba(233,30,140,.15);border-radius:14px;padding:12px 14px;margin-top:6px}
+.as-body{font-size:11px;color:var(--text-m);line-height:1.65}
+</style>
+</head>
+<body>
+<div style="width:380px">
+  <div style="font-family:'Playfair Display',serif;font-size:22px;font-style:italic;color:var(--text);margin-bottom:14px">System <span style="color:var(--r5)">Dashboard</span></div>
+
+  <div class="panel">
+    <div class="plbl">Mac Status</div>
+    <div class="status-grid">
+      <div class="stat-card">
+        <span class="stat-icon">🔋</span>
+        <div class="stat-val" style="color:var(--green)">87%</div>
+        <div class="stat-label">Battery</div>
+        <div class="stat-bar"><div class="stat-fill" style="width:87%;background:linear-gradient(90deg,var(--green),#81C784)"></div></div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon">📶</span>
+        <div class="stat-val" style="color:var(--blue)">WiFi</div>
+        <div class="stat-label">Home Network</div>
+        <div class="stat-bar"><div class="stat-fill" style="width:95%;background:linear-gradient(90deg,var(--blue),#64B5F6)"></div></div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon">💾</span>
+        <div class="stat-val" style="color:var(--orange)">42GB</div>
+        <div class="stat-label">Free Space</div>
+        <div class="stat-bar"><div class="stat-fill" style="width:45%;background:linear-gradient(90deg,var(--orange),#FFCC80)"></div></div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon">🧠</span>
+        <div class="stat-val" style="color:var(--purple)">62%</div>
+        <div class="stat-label">CPU Usage</div>
+        <div class="stat-bar"><div class="stat-fill" style="width:62%;background:linear-gradient(90deg,var(--purple),#CE93D8)"></div></div>
+      </div>
+    </div>
+    <div class="ai-smart">
+      <div class="as-body">✦ <strong>Heads up Miss M</strong> — your Mac battery is unplugged. It'll last ~4 more hours. Perfect for your 3pm lecture but consider charging before your essay session tonight.</div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="plbl">Quick Controls</div>
+    <div class="ctrl-row">
+      <div class="ctrl-ic" style="background:rgba(156,39,176,.1)">🔕</div>
+      <div class="ctrl-info"><div class="ctrl-name">Do Not Disturb</div><div class="ctrl-sub">Focus mode — silence notifications</div></div>
+      <div class="tog off" onclick="this.classList.toggle('off')"></div>
+    </div>
+    <div class="ctrl-row">
+      <div class="ctrl-ic" style="background:rgba(255,149,0,.1)">🌙</div>
+      <div class="ctrl-info"><div class="ctrl-name">Dark Mode</div><div class="ctrl-sub">Switch Mac appearance</div></div>
+      <div class="tog" onclick="this.classList.toggle('off')"></div>
+    </div>
+    <div class="ctrl-row">
+      <div class="ctrl-ic" style="background:rgba(52,199,89,.1)">🎵</div>
+      <div class="ctrl-info"><div class="ctrl-name">Study Music</div><div class="ctrl-sub">Lo-fi Focus playlist · Apple Music</div></div>
+      <div class="tog off" onclick="this.classList.toggle('off')"></div>
+    </div>
+    <div class="ctrl-row" style="flex-direction:column;align-items:stretch;gap:8px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="ctrl-ic" style="background:rgba(0,122,255,.1)">🔊</div>
+        <div class="ctrl-info"><div class="ctrl-name">Volume</div><div class="ctrl-sub">System audio level</div></div>
+        <span class="ctrl-val">65%</span>
+      </div>
+      <div class="slider-row">
+        <span style="font-size:12px">🔈</span>
+        <div class="vol-slider"><div class="vol-fill"></div><div class="vol-thumb"></div></div>
+        <span style="font-size:12px">🔊</span>
+      </div>
+    </div>
+    <div class="ctrl-row">
+      <div class="ctrl-ic" style="background:rgba(233,30,140,.1)">☀️</div>
+      <div class="ctrl-info"><div class="ctrl-name">Night Shift</div><div class="ctrl-sub">Warmer screen for evening study</div></div>
+      <div class="tog" onclick="this.classList.toggle('off')"></div>
+    </div>
+  </div>
+</div>
+
+<div style="width:340px">
+  <div class="panel">
+    <div class="plbl">Smart Automations</div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div class="ctrl-row" style="background:rgba(255,255,255,.7)">
+        <div class="ctrl-ic" style="background:rgba(233,30,140,.1)">⏱</div>
+        <div class="ctrl-info"><div class="ctrl-name">Pomodoro → Auto DND</div><div class="ctrl-sub">Silence Mac when study session starts</div></div>
+        <div class="tog" onclick="this.classList.toggle('off')"></div>
+      </div>
+      <div class="ctrl-row" style="background:rgba(255,255,255,.7)">
+        <div class="ctrl-ic" style="background:rgba(52,199,89,.1)">🔋</div>
+        <div class="ctrl-info"><div class="ctrl-name">Low Battery Alert</div><div class="ctrl-sub">Message Miss M at 20% battery</div></div>
+        <div class="tog" onclick="this.classList.toggle('off')"></div>
+      </div>
+      <div class="ctrl-row" style="background:rgba(255,255,255,.7)">
+        <div class="ctrl-ic" style="background:rgba(0,122,255,.1)">📶</div>
+        <div class="ctrl-info"><div class="ctrl-name">Offline Alert</div><div class="ctrl-sub">Warn before study if no WiFi</div></div>
+        <div class="tog" onclick="this.classList.toggle('off')"></div>
+      </div>
+      <div class="ctrl-row" style="background:rgba(255,255,255,.7)">
+        <div class="ctrl-ic" style="background:rgba(255,149,0,.1)">🎵</div>
+        <div class="ctrl-info"><div class="ctrl-name">Break Music</div><div class="ctrl-sub">Play music automatically on breaks</div></div>
+        <div class="tog" onclick="this.classList.toggle('off')"></div>
+      </div>
+      <div class="ctrl-row" style="background:rgba(255,255,255,.7)">
+        <div class="ctrl-ic" style="background:rgba(156,39,176,.1)">🌙</div>
+        <div class="ctrl-info"><div class="ctrl-name">Auto Night Shift</div><div class="ctrl-sub">Enable at 8pm on school nights</div></div>
+        <div class="tog" onclick="this.classList.toggle('off')"></div>
+      </div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="plbl">AI Smart Alerts</div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div style="background:rgba(255,59,48,.06);border:1px solid rgba(255,59,48,.15);border-radius:12px;padding:10px 13px;font-size:11px;color:var(--text-m);line-height:1.6">🔋 <strong>Battery at 20%</strong> — "Miss M, your Mac needs charging — plugging in now would mean no interruptions during your study session."</div>
+      <div style="background:rgba(255,149,0,.06);border:1px solid rgba(255,149,0,.15);border-radius:12px;padding:10px 13px;font-size:11px;color:var(--text-m);line-height:1.6">💾 <strong>Low storage</strong> — "You're running low on space. Want me to find large unused files to clear up?"</div>
+      <div style="background:rgba(52,199,89,.06);border:1px solid rgba(52,199,89,.15);border-radius:12px;padding:10px 13px;font-size:11px;color:var(--text-m);line-height:1.6">📶 <strong>Back online</strong> — "WiFi reconnected! Your morning briefing is ready and I've synced your calendar."</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
