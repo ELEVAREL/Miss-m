@@ -22,6 +22,9 @@ struct SettingsView: View {
     @State private var touchIDEnabled = false
     @State private var localOnlyEnabled = true
 
+    // System dashboard
+    @State private var showSystemDashboard = false
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 14) {
@@ -172,6 +175,26 @@ struct SettingsView: View {
                     }
                 }
                 .padding(.horizontal, 16)
+
+                // System Dashboard (Phase 7)
+                SettingsSectionLabel(title: "SYSTEM")
+
+                SettingsGroup {
+                    SettingsRow(icon: "🖥", iconBg: Color.purple.opacity(0.1),
+                                name: "System Dashboard", desc: "Battery · Storage · WiFi · Controls") {
+                        Button("Open ›") { showSystemDashboard = true }
+                            .font(.system(size: 11))
+                            .foregroundColor(Theme.Colors.textSoft)
+                            .buttonStyle(.plain)
+                    }
+                }
+                .padding(.horizontal, 16)
+
+                if showSystemDashboard {
+                    SystemDashboardView()
+                        .padding(.horizontal, 16)
+                        .transition(.move(edge: .top).combined(with: .opacity))
+                }
 
                 // API Cost Estimate (per design: rose info box)
                 VStack(alignment: .leading, spacing: 6) {

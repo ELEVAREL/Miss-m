@@ -38,8 +38,8 @@ struct GetScheduleIntent: AppIntent {
     static var description = IntentDescription("Read today's calendar events and reminders")
 
     func perform() async throws -> some IntentResult & ProvidesDialog {
-        let events = try await CalendarService.shared.getEventsToday()
-        let reminders = try await RemindersService.shared.getRemindersDueToday()
+        let events = await CalendarService.shared.getEventsToday()
+        let reminders = await RemindersService.shared.getRemindersDueToday()
 
         var lines: [String] = []
         if events.isEmpty {
@@ -47,7 +47,7 @@ struct GetScheduleIntent: AppIntent {
         } else {
             lines.append("Today's events:")
             for event in events {
-                lines.append("• \(event.title) at \(event.startTime)")
+                lines.append("• \(event.title) at \(event.timeString)")
             }
         }
 
@@ -88,7 +88,7 @@ struct MessageNyRiianIntent: AppIntent {
         guard let phone = KeychainManager.loadPhoneNumber() else {
             return .result(dialog: "Phone number not configured in Miss M.")
         }
-        MessagesService.shared.send(message, to: phone)
+        try await MessagesService.send(message, to: phone)
         return .result(dialog: "Message sent to NyRiian!")
     }
 }
@@ -110,7 +110,7 @@ struct WhatsDueIntent: AppIntent {
     static var description = IntentDescription("Check upcoming assignment deadlines")
 
     func perform() async throws -> some IntentResult & ProvidesDialog {
-        let deadlines = try await RemindersService.shared.upcomingDeadlines()
+        let deadlines = await RemindersService.shared.upcomingDeadlines()
         if deadlines.isEmpty {
             return .result(dialog: "No upcoming deadlines this week. You're all clear!")
         }
@@ -133,8 +133,8 @@ struct MorningBriefingIntent: AppIntent {
             return .result(dialog: "Please set up your API key in Miss M first.")
         }
 
-        let events = try await CalendarService.shared.getEventsToday()
-        let reminders = try await RemindersService.shared.getRemindersDueToday()
+        let events = await CalendarService.shared.getEventsToday()
+        let reminders = await RemindersService.shared.getRemindersDueToday()
 
         let service = ClaudeService(apiKey: apiKey)
         let prompt = """
