@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Miss M — Onboarding</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<style>
+:root{--r5:#E91E8C;--r6:#C2185B;--r7:#880E4F;--r2:#F8BBD9;--r3:#F48FB1;--text:#1A0A10;--text-m:#5C3049;--text-s:#9A6B80;--text-xs:#C4A0B2;--glass-b:rgba(255,255,255,.82);--shadow:rgba(194,24,91,.15);--green:#34C759;--blue:#007AFF}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:linear-gradient(155deg,#FFF0F8,#FCE4EC 40%,#F8BBD9 70%,#FDE8F3);min-height:100vh;padding:28px;display:flex;gap:24px;flex-wrap:wrap;align-items:start;justify-content:center;color:var(--text)}
+body::before{content:'';position:fixed;top:-150px;right:-150px;width:600px;height:600px;background:radial-gradient(circle,rgba(233,30,140,.13),transparent 70%);border-radius:50%;pointer-events:none}
+
+/* PHONE MOCKUP */
+.phone{width:380px;background:rgba(255,255,255,.65);backdrop-filter:blur(20px) saturate(180%);border:1px solid var(--glass-b);border-radius:28px;overflow:hidden;box-shadow:0 24px 60px var(--shadow),inset 0 1px 0 rgba(255,255,255,.92)}
+.step-indicator{display:flex;gap:6px;justify-content:center;padding:16px 20px 0}
+.step-dot{height:4px;border-radius:4px;transition:all .3s;cursor:pointer}
+.step-dot.done{background:var(--r5)}
+.step-dot.now{background:var(--r5)}
+.step-dot.todo{background:rgba(233,30,140,.18)}
+
+/* STEP CONTENT */
+.step-content{padding:28px 24px 24px;min-height:460px;display:flex;flex-direction:column;align-items:center;text-align:center}
+.s-icon{font-size:52px;margin-bottom:16px;animation:pop .4s cubic-bezier(.34,1.56,.64,1)}
+@keyframes pop{from{transform:scale(0.5);opacity:0}to{transform:scale(1);opacity:1}}
+.s-title{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;font-style:italic;color:var(--text);margin-bottom:8px;line-height:1.2}
+.s-title span{color:var(--r5)}
+.s-sub{font-size:13px;color:var(--text-s);line-height:1.65;max-width:300px;font-weight:300}
+
+/* INPUT FIELDS */
+.field{width:100%;margin-top:16px}
+.field label{display:block;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-s);font-weight:600;margin-bottom:6px;text-align:left}
+.field input{width:100%;background:rgba(255,255,255,.8);border:1.5px solid var(--r2);border-radius:13px;padding:11px 14px;font-size:13px;font-family:'DM Sans',sans-serif;color:var(--text);outline:none;transition:all .2s}
+.field input:focus{border-color:var(--r5);box-shadow:0 0 0 3px rgba(233,30,140,.09)}
+.field input::placeholder{color:var(--text-xs)}
+.field-hint{font-size:10px;color:var(--text-xs);margin-top:5px;text-align:left}
+
+/* PERMISSION ROW */
+.perm-row{display:flex;align-items:center;gap:12px;padding:12px 14px;background:rgba(255,255,255,.7);border:1px solid var(--glass-b);border-radius:14px;width:100%;margin-top:10px;text-align:left;cursor:pointer;transition:all .2s}
+.perm-row:hover{background:white}
+.perm-ic{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.perm-info{flex:1}
+.perm-name{font-size:12px;font-weight:600;color:var(--text);margin-bottom:2px}
+.perm-desc{font-size:10px;color:var(--text-s)}
+.perm-state{font-size:11px;font-weight:600}
+
+/* FEATURE GRID */
+.feat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;margin-top:16px}
+.feat{background:rgba(255,255,255,.65);border:1px solid var(--glass-b);border-radius:14px;padding:12px 10px;text-align:center}
+.feat-ic{font-size:22px;margin-bottom:6px;display:block}
+.feat-name{font-size:11px;font-weight:500;color:var(--text)}
+
+/* BOTTOM NAV */
+.bottom{padding:0 24px 24px;display:flex;gap:10px;align-items:center}
+.btn-p{background:linear-gradient(135deg,var(--r5),var(--r6));color:white;border:none;border-radius:14px;padding:13px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;box-shadow:0 4px 16px rgba(233,30,140,.35);transition:all .2s;flex:1}
+.btn-p:hover{transform:translateY(-1px)}
+.btn-back{background:rgba(255,255,255,.75);border:1.5px solid var(--r2);color:var(--text-m);border-radius:14px;padding:13px 16px;font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+.btn-back:hover{background:white}
+
+/* STEP LABELS */
+.steps-nav{width:260px}
+.sn-title{font-family:'Playfair Display',serif;font-size:18px;font-style:italic;color:var(--text);margin-bottom:16px}
+.sn-item{display:flex;align-items:flex-start;gap:12px;padding:12px;border-radius:14px;margin-bottom:6px;cursor:pointer;transition:all .18s}
+.sn-item.on{background:rgba(255,255,255,.75);border:1px solid rgba(233,30,140,.2);box-shadow:0 2px 10px var(--shadow)}
+.sn-item:hover:not(.on){background:rgba(255,255,255,.5)}
+.sn-num{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+.sn-item.done .sn-num{background:var(--green);color:white}
+.sn-item.on .sn-num{background:linear-gradient(135deg,var(--r5),var(--r6));color:white}
+.sn-item.todo .sn-num{background:rgba(233,30,140,.1);color:var(--r5)}
+.sn-t{font-size:12px;font-weight:600;color:var(--text);margin-bottom:2px}
+.sn-d{font-size:10px;color:var(--text-s);line-height:1.4}
+</style>
+</head>
+<body>
+
+<!-- STEP NAV -->
+<div class="steps-nav">
+  <div class="sn-title">Setup Steps</div>
+  <div class="sn-item done" onclick="showStep(1)"><div class="sn-num">✓</div><div><div class="sn-t">Welcome</div><div class="sn-d">Meet Miss M AI</div></div></div>
+  <div class="sn-item done" onclick="showStep(2)"><div class="sn-num">✓</div><div><div class="sn-t">API Key</div><div class="sn-d">Connect to Claude AI</div></div></div>
+  <div class="sn-item on" onclick="showStep(3)"><div class="sn-num">3</div><div><div class="sn-t">Your Details</div><div class="sn-d">Name, phone, preferences</div></div></div>
+  <div class="sn-item todo" onclick="showStep(4)"><div class="sn-num">4</div><div><div class="sn-t">Permissions</div><div class="sn-d">Calendar, Reminders, Messages</div></div></div>
+  <div class="sn-item todo" onclick="showStep(5)"><div class="sn-num">5</div><div><div class="sn-t">iMessage Setup</div><div class="sn-d">Enable two-way AI texting</div></div></div>
+  <div class="sn-item todo" onclick="showStep(6)"><div class="sn-num">6</div><div><div class="sn-t">You're Ready!</div><div class="sn-d">Meet your new assistant</div></div></div>
+  <div style="margin-top:20px;background:rgba(255,255,255,.65);border:1px solid var(--glass-b);border-radius:14px;padding:12px 14px;font-size:11px;color:var(--text-s);line-height:1.6">
+    💡 Click any step to preview it. In the real app these flow one by one.
+  </div>
+</div>
+
+<!-- PHONE -->
+<div class="phone">
+  <div class="step-indicator" id="dots"></div>
+
+  <!-- STEP 1: Welcome -->
+  <div id="step-1" class="step-content">
+    <span class="s-icon">♛</span>
+    <div class="s-title">Hi, I'm <span>Miss M</span></div>
+    <div class="s-sub">Your personal AI assistant — built just for you. I'll help with your studies, manage your home, send you morning briefings, and reply when you text this Mac from your iPhone.</div>
+    <div class="feat-grid">
+      <div class="feat"><span class="feat-ic">🎓</span><div class="feat-name">School & Essays</div></div>
+      <div class="feat"><span class="feat-ic">🌅</span><div class="feat-name">Morning Briefings</div></div>
+      <div class="feat"><span class="feat-ic">💬</span><div class="feat-name">iMessage AI</div></div>
+      <div class="feat"><span class="feat-ic">🏠</span><div class="feat-name">Home Manager</div></div>
+      <div class="feat"><span class="feat-ic">📅</span><div class="feat-name">Calendar Sync</div></div>
+      <div class="feat"><span class="feat-ic">🌙</span><div class="feat-name">Wellness</div></div>
+    </div>
+  </div>
+
+  <!-- STEP 2: API Key -->
+  <div id="step-2" class="step-content" style="display:none">
+    <span class="s-icon">🔑</span>
+    <div class="s-title">Connect to <span>Claude AI</span></div>
+    <div class="s-sub">Enter your Anthropic API key. It's stored securely in your Mac's Keychain — never uploaded anywhere.</div>
+    <div class="field">
+      <label>Anthropic API Key</label>
+      <input type="password" placeholder="sk-ant-api03-..." value="sk-ant-api03-••••••••••••••">
+      <div class="field-hint">Get yours free at platform.anthropic.com · Your $24 balance covers ~5 months</div>
+    </div>
+    <div style="margin-top:14px;background:rgba(52,199,89,.08);border:1px solid rgba(52,199,89,.2);border-radius:12px;padding:10px 14px;display:flex;align-items:center;gap:8px;width:100%">
+      <div style="width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 8px rgba(52,199,89,.6)"></div>
+      <span style="font-size:11px;color:#2E7D32;font-weight:500">API key valid · Connected to Claude Sonnet 4.6</span>
+    </div>
+  </div>
+
+  <!-- STEP 3: Your Details -->
+  <div id="step-3" class="step-content" style="display:none">
+    <span class="s-icon">🩷</span>
+    <div class="s-title">Tell me about <span>you</span></div>
+    <div class="s-sub">So I can personalise everything just right.</div>
+    <div class="field">
+      <label>Your Name (how I'll greet you)</label>
+      <input type="text" placeholder="Miss M" value="Miss M">
+    </div>
+    <div class="field">
+      <label>Your iPhone Number</label>
+      <input type="tel" placeholder="+1 (555) 000-0000" value="+1 (555) 123-4567">
+      <div class="field-hint">So I can send you morning briefings and reply to your texts</div>
+    </div>
+    <div class="field">
+      <label>Your University / College</label>
+      <input type="text" placeholder="e.g. University of Miami" value="University of Miami">
+    </div>
+    <div class="field">
+      <label>Your Main Subject</label>
+      <input type="text" placeholder="e.g. Marketing" value="Marketing">
+    </div>
+  </div>
+
+  <!-- STEP 4: Permissions -->
+  <div id="step-4" class="step-content" style="display:none">
+    <span class="s-icon">🔐</span>
+    <div class="s-title"><span>Permissions</span></div>
+    <div class="s-sub">I need access to these Apple apps so I can manage your life properly.</div>
+    <div class="perm-row" style="margin-top:16px">
+      <div class="perm-ic" style="background:rgba(233,30,140,.1)">📅</div>
+      <div class="perm-info"><div class="perm-name">Apple Calendar</div><div class="perm-desc">Read your schedule for daily briefings</div></div>
+      <span class="perm-state" style="color:var(--green)">✓ Granted</span>
+    </div>
+    <div class="perm-row">
+      <div class="perm-ic" style="background:rgba(255,149,0,.1)">🔔</div>
+      <div class="perm-info"><div class="perm-name">Apple Reminders</div><div class="perm-desc">Create and manage your tasks</div></div>
+      <span class="perm-state" style="color:var(--green)">✓ Granted</span>
+    </div>
+    <div class="perm-row">
+      <div class="perm-ic" style="background:rgba(52,199,89,.1)">💬</div>
+      <div class="perm-info"><div class="perm-name">Messages (Automation)</div><div class="perm-desc">Send your iMessage briefings</div></div>
+      <span class="perm-state" style="color:var(--r5)">Tap to allow</span>
+    </div>
+    <div class="perm-row">
+      <div class="perm-ic" style="background:rgba(0,122,255,.1)">🎙</div>
+      <div class="perm-info"><div class="perm-name">Microphone + Speech</div><div class="perm-desc">Voice input when you want it</div></div>
+      <span class="perm-state" style="color:var(--text-xs)">Optional</span>
+    </div>
+  </div>
+
+  <!-- STEP 5: iMessage -->
+  <div id="step-5" class="step-content" style="display:none">
+    <span class="s-icon">💬</span>
+    <div class="s-title"><span>iMessage</span> AI</div>
+    <div class="s-sub">Text this Mac from anywhere and I'll reply instantly. Your Mac needs to stay on and Messages signed in.</div>
+    <div style="background:#1C1C1E;border-radius:18px;padding:14px;width:100%;margin-top:16px">
+      <div style="text-align:center;font-size:9px;color:#636366;margin-bottom:8px">Preview of what you'll receive</div>
+      <div style="background:#0A84FF;border-radius:14px 14px 4px 14px;padding:10px 13px;font-size:12px;color:white;line-height:1.6;align-self:flex-end;margin-left:auto;max-width:85%">
+        Good morning! ☀️ You have Marketing at 9am and your essay is due Friday. Weather is 22°C. Reply to ask me anything 💬
+      </div>
+      <div style="background:#1C1C1E;border-radius:14px 14px 14px 4px;padding:10px 13px;font-size:12px;color:white;line-height:1.5;margin-top:8px;max-width:80%">what's due this week?</div>
+      <div style="background:#0A84FF;border-radius:14px 14px 4px 14px;padding:10px 13px;font-size:12px;color:white;line-height:1.6;align-self:flex-end;margin-left:auto;max-width:85%;margin-top:8px">
+        📄 Case Study — Friday<br>📊 Brand Slides — Monday<br><br>Start with the case study — want me to help? ✍️
+      </div>
+    </div>
+    <div style="margin-top:14px;display:flex;align-items:center;gap:8px;width:100%;background:rgba(52,199,89,.08);border:1px solid rgba(52,199,89,.2);border-radius:12px;padding:10px 14px">
+      <div style="width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 8px rgba(52,199,89,.6)"></div>
+      <span style="font-size:11px;color:#2E7D32;font-weight:500">iMessage monitor active · Listening for your texts</span>
+    </div>
+  </div>
+
+  <!-- STEP 6: Ready -->
+  <div id="step-6" class="step-content" style="display:none">
+    <span class="s-icon" style="animation:bounce 1s ease infinite">🎉</span>
+    <div class="s-title">You're all <span>set!</span></div>
+    <div class="s-sub">Miss M AI is live on your Mac. I'll send your first morning briefing tomorrow at 7:30am. Click the ♛ in your menu bar anytime to chat.</div>
+    <div style="margin-top:20px;background:linear-gradient(145deg,var(--r5),var(--r6));border-radius:18px;padding:18px;width:100%;color:white">
+      <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.7);margin-bottom:6px">First Message</div>
+      <div style="font-family:'Playfair Display',serif;font-size:16px;font-style:italic;line-height:1.5">Hey Miss M! 🩷 I'm all set up and ready to help. What would you like to do first?</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;margin-top:14px">
+      <div style="background:rgba(255,255,255,.7);border:1px solid var(--glass-b);border-radius:12px;padding:10px;text-align:center;cursor:pointer;transition:all .15s" onmouseover="this.style.background='white'" onmouseout="this.style.background='rgba(255,255,255,.7)'"><div style="font-size:18px;margin-bottom:4px">💬</div><div style="font-size:11px;font-weight:500;color:var(--text)">Open Chat</div></div>
+      <div style="background:rgba(255,255,255,.7);border:1px solid var(--glass-b);border-radius:12px;padding:10px;text-align:center;cursor:pointer;transition:all .15s" onmouseover="this.style.background='white'" onmouseout="this.style.background='rgba(255,255,255,.7)'"><div style="font-size:18px;margin-bottom:4px">📚</div><div style="font-size:11px;font-weight:500;color:var(--text)">Add Assignment</div></div>
+    </div>
+  </div>
+
+  @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+
+  <!-- Bottom nav -->
+  <div class="bottom" id="bottom-nav"></div>
+</div>
+
+<script>
+let cur = 1;
+const totalSteps = 6;
+const stepLabels = ['','Welcome','API Key','Your Details','Permissions','iMessage AI','You\'re Ready!'];
+const stepBtns = ['','Get Started →','Connect AI →','Save Details →','Grant Access →','Enable iMessage →','Open Miss M ♛'];
+
+function showStep(n){
+  cur = n;
+  for(let i=1;i<=totalSteps;i++){
+    const s=document.getElementById('step-'+i);
+    if(s) s.style.display = i===n ? 'flex' : 'none';
+    const ni=document.querySelectorAll('.sn-item')[i-1];
+    if(ni){ ni.className='sn-item '+(i<n?'done':i===n?'on':'todo'); ni.querySelector('.sn-num').textContent=i<n?'✓':i; }
+  }
+  // Dots
+  let dotsHtml='';
+  for(let i=1;i<=totalSteps;i++) dotsHtml+=`<div class="step-dot ${i<=n?'done':'todo'}" style="width:${i===n?'24px':'8px'}" onclick="showStep(${i})"></div>`;
+  document.getElementById('dots').innerHTML=dotsHtml;
+  // Bottom nav
+  let navHtml = n>1 ? `<button class="btn-back" onclick="showStep(${n-1})">← Back</button>` : '';
+  navHtml += `<button class="btn-p" onclick="showStep(${Math.min(n+1,totalSteps)})">${stepBtns[n]}</button>`;
+  document.getElementById('bottom-nav').innerHTML=navHtml;
+}
+showStep(1);
+</script>
+</body>
+</html>
