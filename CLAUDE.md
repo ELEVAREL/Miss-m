@@ -334,3 +334,321 @@ Keep all instructions simple — owner is not a developer.
 
 Last updated: April 2026 — Miss M v1.0
 If anything is unclear in this file, ask before building.
+
+---
+
+## 🖥️ EXPANDED MAC TOOLS — FULL CAPABILITY LIST
+
+Being native macOS gives Miss M access to the entire Apple ecosystem.
+All of these are available via AppleScript, macOS frameworks, or system APIs.
+Add these to phases as appropriate.
+
+---
+
+### 📧 MAIL APP (AppleScript)
+Send real emails — not just drafts. AI composes, user confirms, Mail sends.
+```applescript
+tell application "Mail"
+    set newMsg to make new outgoing message with properties
+        {subject:"[subject]", content:"[body]", visible:true}
+    tell newMsg
+        make new to recipient with properties {address:"[email]"}
+    end tell
+    send newMsg
+end tell
+```
+Use cases: Email professor, send assignment submissions, respond to group project
+
+---
+
+### 📝 APPLE NOTES (AppleScript)
+Read and create notes. Sync study notes, save AI outputs, essay drafts.
+```applescript
+-- Create note
+tell application "Notes"
+    tell account "iCloud"
+        make new note at folder "Notes" with properties
+            {name:"[title]", body:"[content]"}
+    end tell
+end tell
+
+-- Read notes (search)
+tell application "Notes"
+    set matchingNotes to notes whose name contains "[search]"
+end tell
+```
+Use cases: Save essay drafts to Notes, read lecture notes for summarising, create study summaries
+
+---
+
+### 👥 CONTACTS (AddressBook/CNContactStore)
+Look up contacts by name for iMessage sending.
+```swift
+import Contacts
+let store = CNContactStore()
+let request = CNContactFetchRequest(keysToFetch: [CNContactPhoneNumbersKey, CNContactGivenNameKey] as [CNKeyDescriptor])
+try store.enumerateContacts(with: request) { contact, _ in ... }
+```
+Use cases: "Text my husband" → looks up number → sends via MessagesService
+
+---
+
+### 📄 PDF READING (PDFKit + Vision OCR)
+Read lecture slides, textbooks, assignment briefs uploaded as PDFs.
+```swift
+import PDFKit
+import Vision
+
+// Extract text from PDF
+let pdf = PDFDocument(url: fileURL)
+let text = (0..<pdf.pageCount).compactMap { pdf.page(at: $0)?.string }.joined(separator: "\n")
+
+// OCR scanned PDFs (Vision)
+let request = VNRecognizeTextRequest()
+VNImageRequestHandler(cgImage: pageImage).perform([request])
+let text = request.results?.compactMap { $0.topCandidates(1).first?.string }.joined()
+```
+Use cases: "Summarise this lecture PDF", "Generate flashcards from this reading", "Find the deadline in this brief"
+
+---
+
+### 📋 CLIPBOARD MANAGER (NSPasteboard)
+Read and write the clipboard. Copy AI outputs directly, paste research.
+```swift
+// Read clipboard
+let clipboard = NSPasteboard.general.string(forType: .string) ?? ""
+
+// Write to clipboard
+NSPasteboard.general.clearContents()
+NSPasteboard.general.setString(text, forType: .string)
+```
+Use cases: "Copy my essay to clipboard", "Summarise what I just copied", "Format this text I copied"
+
+---
+
+### 🎵 APPLE MUSIC (AppleScript)
+Play focus playlists, control music during study sessions.
+```applescript
+tell application "Music"
+    play playlist "Study Focus"
+    -- or: set volume to 30
+    -- or: pause / play / next track
+end tell
+```
+Use cases: "Play my focus playlist", "Turn music down while I study", auto-pause music during Pomodoro break
+
+---
+
+### 🔕 FOCUS MODE / DO NOT DISTURB (System Events)
+Enable Focus/DND during study sessions automatically.
+```swift
+// Via shortcuts URL scheme
+NSWorkspace.shared.open(URL(string: "shortcuts://run-shortcut?name=StudyFocus")!)
+```
+Use cases: Auto-enable Focus mode when Pomodoro starts, disable when break
+
+---
+
+### 📁 FINDER / FILES (NSOpenPanel + FileManager)
+Let Miss M open PDFs, documents, images directly in the app.
+```swift
+let panel = NSOpenPanel()
+panel.allowedContentTypes = [.pdf, .plainText, .image]
+panel.begin { response in
+    if response == .OK, let url = panel.url { ... }
+}
+```
+Use cases: "Summarise this PDF", "Read my essay draft", "Generate flashcards from this file"
+
+---
+
+### 🖼️ SCREENSHOT + VISION OCR
+Capture screen or a selected area, extract text with Vision framework.
+```swift
+// Capture screen
+let image = CGDisplayCreateImage(CGMainDisplayID())
+
+// Extract text
+let handler = VNImageRequestHandler(cgImage: image!)
+let request = VNRecognizeTextRequest()
+try handler.perform([request])
+let text = request.results?.compactMap { $0.topCandidates(1).first?.string }.joined(separator: "\n")
+```
+Use cases: "What does this say?" (points at screen), capture assignment from browser, read text from any app
+
+---
+
+### 🌐 SAFARI (AppleScript + WKWebView)
+Get current browser URL, page title, selected text.
+```applescript
+tell application "Safari"
+    set currentURL to URL of current tab of window 1
+    set pageTitle to name of current tab of window 1
+end tell
+```
+Use cases: "Summarise the page I'm reading", "Save this article to my research", "What is the deadline on this page"
+
+---
+
+### 📊 MICROSOFT WORD / GOOGLE DOCS (AppleScript + API)
+Open, read, and write Word documents directly.
+```applescript
+tell application "Microsoft Word"
+    open POSIX file "/path/to/essay.docx"
+    set docText to content of text object of active document
+end tell
+```
+Google Docs via REST API with OAuth.
+Use cases: Open essay in Word, export AI draft to .docx, read existing assignment
+
+---
+
+### 📅 ZOOM / TEAMS (URL Schemes)
+Join meetings automatically based on calendar events.
+```swift
+// Zoom join
+NSWorkspace.shared.open(URL(string: "zoommtg://zoom.us/join?confno=[ID]")!)
+// Teams
+NSWorkspace.shared.open(URL(string: "msteams://teams.microsoft.com/l/meetup-join/[ID]")!)
+```
+Use cases: Auto-detect Zoom links in calendar events, "Join my 3pm lecture"
+
+---
+
+### 🔋 SYSTEM STATUS (IOKit + SystemConfiguration)
+Battery level, WiFi status, storage space — for smart notifications.
+```swift
+// Battery
+import IOKit.ps
+let info = IOPSCopyPowerSourcesInfo().takeRetainedValue()
+let list = IOPSCopyList(info).takeRetainedValue() as! [[String: Any]]
+let battery = list.first?[kIOPSCurrentCapacityKey] as? Int ?? 0
+
+// WiFi
+import SystemConfiguration
+let reachability = SCNetworkReachabilityCreateWithName(nil, "api.anthropic.com")
+```
+Use cases: "Charge your Mac — 15% battery", warn if offline before study session, smart notifications
+
+---
+
+### 🗣️ TEXT TO SPEECH (AVSpeechSynthesizer)
+Read AI responses aloud — hands-free when cooking or commuting.
+```swift
+let synth = AVSpeechSynthesizer()
+let utterance = AVSpeechUtterance(string: text)
+utterance.rate = 0.5
+utterance.voice = AVSpeechSynthesisVoice(language: "en-AU")
+synth.speak(utterance)
+```
+Use cases: Read morning briefing aloud, narrate flashcard answers, read essay back to her
+
+---
+
+### 🎙️ VOICE INPUT (Speech Framework)
+Already planned in Phase 7 but can add sooner. Transcribes speech to text.
+```swift
+import Speech
+let recogniser = SFSpeechRecognizer(locale: Locale(identifier: "en-AU"))
+let request = SFSpeechAudioBufferRecognitionRequest()
+// Feed AVAudioEngine buffer → get live transcription
+```
+Use cases: Voice chat, dictate reminders, speak commands, hands-free operation
+
+---
+
+### 📍 LOCATION (CoreLocation)
+Location-aware suggestions — nearest library, coffee shop, campus.
+```swift
+import CoreLocation
+let manager = CLLocationManager()
+manager.requestWhenInUseAuthorization()
+// CLGeocoder for reverse geocoding
+```
+Use cases: "Find a quiet cafe near me to study", weather uses location, campus navigation
+
+---
+
+### 🔔 RICH NOTIFICATIONS (UserNotifications)
+Already using basic notifications — enhance with actions and images.
+```swift
+let content = UNMutableNotificationContent()
+content.title = "Miss M ♛"
+content.body = "Essay due in 2 hours!"
+content.categoryIdentifier = "DEADLINE"  // custom action buttons
+
+// Action buttons on notification
+let snooze = UNNotificationAction(identifier: "SNOOZE", title: "Snooze 30min")
+let start = UNNotificationAction(identifier: "START", title: "Start Writing")
+let category = UNNotificationCategory(identifier: "DEADLINE", actions: [snooze, start], ...)
+```
+Use cases: Tap "Start Writing" on notification → opens essay, "Snooze" delays reminder
+
+---
+
+### ☁️ GOOGLE DRIVE (REST API)
+Access her university documents, lecture slides, shared files.
+```swift
+// OAuth2 + Drive REST API
+// GET https://www.googleapis.com/drive/v3/files
+// Needs OAuth setup — add in Phase 2 or later
+```
+Use cases: "Find my marketing lecture slides", "Save essay to Drive", access shared group project files
+
+---
+
+### 📲 PHONE CALL via FaceTime (URL Scheme)
+Initiate FaceTime audio calls to contacts.
+```swift
+NSWorkspace.shared.open(URL(string: "facetime-audio://+[number]")!)
+```
+Use cases: "Call mum", quick family contact from the assistant
+
+---
+
+### ⌨️ GLOBAL KEYBOARD SHORTCUT
+Trigger Miss M from anywhere on the Mac — not just clicking menu bar.
+```swift
+// Via CGEventTap or NSEvent global monitor
+// Example: Cmd+Shift+M opens Miss M from any app
+NSEvent.addGlobalMonitorForEvents(matching: .keyDown) { event in
+    if event.modifierFlags.contains([.command, .shift]) && event.keyCode == 46 {
+        appDelegate.togglePopover()
+    }
+}
+```
+
+---
+
+### 📸 CAMERA (AVCaptureSession)
+Mood detection from facial expression — optional, privacy-first.
+```swift
+// AVCaptureSession + Vision VNDetectFaceLandmarksRequest
+// Can detect smile/neutral/frown for mood logging
+// Only with explicit user permission — OFF by default
+```
+Use cases: Auto mood check-in, detect stress during study
+
+---
+
+### 🖥️ MULTI-DISPLAY AWARENESS (NSScreen)
+Show popover on correct screen if she uses multiple displays.
+```swift
+let screens = NSScreen.screens
+let mainScreen = NSScreen.main
+// Position popover relative to menu bar on active screen
+```
+
+---
+
+### SUMMARY — TOOLS TO ADD BY PHASE
+
+Phase 1 (NOW): Calendar, Reminders, Keychain, Menu bar ← already planned
+Phase 2: PDF reading (PDFKit+Vision), Clipboard, Files/NSOpenPanel, Safari reading
+Phase 3: iMessage monitor ← already planned, Mail send, Contacts lookup
+Phase 4: Notes app, Google Drive API, Zoom/Teams join
+Phase 5: Apple Music, Focus Mode, Text-to-speech
+Phase 6: Battery/WiFi status, Rich notifications with actions, Voice input
+Phase 7: Screenshot OCR, Camera mood detection, Global keyboard shortcut, FaceTime, Location
+
+---
