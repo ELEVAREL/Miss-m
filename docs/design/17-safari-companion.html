@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Miss M — Safari Companion</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=Playfair+Display:ital,wght@0,400;0,700&display=swap" rel="stylesheet">
+<style>
+:root{--r5:#E91E8C;--r6:#C2185B;--r2:#F8BBD9;--r3:#F48FB1;--text:#1A0A10;--text-m:#5C3049;--text-s:#9A6B80;--text-xs:#C4A0B2;--glass-b:rgba(255,255,255,.82);--shadow:rgba(194,24,91,.13);--green:#34C759;--blue:#007AFF;--orange:#FF9500}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:linear-gradient(155deg,#FFF0F8,#FCE4EC 40%,#F8BBD9 70%,#FDE8F3);min-height:100vh;padding:28px;display:flex;gap:20px;flex-wrap:wrap;align-items:start;color:var(--text)}
+body::before{content:'';position:fixed;top:-150px;right:-150px;width:500px;height:500px;background:radial-gradient(circle,rgba(233,30,140,.11),transparent 70%);border-radius:50%;pointer-events:none}
+.panel{background:rgba(255,255,255,.65);border:1px solid var(--glass-b);border-radius:20px;padding:18px;box-shadow:0 2px 12px var(--shadow);margin-bottom:14px}
+.plbl{font-family:'Cormorant Garamond',serif;font-size:10px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:var(--r5);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.plbl::after{content:'';flex:1;height:1px;background:rgba(233,30,140,.14)}
+.btn-p{background:linear-gradient(135deg,var(--r5),var(--r6));color:white;border:none;border-radius:12px;padding:10px 20px;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;box-shadow:0 4px 14px rgba(233,30,140,.32);transition:all .2s}
+.btn-p:hover{transform:translateY(-1px)}
+.btn-g{background:rgba(255,255,255,.75);border:1.5px solid var(--r2);color:var(--text-m);border-radius:12px;padding:9px 16px;font-size:11px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+.btn-g:hover{background:white;color:var(--r5)}
+
+/* BROWSER MOCKUP */
+.browser{background:#F5F5F7;border-radius:16px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.12);width:520px}
+.browser-bar{background:white;padding:10px 14px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(0,0,0,.08)}
+.br-dots{display:flex;gap:5px}
+.br-dot{width:11px;height:11px;border-radius:50%}
+.br-url{flex:1;background:#F2F2F7;border-radius:8px;padding:6px 12px;font-size:11px;color:#666;display:flex;align-items:center;gap:6px}
+.br-favicon{width:14px;height:14px;border-radius:3px;background:linear-gradient(135deg,#007AFF,#5856D6)}
+.browser-content{padding:18px;min-height:220px;position:relative}
+.bc-headline{font-size:18px;font-weight:700;color:var(--text);margin-bottom:10px;line-height:1.3}
+.bc-text{font-size:12px;color:#555;line-height:1.7}
+.bc-text strong{color:var(--text)}
+
+/* MISS M OVERLAY - appears on page */
+.mm-overlay{position:absolute;right:14px;bottom:14px;width:220px;background:rgba(255,255,255,.96);border:1px solid rgba(233,30,140,.2);border-radius:16px;padding:12px;box-shadow:0 8px 28px rgba(194,24,91,.15)}
+.mm-ov-hdr{display:flex;align-items:center;gap:7px;margin-bottom:8px}
+.mm-ov-av{width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,var(--r5),var(--r6));display:flex;align-items:center;justify-content:center;font-size:10px;color:white}
+.mm-ov-title{font-size:11px;font-weight:600;color:var(--r5)}
+.mm-ov-body{font-size:11px;color:var(--text-m);line-height:1.55;margin-bottom:8px}
+.mm-ov-btns{display:flex;gap:6px;flex-wrap:wrap}
+.mm-ov-btn{background:rgba(233,30,140,.08);border:1px solid rgba(233,30,140,.18);border-radius:8px;padding:4px 9px;font-size:10px;color:var(--r5);cursor:pointer;font-weight:600;transition:all .14s}
+.mm-ov-btn:hover{background:rgba(233,30,140,.14)}
+
+/* COMPANION PANEL */
+.companion{width:320px}
+.source-card{background:rgba(255,255,255,.65);border:1px solid var(--glass-b);border-radius:14px;padding:13px;margin-bottom:8px;cursor:pointer;transition:all .18s}
+.source-card:hover{background:white;transform:translateX(2px);box-shadow:0 4px 14px var(--shadow)}
+.sc-url{font-size:9px;color:var(--blue);font-weight:500;margin-bottom:3px}
+.sc-title{font-size:12px;font-weight:500;color:var(--text);margin-bottom:4px}
+.sc-snip{font-size:11px;color:var(--text-s);line-height:1.5}
+.sc-actions{display:flex;gap:5px;margin-top:8px;flex-wrap:wrap}
+.sc-tag{font-size:9px;background:rgba(0,122,255,.08);color:var(--blue);border-radius:6px;padding:2px 7px;font-weight:500}
+
+.ai-insight{background:linear-gradient(135deg,rgba(233,30,140,.07),rgba(194,24,91,.04));border:1px solid rgba(233,30,140,.15);border-radius:14px;padding:13px;margin-bottom:10px}
+.ai-icon-row{display:flex;align-items:center;gap:7px;margin-bottom:7px}
+.ai-av{width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,var(--r5),var(--r6));display:flex;align-items:center;justify-content:center;font-size:10px;color:white}
+.ai-label{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--r5);font-weight:600}
+.ai-body{font-size:12px;color:var(--text-m);line-height:1.65}
+</style>
+</head>
+<body>
+
+<!-- BROWSER WITH OVERLAY -->
+<div>
+  <div style="font-family:'Playfair Display',serif;font-size:22px;font-style:italic;color:var(--text);margin-bottom:14px">Safari <span style="color:var(--r5)">Companion</span></div>
+  <div class="browser">
+    <div class="browser-bar">
+      <div class="br-dots">
+        <div class="br-dot" style="background:#FF5F57"></div>
+        <div class="br-dot" style="background:#FEBC2E"></div>
+        <div class="br-dot" style="background:#27C93F"></div>
+      </div>
+      <div class="br-url">
+        <div class="br-favicon"></div>
+        hbr.org/2023/09/nike-stp-strategy-global-markets
+      </div>
+    </div>
+    <div class="browser-content">
+      <div style="font-size:10px;color:#007AFF;margin-bottom:6px;font-weight:500">Harvard Business Review · Marketing Strategy</div>
+      <div class="bc-headline">How Nike Uses the STP Model to Dominate Global Markets</div>
+      <div class="bc-text">
+        Nike's remarkable market dominance can be traced to its sophisticated application of the <strong>Segmentation, Targeting and Positioning (STP) framework</strong>. Rather than adopting a mass-market approach, Nike has strategically divided its global customer base into distinct segments defined not merely by demographics, but by <strong>psychographic and behavioural characteristics</strong> — particularly lifestyle, athletic aspiration and brand affinity.<br><br>
+        Through its "Just Do It" positioning, Nike speaks not to a specific sport, but to <strong>the inner athlete in every consumer</strong> — a masterstroke of emotional brand positioning that has proven universally resonant across age groups, geographies and income levels...
+      </div>
+
+      <!-- Miss M overlay -->
+      <div class="mm-overlay">
+        <div class="mm-ov-hdr"><div class="mm-ov-av">✦</div><div class="mm-ov-title">Miss M AI sees this page</div></div>
+        <div class="mm-ov-body">This article is perfect for your Nike case study essay! 🩷 It covers STP with real examples.</div>
+        <div class="mm-ov-btns">
+          <span class="mm-ov-btn">📝 Summarise</span>
+          <span class="mm-ov-btn">📚 Cite it</span>
+          <span class="mm-ov-btn">✍️ Add to essay</span>
+          <span class="mm-ov-btn">🃏 Flashcard</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOW IT DETECTS -->
+  <div class="panel" style="margin-top:14px;width:520px">
+    <div class="plbl">How Safari Detection Works</div>
+    <div style="display:flex;gap:16px">
+      <div style="flex:1;font-size:12px;color:var(--text-m);line-height:1.7">
+        Miss M AI reads the <strong>current Safari URL and page title</strong> every 30 seconds via AppleScript. When it detects a page related to her subjects (Marketing, Consumer Behaviour, etc.) or assignment keywords, it surfaces the overlay automatically.<br><br>
+        She can also manually trigger it anytime with <strong>⌘⇧R</strong> to read the current page.
+      </div>
+      <div style="width:160px;background:rgba(255,255,255,.6);border:1px solid var(--glass-b);border-radius:14px;padding:12px;text-align:center">
+        <div style="font-size:22px;margin-bottom:8px">⌘⇧R</div>
+        <div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:3px">Read This Page</div>
+        <div style="font-size:10px;color:var(--text-s)">Works in Safari, Chrome, any browser</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- COMPANION PANEL -->
+<div class="companion">
+  <!-- AI Insight -->
+  <div class="ai-insight">
+    <div class="ai-icon-row"><div class="ai-av">✦</div><div class="ai-label">AI Insight</div></div>
+    <div class="ai-body">This HBR article directly supports your <strong>Nike STP case study</strong> due Friday. The section on psychographic segmentation is exactly what your essay needs for Section 3. Want me to extract the key points and add them with an APA citation?</div>
+  </div>
+
+  <div class="panel" style="padding:14px">
+    <div class="plbl">Saved from Safari Today</div>
+    <div class="source-card">
+      <div class="sc-url">hbr.org · Harvard Business Review</div>
+      <div class="sc-title">How Nike Uses the STP Model to Dominate Global Markets</div>
+      <div class="sc-snip">Nike's segmentation targets athletes across lifestyle, aspiration and sport type rather than pure demographics…</div>
+      <div class="sc-actions"><span class="sc-tag">STP</span><span class="sc-tag">Nike</span><span class="sc-tag">Segmentation</span><button class="btn-p" style="font-size:9px;padding:4px 10px;margin-left:auto">+ Cite</button></div>
+    </div>
+    <div class="source-card">
+      <div class="sc-url">marketingweek.com · Marketing Week</div>
+      <div class="sc-title">Nike's Digital Transformation and Consumer Data Strategy</div>
+      <div class="sc-snip">First-party data from the Nike App enables micro-segmentation at scale across 190+ countries…</div>
+      <div class="sc-actions"><span class="sc-tag">Digital</span><span class="sc-tag">Data</span><button class="btn-p" style="font-size:9px;padding:4px 10px;margin-left:auto">+ Cite</button></div>
+    </div>
+  </div>
+
+  <div class="panel" style="padding:14px">
+    <div class="plbl">What AI Can Do With Any Page</div>
+    <div style="display:flex;flex-direction:column;gap:7px">
+      <div style="background:rgba(255,255,255,.7);border:1px solid var(--glass-b);border-radius:11px;padding:9px 12px;font-size:12px;color:var(--text-m);cursor:pointer;transition:all .14s" onmouseover="this.style.background='white'" onmouseout="this.style.background='rgba(255,255,255,.7)'">📝 <strong>Summarise</strong> — key points in plain English</div>
+      <div style="background:rgba(255,255,255,.7);border:1px solid var(--glass-b);border-radius:11px;padding:9px 12px;font-size:12px;color:var(--text-m);cursor:pointer;transition:all .14s" onmouseover="this.style.background='white'" onmouseout="this.style.background='rgba(255,255,255,.7)'">📚 <strong>Generate APA citation</strong> — ready to paste</div>
+      <div style="background:rgba(255,255,255,.7);border:1px solid var(--glass-b);border-radius:11px;padding:9px 12px;font-size:12px;color:var(--text-m);cursor:pointer;transition:all .14s" onmouseover="this.style.background='white'" onmouseout="this.style.background='rgba(255,255,255,.7)'">✍️ <strong>Add to essay</strong> — inserts as supporting evidence</div>
+      <div style="background:rgba(255,255,255,.7);border:1px solid var(--glass-b);border-radius:11px;padding:9px 12px;font-size:12px;color:var(--text-m);cursor:pointer;transition:all .14s" onmouseover="this.style.background='white'" onmouseout="this.style.background='rgba(255,255,255,.7)'">🃏 <strong>Make flashcard</strong> — adds to active study deck</div>
+      <div style="background:rgba(255,255,255,.7);border:1px solid var(--glass-b);border-radius:11px;padding:9px 12px;font-size:12px;color:var(--text-m);cursor:pointer;transition:all .14s" onmouseover="this.style.background='white'" onmouseout="this.style.background='rgba(255,255,255,.7)'">💾 <strong>Save to Research</strong> — adds to citation manager</div>
+      <div style="background:rgba(255,255,255,.7);border:1px solid var(--glass-b);border-radius:11px;padding:9px 12px;font-size:12px;color:var(--text-m);cursor:pointer;transition:all .14s" onmouseover="this.style.background='white'" onmouseout="this.style.background='rgba(255,255,255,.7)'">❓ <strong>Explain this page</strong> — break down any complex topic</div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
