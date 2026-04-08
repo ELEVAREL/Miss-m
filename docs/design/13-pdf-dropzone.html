@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Miss M — PDF Drop Zone</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=Playfair+Display:ital,wght@0,400;0,700&display=swap" rel="stylesheet">
+<style>
+:root{--r5:#E91E8C;--r6:#C2185B;--r7:#880E4F;--r2:#F8BBD9;--r3:#F48FB1;--text:#1A0A10;--text-m:#5C3049;--text-s:#9A6B80;--text-xs:#C4A0B2;--glass-b:rgba(255,255,255,.82);--shadow:rgba(194,24,91,.13);--green:#34C759;--blue:#007AFF;--orange:#FF9500}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:linear-gradient(155deg,#FFF0F8,#FCE4EC 40%,#F8BBD9 70%,#FDE8F3);min-height:100vh;padding:28px;display:flex;gap:20px;flex-wrap:wrap;align-items:start;color:var(--text)}
+body::before{content:'';position:fixed;top:-150px;right:-150px;width:500px;height:500px;background:radial-gradient(circle,rgba(233,30,140,.11),transparent 70%);border-radius:50%;pointer-events:none}
+.panel{background:rgba(255,255,255,.65);border:1px solid var(--glass-b);border-radius:20px;padding:18px;box-shadow:0 2px 12px var(--shadow)}
+.plbl{font-family:'Cormorant Garamond',serif;font-size:10px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:var(--r5);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.plbl::after{content:'';flex:1;height:1px;background:rgba(233,30,140,.14)}
+.btn-p{background:linear-gradient(135deg,var(--r5),var(--r6));color:white;border:none;border-radius:12px;padding:10px 20px;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;box-shadow:0 4px 14px rgba(233,30,140,.32);transition:all .2s}
+.btn-p:hover{transform:translateY(-1px)}
+.btn-g{background:rgba(255,255,255,.75);border:1.5px solid var(--r2);color:var(--text-m);border-radius:12px;padding:9px 16px;font-size:11px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+.btn-g:hover{background:white;border-color:var(--r3);color:var(--r5)}
+
+/* DROP ZONE */
+.drop-zone{width:380px}
+.dz{border:2.5px dashed rgba(233,30,140,.3);border-radius:20px;padding:40px 24px;text-align:center;cursor:pointer;transition:all .25s;background:rgba(255,255,255,.4);position:relative;overflow:hidden}
+.dz:hover,.dz.active{border-color:var(--r5);background:rgba(233,30,140,.04);transform:scale(1.01)}
+.dz.active{border-style:solid;box-shadow:0 0 0 4px rgba(233,30,140,.1)}
+.dz-icon{font-size:48px;margin-bottom:14px;display:block;transition:transform .2s}
+.dz:hover .dz-icon{transform:translateY(-4px)}
+.dz-title{font-family:'Playfair Display',serif;font-size:18px;font-style:italic;color:var(--text);margin-bottom:6px}
+.dz-sub{font-size:12px;color:var(--text-s);line-height:1.6}
+.dz-types{display:flex;gap:7px;justify-content:center;margin-top:14px;flex-wrap:wrap}
+.dz-type{background:rgba(233,30,140,.08);border:1px solid rgba(233,30,140,.18);border-radius:8px;padding:3px 10px;font-size:10px;color:var(--r5);font-weight:600}
+.dz-or{font-size:11px;color:var(--text-xs);margin:14px 0}
+
+/* PROCESSING STATE */
+.proc{background:rgba(255,255,255,.82);border:1px solid rgba(233,30,140,.2);border-radius:16px;padding:16px;margin-top:14px}
+.proc-file{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.proc-icon{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,rgba(255,59,48,.15),rgba(255,59,48,.08));display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.proc-name{font-size:13px;font-weight:500;color:var(--text)}
+.proc-size{font-size:10px;color:var(--text-s);margin-top:2px}
+.proc-bar{height:4px;background:rgba(233,30,140,.1);border-radius:4px;overflow:hidden;margin-bottom:8px}
+.proc-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--r5),var(--r3));animation:fill 2s ease forwards}
+@keyframes fill{from{width:0%}to{width:75%}}
+.proc-status{font-size:11px;color:var(--r5);font-weight:500;display:flex;align-items:center;gap:6px}
+.spin{width:12px;height:12px;border:2px solid rgba(233,30,140,.2);border-top-color:var(--r5);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* AI ACTIONS */
+.ai-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.ai-action{background:rgba(255,255,255,.8);border:1px solid var(--glass-b);border-radius:13px;padding:12px;cursor:pointer;transition:all .18s;text-align:center}
+.ai-action:hover{background:white;transform:translateY(-2px);box-shadow:0 6px 16px var(--shadow)}
+.aa-icon{font-size:22px;margin-bottom:6px;display:block}
+.aa-name{font-size:11px;font-weight:600;color:var(--text);margin-bottom:2px}
+.aa-desc{font-size:10px;color:var(--text-s);line-height:1.3}
+
+/* RESULTS PANEL */
+.results{width:360px}
+.result-card{background:rgba(255,255,255,.65);border:1px solid var(--glass-b);border-radius:16px;padding:14px;margin-bottom:12px;transition:all .2s}
+.result-card:hover{background:white;transform:translateY(-1px);box-shadow:0 6px 18px var(--shadow)}
+.rc-head{display:flex;align-items:center;gap:9px;margin-bottom:10px}
+.rc-ic{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.rc-title{font-size:13px;font-weight:600;color:var(--text)}
+.rc-sub{font-size:10px;color:var(--text-s);margin-top:1px}
+.rc-body{font-size:12px;color:var(--text-m);line-height:1.7}
+.rc-body strong{color:var(--text)}
+.tag-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.tag{display:inline-flex;align-items:center;border-radius:8px;padding:3px 9px;font-size:10px;font-weight:600}
+.tag-r{background:rgba(233,30,140,.1);color:var(--r5)}
+.tag-b{background:rgba(0,122,255,.09);color:#1565C0}
+.tag-g{background:rgba(52,199,89,.1);color:#2E7D32}
+.tag-o{background:rgba(255,149,0,.1);color:#C65200}
+
+/* FLASHCARD PREVIEW */
+.fc-mini{background:linear-gradient(135deg,var(--r5),var(--r6));border-radius:13px;padding:12px 14px;margin-top:8px;color:white}
+.fc-q{font-size:12px;font-style:italic;font-family:'Playfair Display',serif;margin-bottom:4px}
+.fc-count{font-size:10px;color:rgba(255,255,255,.7)}
+.fc-dots{display:flex;gap:4px;margin-top:8px}
+.fc-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.3)}
+.fc-dot.on{background:white}
+
+/* DEADLINE CARD */
+.deadline-item{display:flex;align-items:center;gap:10px;padding:9px 12px;background:rgba(255,255,255,.6);border:1px solid var(--glass-b);border-radius:11px;margin-bottom:6px}
+.dl-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.dl-text{flex:1;font-size:12px;color:var(--text)}
+.dl-date{font-size:10px;font-weight:600;padding:2px 8px;border-radius:7px}
+
+/* RECENT FILES */
+.recent-file{display:flex;align-items:center;gap:10px;padding:9px 12px;background:rgba(255,255,255,.6);border:1px solid var(--glass-b);border-radius:11px;margin-bottom:6px;cursor:pointer;transition:all .15s}
+.recent-file:hover{background:white;transform:translateX(2px)}
+.rf-ic{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.rf-name{font-size:12px;font-weight:500;color:var(--text);flex:1}
+.rf-date{font-size:10px;color:var(--text-xs)}
+</style>
+</head>
+<body>
+
+<!-- DROP ZONE PANEL -->
+<div class="drop-zone">
+  <div class="panel" style="margin-bottom:14px">
+    <div class="plbl">PDF Drop Zone</div>
+
+    <!-- Default state -->
+    <div class="dz" id="dropzone" onclick="showProcessing()">
+      <span class="dz-icon">📄</span>
+      <div class="dz-title">Drop your lecture PDF here</div>
+      <div class="dz-sub">Miss M AI reads it instantly — summaries, flashcards, deadlines, key concepts</div>
+      <div class="dz-types">
+        <span class="dz-type">PDF</span>
+        <span class="dz-type">DOCX</span>
+        <span class="dz-type">TXT</span>
+        <span class="dz-type">PPTX</span>
+        <span class="dz-type">Images</span>
+      </div>
+      <div class="dz-or">— or —</div>
+      <button class="btn-p" style="width:100%" onclick="event.stopPropagation()">Browse Files</button>
+    </div>
+
+    <!-- Processing state (shown after drop) -->
+    <div class="proc" id="proc" style="display:none">
+      <div class="proc-file">
+        <div class="proc-icon">📄</div>
+        <div>
+          <div class="proc-name">MKT302_Lecture_7_Consumer_Behaviour.pdf</div>
+          <div class="proc-size">2.4 MB · 34 pages</div>
+        </div>
+      </div>
+      <div class="proc-bar"><div class="proc-fill"></div></div>
+      <div class="proc-status"><div class="spin"></div>Miss M AI is reading your PDF…</div>
+    </div>
+  </div>
+
+  <!-- AI Action buttons -->
+  <div class="panel">
+    <div class="plbl">What should I do with it?</div>
+    <div class="ai-actions">
+      <div class="ai-action">
+        <span class="aa-icon">📝</span>
+        <div class="aa-name">Summarise</div>
+        <div class="aa-desc">Key points in plain English</div>
+      </div>
+      <div class="ai-action">
+        <span class="aa-icon">🃏</span>
+        <div class="aa-name">Flashcards</div>
+        <div class="aa-desc">Auto-generate quiz cards</div>
+      </div>
+      <div class="ai-action">
+        <span class="aa-icon">📅</span>
+        <div class="aa-name">Find Deadlines</div>
+        <div class="aa-desc">Extract dates & tasks</div>
+      </div>
+      <div class="ai-action">
+        <span class="aa-icon">✍️</span>
+        <div class="aa-name">Essay Help</div>
+        <div class="aa-desc">Use as essay source</div>
+      </div>
+      <div class="ai-action">
+        <span class="aa-icon">🔍</span>
+        <div class="aa-name">Explain Concepts</div>
+        <div class="aa-desc">Break down hard parts</div>
+      </div>
+      <div class="ai-action">
+        <span class="aa-icon">📚</span>
+        <div class="aa-name">Add Citations</div>
+        <div class="aa-desc">APA / Harvard refs</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent files -->
+  <div class="panel" style="margin-top:14px">
+    <div class="plbl">Recent Files</div>
+    <div class="recent-file"><div class="rf-ic" style="background:rgba(255,59,48,.1)">📄</div><div class="rf-name">MKT302 Week 6 Lecture.pdf</div><div class="rf-date">2 days ago</div></div>
+    <div class="recent-file"><div class="rf-ic" style="background:rgba(0,122,255,.1)">📘</div><div class="rf-name">Consumer Behaviour Textbook Ch4.pdf</div><div class="rf-date">4 days ago</div></div>
+    <div class="recent-file"><div class="rf-ic" style="background:rgba(52,199,89,.1)">📗</div><div class="rf-name">Assignment Brief MKT210.pdf</div><div class="rf-date">1 week ago</div></div>
+  </div>
+</div>
+
+<!-- RESULTS PANEL -->
+<div class="results">
+  <div style="font-family:'Playfair Display',serif;font-size:22px;font-style:italic;color:var(--text);margin-bottom:16px">AI <span style="color:var(--r5)">Results</span></div>
+
+  <!-- Summary card -->
+  <div class="result-card">
+    <div class="rc-head">
+      <div class="rc-ic" style="background:rgba(233,30,140,.1)">📝</div>
+      <div><div class="rc-title">Summary</div><div class="rc-sub">MKT302 Lecture 7 · Consumer Behaviour</div></div>
+    </div>
+    <div class="rc-body">
+      This lecture covers <strong>consumer decision-making models</strong>, focusing on the <strong>EKB Model</strong> (Engel, Kollat & Blackwell) and how internal/external stimuli drive purchase behaviour. Key themes include <strong>cognitive dissonance</strong>, post-purchase evaluation, and how marketers can reduce buyer's regret through reassurance strategies.
+    </div>
+    <div class="tag-row">
+      <span class="tag tag-r">EKB Model</span>
+      <span class="tag tag-b">Decision Making</span>
+      <span class="tag tag-g">Post-Purchase</span>
+      <span class="tag tag-o">Cognitive Dissonance</span>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <button class="btn-p" style="flex:1;font-size:11px;padding:8px">Copy to Essay</button>
+      <button class="btn-g" style="font-size:11px;padding:8px">Expand</button>
+    </div>
+  </div>
+
+  <!-- Flashcards preview -->
+  <div class="result-card">
+    <div class="rc-head">
+      <div class="rc-ic" style="background:rgba(156,39,176,.1)">🃏</div>
+      <div><div class="rc-title">12 Flashcards Generated</div><div class="rc-sub">Ready to study</div></div>
+    </div>
+    <div class="fc-mini">
+      <div class="fc-q">"What are the 5 stages of the EKB consumer decision model?"</div>
+      <div class="fc-count">Card 1 of 12 · Tap to flip</div>
+      <div class="fc-dots">
+        <div class="fc-dot on"></div><div class="fc-dot on"></div><div class="fc-dot on"></div>
+        <div class="fc-dot"></div><div class="fc-dot"></div><div class="fc-dot"></div>
+      </div>
+    </div>
+    <button class="btn-p" style="width:100%;margin-top:10px;font-size:11px">Start Quiz Mode</button>
+  </div>
+
+  <!-- Deadlines found -->
+  <div class="result-card">
+    <div class="rc-head">
+      <div class="rc-ic" style="background:rgba(255,149,0,.1)">📅</div>
+      <div><div class="rc-title">2 Deadlines Found</div><div class="rc-sub">Extracted from document</div></div>
+    </div>
+    <div class="deadline-item"><div class="dl-dot" style="background:#FF3B30"></div><div class="dl-text">Case Study Submission — 2,500 words</div><div class="dl-date" style="background:rgba(255,59,48,.1);color:#B71C1C">Fri Apr 7</div></div>
+    <div class="deadline-item"><div class="dl-dot" style="background:#FF9500"></div><div class="dl-text">Group Presentation — 15 slides</div><div class="dl-date" style="background:rgba(255,149,0,.1);color:#C65200">Mon Apr 10</div></div>
+    <button class="btn-p" style="width:100%;margin-top:10px;font-size:11px">Add to Reminders</button>
+  </div>
+
+  <!-- Key concepts -->
+  <div class="result-card">
+    <div class="rc-head">
+      <div class="rc-ic" style="background:rgba(0,122,255,.1)">🔍</div>
+      <div><div class="rc-title">Key Concepts</div><div class="rc-sub">Explain any of these</div></div>
+    </div>
+    <div style="display:flex;gap:7px;flex-wrap:wrap">
+      <span class="tag tag-r" style="cursor:pointer">EKB Model</span>
+      <span class="tag tag-b" style="cursor:pointer">Cognitive Dissonance</span>
+      <span class="tag tag-g" style="cursor:pointer">Need Recognition</span>
+      <span class="tag tag-o" style="cursor:pointer">Information Search</span>
+      <span class="tag tag-r" style="cursor:pointer">Post-Purchase Eval</span>
+      <span class="tag tag-b" style="cursor:pointer">Brand Loyalty</span>
+    </div>
+    <div style="margin-top:10px;background:rgba(233,30,140,.06);border:1px solid rgba(233,30,140,.13);border-radius:11px;padding:10px;font-size:11px;color:var(--text-m);line-height:1.65">
+      ✦ Tap any concept to get a plain-English explanation from Miss M AI
+    </div>
+  </div>
+</div>
+
+<script>
+function showProcessing(){
+  document.getElementById('dropzone').style.opacity='0.4';
+  document.getElementById('proc').style.display='block';
+  setTimeout(()=>{
+    document.getElementById('dropzone').style.display='none';
+    document.getElementById('proc').style.display='none';
+  },3000);
+}
+</script>
+</body>
+</html>
