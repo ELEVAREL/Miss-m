@@ -706,3 +706,109 @@ Smart association examples (AI should handle naturally):
   "Can you check if my husband is free Saturday?" → check shared calendar or message him
   "Remind my husband to pick up milk" → sends him an iMessage reminder
   "Draft a message to my husband saying I'll be late" → drafts then sends to NyRiian
+
+---
+
+## 👥 PEOPLE HUB — HOW TO BUILD IT (Phase 3)
+
+### Core concept
+NO hardcoded contacts. The app reads Miss M's real Messages history via AppleScript,
+ranks contacts by frequency, looks them up in CNContactStore, then Claude infers
+the relationship from message tone. Cards build themselves automatically.
+
+### Step 1 — Scan Messages history (AppleScript)
+```applescript
+tell application "Messages"
+    set allChats to chats
+    -- For each chat, get participant + message count + last message
+    -- Return sorted by message count descending
+end tell
+```
+
+### Step 2 — Rank contacts
+```swift
+struct ContactFrequency {
+    let phoneNumber: String
+    let messageCount: Int      // total messages this week
+    let lastMessage: String    // preview text
+    let lastMessageDate: Date
+    let isGroup: Bool
+    let participantCount: Int  // for group chats
+}
+// Sort by messageCount descending → top 5-8 get profile cards
+```
+
+### Step 3 — Match to CNContact
+```swift
+// Use CNContactStore to find contact by phone number
+// Get: displayName, thumbnailImage (if any)
+// If no contact found → show phone number, let Miss M name them
+```
+
+### Step 4 — Claude infers relationship
+```swift
+// Send last 20 messages to Claude with prompt:
+// "Based on these messages, who is this person to Miss M?
+//  Options: Husband, Family, Close Friend, Friend, Colleague,
+//           Lecturer, Classmate, Group Chat, Unknown
+//  Also generate 4 quick reply chips appropriate for this relationship.
+//  Return JSON only."
+```
+
+### Step 5 — Build card with real data
+```swift
+struct PersonCard {
+    let contact: CNContact
+    let relationship: RelationshipType
+    let messageCountWeek: Int
+    let messageCountToday: Int
+    let lastMessage: String
+    let lastMessageDate: Date
+    let aiSmartChips: [String]    // Claude generated
+    let gradientColors: [Color]   // assigned by relationship type
+    let isGroup: Bool
+    let isPinned: Bool
+}
+```
+
+### NyRiian — always special-cased
+```swift
+// NyRiian is always recognised as "my husband"
+// Saved in Contacts as "NyRiian"
+// Always pinned at position 1 regardless of message frequency
+// When Miss M says "my husband" → always resolves to NyRiian
+let husbandName = "NyRiian"  // stored in settings
+```
+
+### Gradient colours by relationship
+```swift
+// Husband:     rose gradient      (#E91E8C → #C2185B → #880E4F)
+// Family:      warm pink          (#FF6B9D → #E91E8C → #C2185B)
+// Close friend: purple            (#AB47BC → #8E24AA → #6A1B9A)
+// Friend:       orange            (#FF9800 → #F57C00 → #E65100)
+// Classmate:    teal              (#26A69A → #00796B → #004D40)
+// Lecturer:     deep blue         (#1976D2 → #1565C0 → #0D47A1)
+// Group chat:   dark teal         (#00838F → #006064 → #004D40)
+// Unknown:      grey-rose         (#9A6B80 → #5C3049)
+```
+
+### Smart chips — Claude generates per person
+Prompt: "Miss M needs to message [relationship]. Generate 4 short, natural reply chips.
+Match tone: husband=warm/loving, family=caring, friend=casual/fun,
+lecturer=professional, group=brief/practical. Max 6 words each."
+
+### Refresh frequency
+- Refresh card order every time app opens
+- Re-rank weekly (Sunday night alongside weekly briefing)
+- Smart chips regenerate when message pattern changes significantly
+- Always keep NyRiian pinned at top regardless of frequency
+
+### Design file reference
+docs/design/15-people-hub.html — shows all states:
+  - Scanning/loading state (spinner + progress text)
+  - How it works banner (4 steps)
+  - Dynamic cards with real-data placeholders
+  - NyRiian expanded detail panel
+  - AI relationship intelligence explanation
+  - Add card for manual pins
+

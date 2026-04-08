@@ -16,382 +16,396 @@ body::before{content:'';position:fixed;top:-150px;right:-150px;width:600px;heigh
 .plbl{font-family:'Cormorant Garamond',serif;font-size:10px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:var(--r5);margin-bottom:12px;display:flex;align-items:center;gap:8px}
 .plbl::after{content:'';flex:1;height:1px;background:rgba(233,30,140,.14)}
 
-/* HEADER */
-.page-header{display:flex;align-items:baseline;gap:14px;margin-bottom:22px;flex-wrap:wrap}
-.page-header h1{font-family:'Playfair Display',serif;font-size:28px;font-style:italic;color:var(--text)}
-.page-header h1 span{color:var(--r5)}
-.page-header p{font-size:12px;color:var(--text-s)}
+/* HOW IT WORKS BANNER */
+.how-banner{background:rgba(255,255,255,.65);border:1px solid var(--glass-b);border-radius:18px;padding:16px 20px;margin-bottom:22px;display:flex;gap:20px;flex-wrap:wrap;box-shadow:0 2px 12px var(--shadow)}
+.hw-step{display:flex;align-items:flex-start;gap:10px;flex:1;min-width:180px}
+.hw-num{width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,var(--r5),var(--r6));color:white;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.hw-t{font-size:11.5px;font-weight:600;color:var(--text);margin-bottom:2px}
+.hw-s{font-size:10px;color:var(--text-s);line-height:1.45}
 
-/* CONTACT GRID */
-.contact-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;margin-bottom:32px}
+/* CONNECTING STATE */
+.connect-state{background:rgba(255,255,255,.65);border:1px solid rgba(233,30,140,.15);border-radius:18px;padding:20px;text-align:center;margin-bottom:20px;display:none}
+.connect-state.show{display:block}
+.scan-ring{width:56px;height:56px;border-radius:50%;border:3px solid rgba(233,30,140,.15);border-top-color:var(--r5);animation:spin .8s linear infinite;margin:0 auto 12px}
+@keyframes spin{to{transform:rotate(360deg)}}
 
-/* CONTACT CARD */
-.contact-card{background:rgba(255,255,255,.65);border:1px solid var(--glass-b);border-radius:22px;overflow:hidden;box-shadow:0 4px 16px var(--shadow);transition:all .2s;cursor:pointer}
-.contact-card:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(194,24,91,.15)}
-.contact-card.expanded{grid-column:span 2}
+/* DYNAMIC GRID */
+.people-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
 
-/* CARD HEADER - each person has unique gradient */
-.cc-hero{padding:18px 18px 14px;position:relative;overflow:hidden}
-.cc-hero::before{content:'';position:absolute;top:-30px;right:-30px;width:120px;height:120px;background:rgba(255,255,255,.12);border-radius:50%}
-.cc-hero::after{content:'';position:absolute;bottom:-20px;left:30px;width:80px;height:80px;background:rgba(255,255,255,.07);border-radius:50%}
-.cc-top{display:flex;align-items:center;gap:12px;margin-bottom:10px;position:relative;z-index:1}
-.cc-av{width:48px;height:48px;border-radius:50%;border:2.5px solid rgba(255,255,255,.4);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;box-shadow:0 4px 12px rgba(0,0,0,.12)}
-.cc-name{font-family:'Playfair Display',serif;font-size:17px;font-style:italic;color:white;line-height:1.1}
-.cc-relation{font-size:10px;color:rgba(255,255,255,.75);font-weight:500;letter-spacing:.3px;margin-top:2px}
-.cc-stats{display:flex;gap:14px;position:relative;z-index:1}
-.cc-stat{text-align:center}
-.cc-stat-n{font-family:'Cormorant Garamond',serif;font-size:18px;color:white;font-weight:600;line-height:1}
-.cc-stat-l{font-size:8px;color:rgba(255,255,255,.65);letter-spacing:.5px;text-transform:uppercase;margin-top:1px}
+/* PERSON CARD — built from real data */
+.person-card{background:rgba(255,255,255,.65);border:1px solid var(--glass-b);border-radius:22px;overflow:hidden;box-shadow:0 4px 14px var(--shadow);transition:all .22s;cursor:pointer;position:relative}
+.person-card:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(194,24,91,.16)}
+.person-card.pinned::after{content:'📌';position:absolute;top:10px;right:10px;font-size:12px}
+
+/* RANK BADGE */
+.rank-badge{position:absolute;top:12px;left:12px;background:rgba(255,255,255,.25);border:1px solid rgba(255,255,255,.35);border-radius:10px;padding:3px 8px;font-size:9px;font-weight:700;color:white;letter-spacing:.5px;z-index:2}
+
+/* CARD HERO */
+.card-hero{padding:20px 16px 14px;position:relative;overflow:hidden}
+.card-hero::before{content:'';position:absolute;top:-30px;right:-30px;width:120px;height:120px;background:rgba(255,255,255,.12);border-radius:50%}
+.hero-row{display:flex;align-items:center;gap:11px;position:relative;z-index:1;margin-bottom:10px}
+.hero-av{width:46px;height:46px;border-radius:50%;border:2.5px solid rgba(255,255,255,.4);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;background:rgba(255,255,255,.2);box-shadow:0 3px 10px rgba(0,0,0,.12)}
+.hero-name{font-family:'Playfair Display',serif;font-size:16px;font-style:italic;color:white;line-height:1}
+.hero-rel{font-size:10px;color:rgba(255,255,255,.72);margin-top:3px;font-weight:500}
+.msg-count-row{display:flex;gap:12px;position:relative;z-index:1}
+.mc-item{text-align:center}
+.mc-n{font-family:'Cormorant Garamond',serif;font-size:17px;color:white;font-weight:600;line-height:1}
+.mc-l{font-size:8px;color:rgba(255,255,255,.65);letter-spacing:.4px;text-transform:uppercase;margin-top:1px}
 
 /* CARD BODY */
-.cc-body{padding:14px}
-.cc-last{font-size:11px;color:var(--text-s);margin-bottom:10px;font-style:italic;line-height:1.5}
-.cc-last strong{color:var(--text-m);font-style:normal}
+.card-body{padding:12px 14px}
+.last-msg{font-size:11px;color:var(--text-s);line-height:1.5;margin-bottom:10px;font-style:italic}
+.last-msg strong{color:var(--text-m);font-style:normal}
+.card-actions{display:flex;gap:5px;margin-bottom:9px}
+.ca{flex:1;border-radius:9px;padding:7px 4px;font-size:10px;font-weight:600;cursor:pointer;text-align:center;transition:all .15s;border:none;font-family:'DM Sans',sans-serif}
 
-/* QUICK ACTIONS */
-.cc-actions{display:flex;gap:6px;margin-bottom:10px}
-.cc-act{flex:1;border-radius:10px;padding:7px 4px;font-size:10px;font-weight:600;cursor:pointer;text-align:center;transition:all .15s;border:none;font-family:'DM Sans',sans-serif}
+/* SMART CHIPS — AI generated per person */
+.smart-chips{display:flex;gap:5px;flex-wrap:wrap}
+.smart-chip{background:rgba(255,255,255,.75);border:1px solid var(--r2);border-radius:11px;padding:4px 10px;font-size:10px;color:var(--text-m);cursor:pointer;transition:all .14s;white-space:nowrap}
+.smart-chip:hover{background:white;border-color:var(--r3);color:var(--r5)}
+.ai-chip-label{font-size:8px;color:var(--text-xs);letter-spacing:1px;text-transform:uppercase;margin-bottom:5px;font-weight:600}
 
-/* QUICK CHIPS - message templates */
-.cc-chips{display:flex;gap:5px;flex-wrap:wrap}
-.cc-chip{background:rgba(255,255,255,.75);border:1px solid var(--r2);border-radius:12px;padding:5px 10px;font-size:10px;color:var(--text-m);cursor:pointer;transition:all .14s;white-space:nowrap}
-.cc-chip:hover{background:white;border-color:var(--r3);color:var(--r5)}
+/* ADD CARD */
+.add-card{background:rgba(255,255,255,.38);border:2px dashed rgba(233,30,140,.2);border-radius:22px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 16px;cursor:pointer;transition:all .2s;min-height:160px}
+.add-card:hover{background:rgba(255,255,255,.6);border-color:rgba(233,30,140,.38);transform:translateY(-2px)}
 
-/* ADD PERSON CARD */
-.add-card{background:rgba(255,255,255,.4);border:2px dashed rgba(233,30,140,.22);border-radius:22px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 20px;cursor:pointer;transition:all .2s;min-height:180px}
-.add-card:hover{background:rgba(255,255,255,.65);border-color:rgba(233,30,140,.4);transform:translateY(-2px)}
-.add-icon{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,rgba(233,30,140,.12),rgba(194,24,91,.08));border:2px dashed rgba(233,30,140,.25);display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:10px}
-.add-label{font-size:12px;font-weight:600;color:var(--text-m);margin-bottom:3px}
-.add-sub{font-size:10px;color:var(--text-xs);text-align:center;line-height:1.4}
-
-/* AI SUGGESTIONS BANNER */
-.ai-banner{background:rgba(255,255,255,.65);border:1px solid var(--glass-b);border-radius:18px;padding:14px 18px;margin-bottom:20px;display:flex;align-items:center;gap:14px;box-shadow:0 2px 10px var(--shadow)}
-.ai-av{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--r5),var(--r6));display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;box-shadow:0 4px 10px rgba(233,30,140,.28)}
-.ai-msg{flex:1;font-size:12px;color:var(--text-m);line-height:1.6}
-
-/* SELECTED CONTACT DETAIL */
-.detail-panel{background:rgba(255,255,255,.65);border:1px solid var(--glass-b);border-radius:22px;padding:0;overflow:hidden;box-shadow:0 4px 20px var(--shadow);margin-top:8px;display:none}
-.detail-panel.show{display:block}
-.dp-hero{padding:20px 20px 16px;position:relative;overflow:hidden}
-.dp-hero::before{content:'';position:absolute;top:-40px;right:-40px;width:160px;height:160px;background:rgba(255,255,255,.1);border-radius:50%}
-.dp-top{display:flex;align-items:center;gap:14px;position:relative;z-index:1}
-.dp-av{width:56px;height:56px;border-radius:50%;border:3px solid rgba(255,255,255,.4);display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:0 6px 18px rgba(0,0,0,.12)}
-.dp-name{font-family:'Playfair Display',serif;font-size:22px;font-style:italic;color:white}
-.dp-rel{font-size:11px;color:rgba(255,255,255,.75);font-weight:500}
-.dp-stats-row{display:flex;gap:16px;margin-top:14px;position:relative;z-index:1}
-.dp-stat{text-align:center}
-.dp-stat-n{font-family:'Cormorant Garamond',serif;font-size:20px;color:white;font-weight:600}
-.dp-stat-l{font-size:8px;color:rgba(255,255,255,.65);letter-spacing:.5px;text-transform:uppercase}
-.dp-body{padding:16px 18px}
+/* DETAIL EXPAND */
+.detail-wrap{margin-top:16px;background:rgba(255,255,255,.65);border:1px solid var(--glass-b);border-radius:22px;overflow:hidden;box-shadow:0 4px 20px var(--shadow)}
+.detail-hero{padding:18px 20px;position:relative;overflow:hidden}
+.detail-hero::before{content:'';position:absolute;top:-40px;right:-40px;width:160px;height:160px;background:rgba(255,255,255,.1);border-radius:50%}
+.dh-row{display:flex;align-items:center;gap:14px;position:relative;z-index:1}
+.dh-av{width:52px;height:52px;border-radius:50%;border:3px solid rgba(255,255,255,.4);display:flex;align-items:center;justify-content:center;font-size:24px;background:rgba(255,255,255,.2);box-shadow:0 4px 14px rgba(0,0,0,.12)}
+.dh-name{font-family:'Playfair Display',serif;font-size:21px;font-style:italic;color:white}
+.dh-sub{font-size:11px;color:rgba(255,255,255,.72);margin-top:3px}
+.dh-actions{margin-left:auto;display:flex;gap:7px}
+.dh-act{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);border-radius:10px;padding:7px 12px;font-size:11px;font-weight:600;color:white;cursor:pointer;transition:all .15s}
+.dh-act:hover{background:rgba(255,255,255,.3)}
+.dh-stats{display:flex;gap:16px;margin-top:14px;position:relative;z-index:1}
+.dh-stat-n{font-family:'Cormorant Garamond',serif;font-size:19px;color:white;font-weight:600}
+.dh-stat-l{font-size:8px;color:rgba(255,255,255,.65);letter-spacing:.5px;text-transform:uppercase}
+.detail-body{padding:16px 18px}
 .dp-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
-.dp-section{background:rgba(255,255,255,.65);border:1px solid var(--glass-b);border-radius:14px;padding:12px}
+.dp-sec{background:rgba(255,255,255,.65);border:1px solid var(--glass-b);border-radius:14px;padding:12px}
 .dp-sec-lbl{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-xs);font-weight:600;margin-bottom:8px}
-.msg-bubble{padding:8px 12px;border-radius:12px;font-size:11px;line-height:1.5;margin-bottom:5px}
-.mb-them{background:rgba(255,255,255,.85);color:var(--text);border-radius:12px 12px 12px 4px}
-.mb-ai{background:rgba(233,30,140,.08);color:var(--text-m);border-radius:12px 12px 4px 12px;border:1px solid rgba(233,30,140,.12);font-style:italic}
-.mb-miss{background:linear-gradient(135deg,var(--r5),var(--r6));color:white;border-radius:12px 12px 4px 12px}
+.mb{padding:8px 11px;border-radius:11px;font-size:11px;line-height:1.5;margin-bottom:5px}
+.mb-them{background:rgba(255,255,255,.85);color:var(--text);border-radius:11px 11px 11px 3px}
+.mb-me{background:linear-gradient(135deg,var(--r5),var(--r6));color:white;border-radius:11px 11px 3px 11px}
+.mb-ai{background:rgba(233,30,140,.07);border:1px solid rgba(233,30,140,.12);color:var(--text-m);border-radius:11px;font-style:italic}
+.ai-lbl{font-size:8px;letter-spacing:1px;text-transform:uppercase;color:var(--r5);font-weight:600;margin-bottom:2px;font-style:normal}
 .compose-row{display:flex;gap:8px;margin-top:10px}
-.compose-inp{flex:1;background:rgba(255,255,255,.8);border:1.5px solid var(--r2);border-radius:11px;padding:9px 13px;font-size:12px;font-family:'DM Sans',sans-serif;color:var(--text);outline:none}
+.compose-inp{flex:1;background:rgba(255,255,255,.85);border:1.5px solid var(--r2);border-radius:11px;padding:9px 13px;font-size:12px;font-family:'DM Sans',sans-serif;color:var(--text);outline:none}
+.compose-inp:focus{border-color:var(--r5)}
+
+/* INTELLIGENCE NOTE */
+.intel-note{background:rgba(233,30,140,.05);border:1px solid rgba(233,30,140,.13);border-radius:13px;padding:12px 14px;margin-bottom:12px;font-size:11px;color:var(--text-m);line-height:1.65}
 </style>
 </head>
 <body>
 
-<!-- PAGE HEADER -->
-<div class="page-header">
+<!-- HEADER -->
+<div style="display:flex;align-items:baseline;gap:14px;margin-bottom:20px;flex-wrap:wrap">
   <div>
-    <h1>People <span>Hub</span></h1>
-    <p>Miss M's most important contacts — message anyone instantly with AI drafting</p>
+    <h1 style="font-family:'Playfair Display',serif;font-size:28px;font-style:italic;color:var(--text)">People <span style="color:var(--r5)">Hub</span></h1>
+    <p style="font-size:12px;color:var(--text-s);margin-top:4px">Built automatically from Miss M's real message history — the more she chats, the smarter it gets</p>
   </div>
-  <div style="display:flex;gap:8px;margin-left:auto;flex-wrap:wrap">
-    <button class="btn-p">+ Add Person</button>
-    <button class="btn-g">📋 From Contacts</button>
-    <button class="btn-g">✦ AI Suggest People</button>
+  <div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap">
+    <button class="btn-g" onclick="toggleConnect()">🔄 Refresh from Messages</button>
+    <button class="btn-g">+ Pin Someone</button>
   </div>
 </div>
 
-<!-- AI BANNER -->
-<div class="ai-banner">
-  <div class="ai-av">✦</div>
-  <div class="ai-msg">✦ Based on your message history, your most contacted people are <strong>NyRiian, Mum, and Professor Chen</strong>. I've added quick templates for each of them. Want me to add anyone else?</div>
-  <button class="btn-g" style="white-space:nowrap;font-size:10px">Manage</button>
+<!-- HOW IT WORKS -->
+<div class="how-banner">
+  <div class="hw-step">
+    <div class="hw-num">1</div>
+    <div><div class="hw-t">Reads Messages App</div><div class="hw-s">AppleScript scans her real conversation history — every thread she's part of</div></div>
+  </div>
+  <div class="hw-step">
+    <div class="hw-num">2</div>
+    <div><div class="hw-t">Ranks by Frequency</div><div class="hw-s">Top contacts by message count this week, month and all-time — always current</div></div>
+  </div>
+  <div class="hw-step">
+    <div class="hw-num">3</div>
+    <div><div class="hw-t">Looks Up in Contacts</div><div class="hw-s">Matches number to CNContact — gets name, emoji, relationship (if tagged)</div></div>
+  </div>
+  <div class="hw-step">
+    <div class="hw-num">4</div>
+    <div><div class="hw-t">AI Learns Their Relationship</div><div class="hw-s">Claude reads recent messages to understand who each person is and generates smart reply chips</div></div>
+  </div>
 </div>
 
-<!-- CONTACT GRID -->
-<div class="contact-grid">
+<!-- SCANNING STATE -->
+<div class="connect-state" id="connectState">
+  <div class="scan-ring"></div>
+  <div style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:4px">Reading Messages app…</div>
+  <div style="font-size:11px;color:var(--text-s)">Scanning conversation history · Ranking contacts · Building profile cards</div>
+</div>
 
-  <!-- NYRIIAN - HUSBAND -->
-  <div class="contact-card" onclick="showDetail('nyriian')">
-    <div class="cc-hero" style="background:linear-gradient(145deg,#E91E8C,#C2185B 55%,#880E4F)">
-      <div class="cc-top">
-        <div class="cc-av" style="background:rgba(255,255,255,.2)">💙</div>
+<!-- INTELLIGENCE NOTE -->
+<div class="intel-note">
+  ✦ <strong>How AI assigns relationship labels:</strong> Claude reads the last 20 messages with each person and infers who they are. "I love you babe" → Husband. "Hi sweetheart" + saved as Mum → Family. "Assignment is due Friday" + university email → Lecturer. "Are you coming to class?" → Classmate. Miss M can correct any label by tapping the card.
+</div>
+
+<!-- PEOPLE GRID — populated from real Messages data -->
+<div class="people-grid" id="peopleGrid">
+
+  <!-- CARD 1: NyRiian — always pinned (we know who he is) -->
+  <div class="person-card pinned" onclick="showDetail()">
+    <div class="rank-badge">#1 Most Contacted</div>
+    <div class="card-hero" style="background:linear-gradient(145deg,#E91E8C,#C2185B 55%,#880E4F)">
+      <div class="hero-row">
+        <div class="hero-av">💙</div>
         <div>
-          <div class="cc-name">NyRiian</div>
-          <div class="cc-relation">Husband · Most contacted</div>
+          <div class="hero-name">NyRiian</div>
+          <div class="hero-rel">Husband · Pinned · AI knows who he is</div>
         </div>
-        <div style="margin-left:auto;background:rgba(255,255,255,.18);border-radius:10px;padding:4px 10px;font-size:9px;color:white;font-weight:600;letter-spacing:.5px">● Online</div>
+        <div style="margin-left:auto;background:rgba(255,255,255,.2);border-radius:9px;padding:3px 9px;font-size:9px;color:white;font-weight:600">● iMessage</div>
       </div>
-      <div class="cc-stats">
-        <div class="cc-stat"><div class="cc-stat-n">14</div><div class="cc-stat-l">Today</div></div>
-        <div class="cc-stat"><div class="cc-stat-n">3</div><div class="cc-stat-l">AI Sent</div></div>
-        <div class="cc-stat"><div class="cc-stat-n">2</div><div class="cc-stat-l">Shared Events</div></div>
+      <div class="msg-count-row">
+        <div class="mc-item"><div class="mc-n">47</div><div class="mc-l">This week</div></div>
+        <div class="mc-item"><div class="mc-n">14</div><div class="mc-l">Today</div></div>
+        <div class="mc-item"><div class="mc-n">3</div><div class="mc-l">AI sent</div></div>
+        <div class="mc-item"><div class="mc-n">98%</div><div class="mc-l">Response</div></div>
       </div>
     </div>
-    <div class="cc-body">
-      <div class="cc-last"><strong>Last message:</strong> "Pasta sounds perfect 🍝" — 1:22 PM</div>
-      <div class="cc-actions">
-        <div class="cc-act" style="background:linear-gradient(135deg,var(--r5),var(--r6));color:white">💬 Message</div>
-        <div class="cc-act" style="background:rgba(52,199,89,.1);color:#2E7D32;border:1px solid rgba(52,199,89,.2)">📞 FaceTime</div>
-        <div class="cc-act" style="background:rgba(255,255,255,.75);color:var(--text-m);border:1px solid var(--r2)">📅 Check Cal</div>
+    <div class="card-body">
+      <div class="last-msg"><strong>Last message:</strong> "Pasta sounds perfect 🍝" — 1:22 PM today</div>
+      <div class="card-actions">
+        <div class="ca" style="background:linear-gradient(135deg,var(--r5),var(--r6));color:white">💬 iMessage</div>
+        <div class="ca" style="background:rgba(52,199,89,.1);color:#2E7D32;border:1px solid rgba(52,199,89,.2)">📞 FaceTime</div>
+        <div class="ca" style="background:rgba(255,255,255,.75);color:var(--text-m);border:1.5px solid var(--r2)">📅 Calendar</div>
       </div>
-      <div class="cc-chips">
-        <div class="cc-chip">On my way home 🚗</div>
-        <div class="cc-chip">Dinner at 7 tonight</div>
-        <div class="cc-chip">Love you 🩷</div>
-        <div class="cc-chip">Pick up milk?</div>
+      <div class="ai-chip-label">✦ AI smart replies for NyRiian</div>
+      <div class="smart-chips">
+        <div class="smart-chip">On my way home 🚗</div>
+        <div class="smart-chip">Dinner at 7 🍽️</div>
+        <div class="smart-chip">Love you 🩷</div>
+        <div class="smart-chip">Can you grab milk?</div>
       </div>
     </div>
   </div>
 
-  <!-- MUM -->
-  <div class="contact-card" onclick="showDetail('mum')">
-    <div class="cc-hero" style="background:linear-gradient(145deg,#FF6B9D,#E91E8C 55%,#C2185B)">
-      <div class="cc-top">
-        <div class="cc-av" style="background:rgba(255,255,255,.2)">👩</div>
+  <!-- CARD 2: #2 Most messaged — pulled from Messages, name from Contacts -->
+  <div class="person-card" onclick="alert('Opens full detail panel for this contact')">
+    <div class="rank-badge">#2 Most Contacted</div>
+    <div class="card-hero" style="background:linear-gradient(145deg,#8E24AA,#6A1B9A 55%,#4A148C)">
+      <div class="hero-row">
+        <div class="hero-av">👤</div>
         <div>
-          <div class="cc-name">Mum</div>
-          <div class="cc-relation">Family · 2nd most contacted</div>
+          <div class="hero-name">Contact Name</div>
+          <div class="hero-rel">AI inferred: Family · from message tone</div>
         </div>
       </div>
-      <div class="cc-stats">
-        <div class="cc-stat"><div class="cc-stat-n">3</div><div class="cc-stat-l">This week</div></div>
-        <div class="cc-stat"><div class="cc-stat-n">1</div><div class="cc-stat-l">Missed call</div></div>
-        <div class="cc-stat"><div class="cc-stat-n">Sun</div><div class="cc-stat-l">Last chat</div></div>
+      <div class="msg-count-row">
+        <div class="mc-item"><div class="mc-n">31</div><div class="mc-l">This week</div></div>
+        <div class="mc-item"><div class="mc-n">6</div><div class="mc-l">Today</div></div>
+        <div class="mc-item"><div class="mc-n">2d</div><div class="mc-l">Last reply</div></div>
       </div>
     </div>
-    <div class="cc-body">
-      <div class="cc-last"><strong>Missed call</strong> from Mum — Today 11:30 AM · <span style="color:var(--r5)">Not called back yet</span></div>
-      <div class="cc-actions">
-        <div class="cc-act" style="background:linear-gradient(135deg,var(--r5),var(--r6));color:white">💬 Message</div>
-        <div class="cc-act" style="background:rgba(52,199,89,.1);color:#2E7D32;border:1px solid rgba(52,199,89,.2)">📞 Call Back</div>
-        <div class="cc-act" style="background:rgba(255,59,48,.08);color:#B71C1C;border:1px solid rgba(255,59,48,.2)">⚠️ Overdue</div>
+    <div class="card-body">
+      <div style="background:rgba(142,36,170,.07);border:1px solid rgba(142,36,170,.15);border-radius:11px;padding:10px;font-size:11px;color:var(--text-m);line-height:1.55;margin-bottom:10px">
+        ✦ <strong>AI reading relationship…</strong><br>
+        Analysing last 20 messages to understand who this person is and generate smart replies.
       </div>
-      <div class="cc-chips">
-        <div class="cc-chip">Sorry I missed your call!</div>
-        <div class="cc-chip">Call you tonight?</div>
-        <div class="cc-chip">Thinking of you 🩷</div>
-        <div class="cc-chip">I'll call you at 6pm</div>
+      <div class="card-actions">
+        <div class="ca" style="background:linear-gradient(135deg,#8E24AA,#6A1B9A);color:white">💬 Message</div>
+        <div class="ca" style="background:rgba(255,255,255,.75);color:var(--text-m);border:1.5px solid var(--r2)">📞 Call</div>
+        <div class="ca" style="background:rgba(255,255,255,.75);color:var(--text-m);border:1.5px solid var(--r2)">✦ Draft</div>
+      </div>
+      <div class="ai-chip-label">✦ Smart chips loading…</div>
+      <div class="smart-chips">
+        <div class="smart-chip" style="background:rgba(255,255,255,.5);color:var(--text-xs)">Generating…</div>
+        <div class="smart-chip" style="background:rgba(255,255,255,.5);color:var(--text-xs)">Generating…</div>
+        <div class="smart-chip" style="background:rgba(255,255,255,.5);color:var(--text-xs)">Generating…</div>
       </div>
     </div>
   </div>
 
-  <!-- PROF CHEN - LECTURER -->
-  <div class="contact-card" onclick="showDetail('prof')">
-    <div class="cc-hero" style="background:linear-gradient(145deg,#5C6BC0,#3F51B5 55%,#283593)">
-      <div class="cc-top">
-        <div class="cc-av" style="background:rgba(255,255,255,.2)">👨‍🏫</div>
+  <!-- CARD 3: #3 Most messaged -->
+  <div class="person-card">
+    <div class="rank-badge">#3 Most Contacted</div>
+    <div class="card-hero" style="background:linear-gradient(145deg,#F57C00,#E65100 55%,#BF360C)">
+      <div class="hero-row">
+        <div class="hero-av">👤</div>
         <div>
-          <div class="cc-name">Prof. Chen</div>
-          <div class="cc-relation">MKT302 Lecturer · University</div>
+          <div class="hero-name">Contact Name</div>
+          <div class="hero-rel">AI inferred: Friend · from casual tone + emojis</div>
         </div>
-        <div style="margin-left:auto;background:rgba(255,255,255,.15);border-radius:10px;padding:4px 10px;font-size:9px;color:white;font-weight:600">Email</div>
+        <div style="margin-left:auto;background:rgba(255,255,255,.18);border-radius:9px;padding:3px 9px;font-size:9px;color:white;font-weight:600">● Active</div>
       </div>
-      <div class="cc-stats">
-        <div class="cc-stat"><div class="cc-stat-n">2</div><div class="cc-stat-l">This month</div></div>
-        <div class="cc-stat"><div class="cc-stat-n">1</div><div class="cc-stat-l">Draft ready</div></div>
-        <div class="cc-stat"><div class="cc-stat-n">Fri</div><div class="cc-stat-l">Essay due</div></div>
+      <div class="msg-count-row">
+        <div class="mc-item"><div class="mc-n">28</div><div class="mc-l">This week</div></div>
+        <div class="mc-item"><div class="mc-n">3</div><div class="mc-l">Today</div></div>
+        <div class="mc-item"><div class="mc-n">4</div><div class="mc-l">Unread</div></div>
       </div>
     </div>
-    <div class="cc-body">
-      <div class="cc-last"><strong>Draft ready:</strong> Extension request email — AI drafted, waiting to send</div>
-      <div class="cc-actions">
-        <div class="cc-act" style="background:linear-gradient(135deg,#5C6BC0,#3F51B5);color:white">📧 Email</div>
-        <div class="cc-act" style="background:rgba(255,255,255,.75);color:var(--text-m);border:1px solid var(--r2)">✦ Draft</div>
-        <div class="cc-act" style="background:rgba(255,255,255,.75);color:var(--text-m);border:1px solid var(--r2)">📋 Templates</div>
+    <div class="card-body">
+      <div class="last-msg"><strong>Unread (4):</strong> Message preview from real Messages app thread</div>
+      <div class="card-actions">
+        <div class="ca" style="background:linear-gradient(135deg,#F57C00,#E65100);color:white">💬 Message</div>
+        <div class="ca" style="background:rgba(255,255,255,.75);color:var(--text-m);border:1.5px solid var(--r2)">📞 Call</div>
+        <div class="ca" style="background:rgba(255,255,255,.75);color:var(--text-m);border:1.5px solid var(--r2)">✦ Draft</div>
       </div>
-      <div class="cc-chips">
-        <div class="cc-chip">Request extension</div>
-        <div class="cc-chip">Ask about feedback</div>
-        <div class="cc-chip">Clarify assignment</div>
-        <div class="cc-chip">Thank you email</div>
+      <div class="ai-chip-label">✦ AI smart replies — friend tone</div>
+      <div class="smart-chips">
+        <div class="smart-chip">Just saw this! Sorry 😅</div>
+        <div class="smart-chip">Yes! What time?</div>
+        <div class="smart-chip">Sounds good! 🙌</div>
       </div>
     </div>
   </div>
 
-  <!-- STUDY GROUP - FRIENDS -->
-  <div class="contact-card" onclick="showDetail('study')">
-    <div class="cc-hero" style="background:linear-gradient(145deg,#FF9800,#F57C00 55%,#E65100)">
-      <div class="cc-top">
-        <div class="cc-av" style="background:rgba(255,255,255,.2)">📚</div>
+  <!-- CARD 4: #4 — Group chat -->
+  <div class="person-card">
+    <div class="rank-badge">#4 Most Contacted</div>
+    <div class="card-hero" style="background:linear-gradient(145deg,#00838F,#006064 55%,#004D40)">
+      <div class="hero-row">
+        <div class="hero-av">👥</div>
         <div>
-          <div class="cc-name">Study Group</div>
-          <div class="cc-relation">Aisha, Marcus, Priya · MKT302</div>
+          <div class="hero-name">Group Chat Name</div>
+          <div class="hero-rel">AI inferred: Group · 4 participants · Uni related</div>
         </div>
-        <div style="margin-left:auto;background:rgba(255,255,255,.15);border-radius:10px;padding:4px 10px;font-size:9px;color:white;font-weight:600">Group · 3</div>
+        <div style="margin-left:auto;background:rgba(255,255,255,.18);border-radius:9px;padding:3px 9px;font-size:9px;color:white;font-weight:600">Group · 4</div>
       </div>
-      <div class="cc-stats">
-        <div class="cc-stat"><div class="cc-stat-n">Wed</div><div class="cc-stat-l">Meeting</div></div>
-        <div class="cc-stat"><div class="cc-stat-n">12:30</div><div class="cc-stat-l">Library</div></div>
-        <div class="cc-stat"><div class="cc-stat-n">3</div><div class="cc-stat-l">Members</div></div>
+      <div class="msg-count-row">
+        <div class="mc-item"><div class="mc-n">22</div><div class="mc-l">This week</div></div>
+        <div class="mc-item"><div class="mc-n">8</div><div class="mc-l">Today</div></div>
+        <div class="mc-item"><div class="mc-n">2</div><div class="mc-l">Unread</div></div>
       </div>
     </div>
-    <div class="cc-body">
-      <div class="cc-last"><strong>Group chat:</strong> "Library 12:30 confirmed?" — Aisha, 9:45 AM</div>
-      <div class="cc-actions">
-        <div class="cc-act" style="background:linear-gradient(135deg,#FF9800,#F57C00);color:white">💬 Group Chat</div>
-        <div class="cc-act" style="background:rgba(255,255,255,.75);color:var(--text-m);border:1px solid var(--r2)">📅 Our Events</div>
-        <div class="cc-act" style="background:rgba(255,255,255,.75);color:var(--text-m);border:1px solid var(--r2)">✦ Draft</div>
+    <div class="card-body">
+      <div class="last-msg"><strong>Last message:</strong> Real preview from the actual group thread</div>
+      <div class="card-actions">
+        <div class="ca" style="background:linear-gradient(135deg,#00838F,#006064);color:white">💬 Group</div>
+        <div class="ca" style="background:rgba(255,255,255,.75);color:var(--text-m);border:1.5px solid var(--r2)">👥 Members</div>
+        <div class="ca" style="background:rgba(255,255,255,.75);color:var(--text-m);border:1.5px solid var(--r2)">✦ Draft</div>
       </div>
-      <div class="cc-chips">
-        <div class="cc-chip">Library 12:30 ✓</div>
-        <div class="cc-chip">Who has the notes?</div>
-        <div class="cc-chip">Running 5 mins late</div>
-        <div class="cc-chip">What's our section?</div>
+      <div class="ai-chip-label">✦ AI smart replies — group context</div>
+      <div class="smart-chips">
+        <div class="smart-chip">On my way! ✅</div>
+        <div class="smart-chip">Running 5 mins late</div>
+        <div class="smart-chip">Who's doing section 2?</div>
+        <div class="smart-chip">Sounds good 👍</div>
       </div>
     </div>
   </div>
 
-  <!-- BEST FRIEND -->
-  <div class="contact-card" onclick="showDetail('friend')">
-    <div class="cc-hero" style="background:linear-gradient(145deg,#AB47BC,#8E24AA 55%,#6A1B9A)">
-      <div class="cc-top">
-        <div class="cc-av" style="background:rgba(255,255,255,.2)">👯‍♀️</div>
+  <!-- CARD 5: #5 -->
+  <div class="person-card">
+    <div class="rank-badge">#5 Most Contacted</div>
+    <div class="card-hero" style="background:linear-gradient(145deg,#1976D2,#1565C0 55%,#0D47A1)">
+      <div class="hero-row">
+        <div class="hero-av">👤</div>
         <div>
-          <div class="cc-name">Zara</div>
-          <div class="cc-relation">Best Friend · Uni</div>
+          <div class="hero-name">Contact Name</div>
+          <div class="hero-rel">AI inferred: Formal · possibly work/uni</div>
         </div>
-        <div style="margin-left:auto;background:rgba(255,255,255,.15);border-radius:10px;padding:4px 10px;font-size:9px;color:white;font-weight:600">● Active</div>
       </div>
-      <div class="cc-stats">
-        <div class="cc-stat"><div class="cc-stat-n">7</div><div class="cc-stat-l">Yesterday</div></div>
-        <div class="cc-stat"><div class="cc-stat-n">Fri</div><div class="cc-stat-l">Plans</div></div>
-        <div class="cc-stat"><div class="cc-stat-n">🩷</div><div class="cc-stat-l">Vibe</div></div>
+      <div class="msg-count-row">
+        <div class="mc-item"><div class="mc-n">11</div><div class="mc-l">This week</div></div>
+        <div class="mc-item"><div class="mc-n">0</div><div class="mc-l">Today</div></div>
+        <div class="mc-item"><div class="mc-n">Email</div><div class="mc-l">Prefers</div></div>
       </div>
     </div>
-    <div class="cc-body">
-      <div class="cc-last"><strong>Last message:</strong> "Coffee after class Friday? ☕" — Yesterday 4pm</div>
-      <div class="cc-actions">
-        <div class="cc-act" style="background:linear-gradient(135deg,#AB47BC,#8E24AA);color:white">💬 Message</div>
-        <div class="cc-act" style="background:rgba(52,199,89,.1);color:#2E7D32;border:1px solid rgba(52,199,89,.2)">📞 FaceTime</div>
-        <div class="cc-act" style="background:rgba(255,255,255,.75);color:var(--text-m);border:1px solid var(--r2)">📅 Plans</div>
+    <div class="card-body">
+      <div class="last-msg"><strong>Last message:</strong> Real preview from Messages thread</div>
+      <div class="card-actions">
+        <div class="ca" style="background:linear-gradient(135deg,#1976D2,#1565C0);color:white">📧 Email</div>
+        <div class="ca" style="background:rgba(255,255,255,.75);color:var(--text-m);border:1.5px solid var(--r2)">💬 Message</div>
+        <div class="ca" style="background:rgba(255,255,255,.75);color:var(--text-m);border:1.5px solid var(--r2)">✦ Draft</div>
       </div>
-      <div class="cc-chips">
-        <div class="cc-chip">Coffee Friday? ☕ Yes!</div>
-        <div class="cc-chip">Running late for class</div>
-        <div class="cc-chip">Miss you! 💜</div>
-        <div class="cc-chip">Study together today?</div>
+      <div class="ai-chip-label">✦ AI smart replies — formal tone</div>
+      <div class="smart-chips">
+        <div class="smart-chip">Thank you for your reply</div>
+        <div class="smart-chip">I'll send it shortly</div>
+        <div class="smart-chip">Could we schedule a time?</div>
       </div>
     </div>
   </div>
 
-  <!-- DAD -->
-  <div class="contact-card" onclick="showDetail('dad')">
-    <div class="cc-hero" style="background:linear-gradient(145deg,#26A69A,#00796B 55%,#004D40)">
-      <div class="cc-top">
-        <div class="cc-av" style="background:rgba(255,255,255,.2)">👨</div>
-        <div>
-          <div class="cc-name">Dad</div>
-          <div class="cc-relation">Family · Weekly check-in</div>
-        </div>
-      </div>
-      <div class="cc-stats">
-        <div class="cc-stat"><div class="cc-stat-n">Sun</div><div class="cc-stat-l">Last chat</div></div>
-        <div class="cc-stat"><div class="cc-stat-n">1</div><div class="cc-stat-l">This week</div></div>
-        <div class="cc-stat"><div class="cc-stat-n">📞</div><div class="cc-stat-l">Prefers call</div></div>
-      </div>
-    </div>
-    <div class="cc-body">
-      <div class="cc-last"><strong>Sunday call:</strong> 45 minutes — asked about uni progress 🎓</div>
-      <div class="cc-actions">
-        <div class="cc-act" style="background:linear-gradient(135deg,#26A69A,#00796B);color:white">💬 Message</div>
-        <div class="cc-act" style="background:rgba(52,199,89,.1);color:#2E7D32;border:1px solid rgba(52,199,89,.2)">📞 Call</div>
-        <div class="cc-act" style="background:rgba(255,255,255,.75);color:var(--text-m);border:1px solid var(--r2)">✦ Draft</div>
-      </div>
-      <div class="cc-chips">
-        <div class="cc-chip">Uni is going great!</div>
-        <div class="cc-chip">Miss you, Dad 💚</div>
-        <div class="cc-chip">Call you Sunday?</div>
-        <div class="cc-chip">Got my essay back!</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ADD NEW -->
-  <div class="add-card" onclick="alert('Add contact modal would open')">
-    <div class="add-icon">+</div>
-    <div class="add-label">Add Important Person</div>
-    <div class="add-sub">AI learns their name from Contacts<br>and builds their profile automatically</div>
+  <!-- ADD PINNED PERSON -->
+  <div class="add-card" onclick="alert('Opens Contacts picker to pin someone specific')">
+    <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,rgba(233,30,140,.12),rgba(194,24,91,.07));border:2px dashed rgba(233,30,140,.25);display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:10px">+</div>
+    <div style="font-size:12px;font-weight:600;color:var(--text-m);margin-bottom:4px">Pin Someone</div>
+    <div style="font-size:10px;color:var(--text-xs);text-align:center;line-height:1.45;padding:0 16px">Manually pin a contact — even if they're not in your top 5 messaged</div>
   </div>
 
 </div>
 
-<!-- DETAIL PANEL (shown when card clicked) -->
-<div class="detail-panel show" id="detail-nyriian">
-  <div class="dp-hero" style="background:linear-gradient(145deg,#E91E8C,#C2185B 55%,#880E4F)">
-    <div class="dp-top">
-      <div class="dp-av" style="background:rgba(255,255,255,.2)">💙</div>
+<!-- NYRIIAN DETAIL PANEL -->
+<div class="detail-wrap" id="detail" style="display:none">
+  <div class="detail-hero" style="background:linear-gradient(145deg,#E91E8C,#C2185B 55%,#880E4F)">
+    <div class="dh-row">
+      <div class="dh-av">💙</div>
       <div>
-        <div class="dp-name">NyRiian</div>
-        <div class="dp-rel">Husband · Saved as "NyRiian" in Contacts · Always recognised as "my husband"</div>
+        <div class="dh-name">NyRiian</div>
+        <div class="dh-sub">Husband · Always recognised as "my husband" · Saved as "NyRiian" in Contacts</div>
       </div>
-      <div style="margin-left:auto;display:flex;gap:8px">
-        <div style="background:rgba(255,255,255,.2);border-radius:11px;padding:7px 13px;font-size:11px;font-weight:600;color:white;cursor:pointer">💬 iMessage</div>
-        <div style="background:rgba(255,255,255,.2);border-radius:11px;padding:7px 13px;font-size:11px;font-weight:600;color:white;cursor:pointer">📞 FaceTime</div>
+      <div class="dh-actions">
+        <div class="dh-act">💬 iMessage</div>
+        <div class="dh-act">📞 FaceTime</div>
+        <div class="dh-act" onclick="document.getElementById('detail').style.display='none'">✕</div>
       </div>
     </div>
-    <div class="dp-stats-row">
-      <div class="dp-stat"><div class="dp-stat-n">14</div><div class="dp-stat-l">Today</div></div>
-      <div class="dp-stat"><div class="dp-stat-n">3</div><div class="dp-stat-l">AI Sent</div></div>
-      <div class="dp-stat"><div class="dp-stat-n">2</div><div class="dp-stat-l">Shared Events</div></div>
-      <div class="dp-stat"><div class="dp-stat-n">98%</div><div class="dp-stat-l">Response Rate</div></div>
+    <div class="dh-stats">
+      <div><div class="dh-stat-n">47</div><div class="dh-stat-l">This week</div></div>
+      <div><div class="dh-stat-n">14</div><div class="dh-stat-l">Today</div></div>
+      <div><div class="dh-stat-n">3</div><div class="dh-stat-l">AI sent</div></div>
+      <div><div class="dh-stat-n">98%</div><div class="dh-stat-l">Response rate</div></div>
+      <div><div class="dh-stat-n">2</div><div class="dh-stat-l">Shared events</div></div>
     </div>
   </div>
-  <div class="dp-body">
+  <div class="detail-body">
     <div class="dp-grid">
-      <div class="dp-section">
-        <div class="dp-sec-lbl">Recent Messages</div>
-        <div class="msg-bubble mb-miss">Pasta sounds perfect 🍝</div>
-        <div class="msg-bubble mb-them">Great! Home by 6:30 🩷</div>
-        <div class="msg-bubble mb-ai">✦ AI sent: "Dinner ready at 7 tonight! Can you grab milk? 🍼"</div>
+      <div class="dp-sec">
+        <div class="dp-sec-lbl">Recent Messages · Real Data</div>
+        <div class="mb mb-them">Good morning! Have a great day 🩷</div>
+        <div class="mb mb-me">Thank you! Love you 💕</div>
+        <div class="mb mb-ai"><span class="ai-lbl">✦ AI sent automatically</span>Dinner ready at 7 tonight! Can you grab milk? 🍼</div>
+        <div class="mb mb-them">Sure! Home by 6:30 🩷</div>
       </div>
-      <div class="dp-section">
-        <div class="dp-sec-lbl">Shared This Week</div>
-        <div style="display:flex;flex-direction:column;gap:6px">
-          <div style="display:flex;gap:8px;align-items:center"><div style="width:7px;height:7px;border-radius:50%;background:var(--r5);flex-shrink:0"></div><div style="font-size:11px;color:var(--text-m)">Dinner together — Tonight 7pm</div></div>
-          <div style="display:flex;gap:8px;align-items:center"><div style="width:7px;height:7px;border-radius:50%;background:var(--gold);flex-shrink:0"></div><div style="font-size:11px;color:var(--text-m)">Weekend plans — Sat TBD</div></div>
-          <div style="margin-top:8px;font-size:10px;color:var(--text-xs)">2 shared calendar events this week</div>
+      <div class="dp-sec">
+        <div class="dp-sec-lbl">AI Relationship Intelligence</div>
+        <div style="font-size:11px;color:var(--text-m);line-height:1.65">
+          ✦ Detected from messages: <strong>Husband</strong><br><br>
+          Signals used: affectionate language, daily check-ins, shared home context ("dinner", "milk", "home"), contact saved as "NyRiian".<br><br>
+          When Miss M says <strong>"my husband"</strong> → AI always resolves to NyRiian.
         </div>
       </div>
     </div>
     <div class="plbl">Quick Message</div>
     <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
-      <div class="cc-chip" onclick="setCompose(this)">On my way home! 🚗</div>
-      <div class="cc-chip" onclick="setCompose(this)">Dinner is ready at 7 🍽️</div>
-      <div class="cc-chip" onclick="setCompose(this)">Can you pick up milk? 🥛</div>
-      <div class="cc-chip" onclick="setCompose(this)">Love you so much 🩷</div>
-      <div class="cc-chip" onclick="setCompose(this)">Running late, home by 7:30</div>
-      <div class="cc-chip" onclick="setCompose(this)">Thinking of you ✨</div>
+      <div class="smart-chip" onclick="setC(this,'On my way home! 🚗')">On my way home! 🚗</div>
+      <div class="smart-chip" onclick="setC(this,'Dinner is ready at 7 🍽️')">Dinner is ready at 7 🍽️</div>
+      <div class="smart-chip" onclick="setC(this,'Can you pick up milk? 🥛')">Can you pick up milk? 🥛</div>
+      <div class="smart-chip" onclick="setC(this,'Love you so much 🩷')">Love you so much 🩷</div>
+      <div class="smart-chip" onclick="setC(this,'Running late, home by 7:30')">Running late, home by 7:30</div>
+      <div class="smart-chip" onclick="setC(this,'Thinking of you ✨')">Thinking of you ✨</div>
     </div>
-    <div style="display:flex;gap:8px">
-      <input class="compose-inp" id="compose-inp" placeholder="Or type your own… AI will make it warm and natural" value="On my way home! 🚗">
-      <button class="btn-p" style="white-space:nowrap">✦ Draft & Send</button>
+    <div class="compose-row">
+      <input class="compose-inp" id="composeInp" placeholder="Or describe what you want to say — AI makes it warm and natural" value="On my way home! 🚗">
+      <button class="btn-p">✦ Draft &amp; Send</button>
     </div>
   </div>
 </div>
 
 <script>
-function showDetail(id) {
-  document.querySelectorAll('.detail-panel').forEach(p => p.classList.remove('show'));
-  const panel = document.getElementById('detail-' + id);
-  if (panel) panel.classList.add('show');
-  panel?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+function showDetail(){
+  const d = document.getElementById('detail');
+  d.style.display = d.style.display === 'none' ? 'block' : 'none';
+  if(d.style.display==='block') d.scrollIntoView({behavior:'smooth',block:'start'});
 }
-function setCompose(el) {
-  document.querySelectorAll('.cc-chip').forEach(c => c.style.background = '');
-  el.style.background = 'rgba(233,30,140,.12)';
-  el.style.borderColor = 'var(--r4)';
-  el.style.color = 'var(--r5)';
-  const inp = document.getElementById('compose-inp');
-  if (inp) inp.value = el.textContent.trim();
+function setC(el,msg){
+  document.querySelectorAll('.smart-chip').forEach(c=>{c.style.background='';c.style.color='';c.style.borderColor=''});
+  el.style.background='rgba(233,30,140,.1)';
+  el.style.color='var(--r5)';
+  el.style.borderColor='var(--r3)';
+  document.getElementById('composeInp').value=msg;
+}
+function toggleConnect(){
+  const s = document.getElementById('connectState');
+  s.classList.toggle('show');
+  if(s.classList.contains('show')) setTimeout(()=>s.classList.remove('show'),3000);
 }
 </script>
 </body>
