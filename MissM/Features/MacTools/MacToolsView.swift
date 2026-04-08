@@ -13,11 +13,15 @@ struct MacToolsView: View {
     enum MacToolFeature: String, CaseIterable {
         case pdfReader = "PDF Reader"
         case screenshotOCR = "Screenshot OCR"
+        case safariCompanion = "Safari Companion"
+        case fileCommandCentre = "File Command Centre"
 
         var icon: String {
             switch self {
             case .pdfReader: return "📄"
             case .screenshotOCR: return "📸"
+            case .safariCompanion: return "🌐"
+            case .fileCommandCentre: return "📁"
             }
         }
 
@@ -25,6 +29,8 @@ struct MacToolsView: View {
             switch self {
             case .pdfReader: return "Read & summarise PDFs"
             case .screenshotOCR: return "OCR any screen region"
+            case .safariCompanion: return "Read current Safari page"
+            case .fileCommandCentre: return "AI reads any file"
             }
         }
     }
@@ -83,6 +89,8 @@ struct MacToolsView: View {
         switch feature {
         case .pdfReader: PDFDropZoneView(claudeService: claudeService)
         case .screenshotOCR: ScreenshotOCRView(claudeService: claudeService)
+        case .safariCompanion: SafariCompanionView(claudeService: claudeService)
+        case .fileCommandCentre: FileCommandCentreView(claudeService: claudeService)
         }
     }
 }

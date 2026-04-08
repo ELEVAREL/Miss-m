@@ -279,7 +279,9 @@ struct ChatView: View {
             // Input row or voice waveform
             if viewModel.isListening {
                 // Voice input mode (State 7 per design)
-                VoiceInputRow(isListening: $viewModel.isListening)
+                VoiceInputRow(isListening: $viewModel.isListening) { transcript in
+                    viewModel.inputText = transcript
+                }
             } else {
                 HStack(spacing: 8) {
                     TextField("Ask me anything, Miss M…", text: $viewModel.inputText)
@@ -493,40 +495,52 @@ struct RichCard: View {
 }
 
 // MARK: - Voice Input Row (per design: pulsing mic, waveform, timer)
+// Now wired to SFSpeechRecognizer (Phase 7)
 struct VoiceInputRow: View {
     @Binding var isListening: Bool
+    var onTranscript: ((String) -> Void)? = nil
     @State private var seconds = 0
     @State private var timer: Timer? = nil
+    @State private var voiceService = VoiceInputService.shared
 
     var body: some View {
-        HStack(spacing: 12) {
-            // Pulsing mic icon
-            VoiceMicButton()
+        VStack(spacing: 6) {
+            HStack(spacing: 12) {
+                // Pulsing mic icon
+                VoiceMicButton()
 
-            VoiceWaveform()
+                VoiceWaveform()
 
-            Text("Listening to Miss M…")
-                .font(.system(size: 11))
-                .italic()
-                .foregroundColor(Theme.Colors.textSoft)
+                if voiceService.transcribedText.isEmpty {
+                    Text("Listening to Miss M…")
+                        .font(.system(size: 11))
+                        .italic()
+                        .foregroundColor(Theme.Colors.textSoft)
+                } else {
+                    Text(voiceService.transcribedText)
+                        .font(.system(size: 11))
+                        .foregroundColor(Theme.Colors.textPrimary)
+                        .lineLimit(2)
+                }
 
-            Spacer()
+                Spacer()
 
-            // Timer
-            Text(timerString)
-                .font(.system(size: 11, weight: .semibold))
-                .foregroundColor(Theme.Colors.rosePrimary)
-
-            Button(action: { stopListening() }) {
-                Text("Done")
+                // Timer
+                Text(timerString)
                     .font(.system(size: 11, weight: .semibold))
-                    .foregroundColor(.white)
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 7)
-                    .background(Theme.Gradients.rosePrimary)
-                    .cornerRadius(10)
+                    .foregroundColor(Theme.Colors.rosePrimary)
+
+                Button(action: { stopListening() }) {
+                    Text("Done")
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 7)
+                        .background(Theme.Gradients.rosePrimary)
+                        .cornerRadius(10)
+                }
+                .buttonStyle(.plain)
             }
-            .buttonStyle(.plain)
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 11)
@@ -536,8 +550,8 @@ struct VoiceInputRow: View {
         .padding(.horizontal, 14)
         .padding(.bottom, 12)
         .padding(.top, 6)
-        .onAppear { startTimer() }
-        .onDisappear { timer?.invalidate() }
+        .onAppear { startListening() }
+        .onDisappear { timer?.invalidate(); voiceService.stopListening() }
     }
 
     private var timerString: String {
@@ -546,15 +560,30 @@ struct VoiceInputRow: View {
         return "\(m):\(String(format: "%02d", s))"
     }
 
-    private func startTimer() {
+    private func startListening() {
         seconds = 0
         timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
             seconds += 1
+        }
+
+        Task {
+            await voiceService.requestAuthorization()
+            if voiceService.isAuthorized {
+                try? voiceService.startListening()
+            }
         }
     }
 
     private func stopListening() {
         timer?.invalidate()
+        voiceService.stopListening()
+
+        // Pass transcript to chat input
+        let text = voiceService.transcribedText.trimmingCharacters(in: .whitespacesAndNewlines)
+        if !text.isEmpty {
+            onTranscript?(text)
+        }
+
         isListening = false
     }
 }

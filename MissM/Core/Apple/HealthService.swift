@@ -43,6 +43,26 @@ class HealthService {
         HKCategoryType.categoryType(forIdentifier: .mindfulSession)!
     }
 
+    // MARK: - Cycle Tracking Types (Phase 6)
+
+    private var menstrualFlowType: HKCategoryType {
+        HKCategoryType.categoryType(forIdentifier: .menstrualFlow)!
+    }
+    private var cervicalMucusType: HKCategoryType {
+        HKCategoryType.categoryType(forIdentifier: .cervicalMucusQuality)!
+    }
+    private var ovulationTestType: HKCategoryType {
+        HKCategoryType.categoryType(forIdentifier: .ovulationTestResult)!
+    }
+    private var intermenstrualBleedingType: HKCategoryType {
+        HKCategoryType.categoryType(forIdentifier: .intermenstrualBleeding)!
+    }
+
+    // MARK: - Cycle Tracking Observable State
+    var currentCycleDay: Int = 0
+    var currentPhase: CyclePhase = .unknown
+    var lastPeriodStart: Date?
+
     // MARK: - Types to Read & Share
 
     private var readTypes: Set<HKObjectType> {
@@ -52,13 +72,18 @@ class HealthService {
             heartRateType,
             hrvType,
             sleepType,
-            mindfulType
+            mindfulType,
+            menstrualFlowType,
+            cervicalMucusType,
+            ovulationTestType,
+            intermenstrualBleedingType
         ]
     }
 
     private var shareTypes: Set<HKSampleType> {
         [
-            mindfulType
+            mindfulType,
+            menstrualFlowType
         ]
     }
 
@@ -319,6 +344,74 @@ class HealthService {
         return lines.joined(separator: "\n")
     }
 
+    // MARK: - Cycle Tracking (Phase 6)
+
+    /// Fetch recent menstrual flow data and estimate current cycle day/phase
+    func fetchCycleData() async {
+        let calendar = Calendar.current
+        let threeMonthsAgo = calendar.date(byAdding: .month, value: -3, to: Date())!
+
+        let predicate = HKQuery.predicateForSamples(
+            withStart: threeMonthsAgo,
+            end: Date(),
+            options: .strictStartDate
+        )
+
+        do {
+            let samples = try await fetchCategorySamples(for: menstrualFlowType, predicate: predicate)
+
+            // Find the most recent period start (flow value > 0, preceded by no-flow)
+            let flowDays = samples.filter { $0.value != HKCategoryValueMenstrualFlow.none.rawValue }
+                .sorted { $0.startDate > $1.startDate }
+
+            if let lastFlow = flowDays.first {
+                // Walk back to find the start of the most recent period
+                var periodStart = lastFlow.startDate
+                for sample in flowDays {
+                    if calendar.isDate(sample.startDate, equalTo: periodStart, toGranularity: .day) ||
+                       calendar.dateComponents([.day], from: sample.startDate, to: periodStart).day ?? 99 <= 1 {
+                        periodStart = sample.startDate
+                    }
+                }
+
+                lastPeriodStart = periodStart
+                let daysSincePeriod = calendar.dateComponents([.day], from: periodStart, to: Date()).day ?? 0
+                currentCycleDay = daysSincePeriod + 1
+
+                // Estimate phase (28-day cycle)
+                if daysSincePeriod <= 5 {
+                    currentPhase = .menstrual
+                } else if daysSincePeriod <= 13 {
+                    currentPhase = .follicular
+                } else if daysSincePeriod <= 16 {
+                    currentPhase = .ovulation
+                } else if daysSincePeriod <= 28 {
+                    currentPhase = .luteal
+                } else {
+                    currentPhase = .unknown
+                }
+            }
+        } catch {
+            currentPhase = .unknown
+        }
+    }
+
+    /// Log menstrual flow
+    func logMenstrualFlow(_ flowLevel: Int) async throws {
+        let now = Date()
+        let startOfDay = Calendar.current.startOfDay(for: now)
+
+        let sample = HKCategorySample(
+            type: menstrualFlowType,
+            value: flowLevel,
+            start: startOfDay,
+            end: now,
+            metadata: [HKMetadataKeyWasUserEntered: true]
+        )
+
+        try await store.save(sample)
+    }
+
     // MARK: - Error Types
 
     enum HealthServiceError: Error, LocalizedError {
@@ -380,6 +473,46 @@ enum MoodLevel: Int, CaseIterable, Identifiable {
         case .okay:     return Color(hex: "#FFA726")
         case .good:     return Color(hex: "#66BB6A")
         case .great:    return Color(hex: "#E91E8C")
+        }
+    }
+}
+
+// MARK: - Cycle Phase Model (Phase 6)
+
+enum CyclePhase: String, CaseIterable {
+    case menstrual = "Menstrual"
+    case follicular = "Follicular"
+    case ovulation = "Ovulation"
+    case luteal = "Luteal"
+    case unknown = "Unknown"
+
+    var icon: String {
+        switch self {
+        case .menstrual: return "🩸"
+        case .follicular: return "🌱"
+        case .ovulation: return "🌸"
+        case .luteal: return "🌙"
+        case .unknown: return "❓"
+        }
+    }
+
+    var color: Color {
+        switch self {
+        case .menstrual: return Color(hex: "#FF3B30")
+        case .follicular: return Color(hex: "#34C759")
+        case .ovulation: return Color(hex: "#FF9500")
+        case .luteal: return Color(hex: "#AF52DE")
+        case .unknown: return Color(hex: "#8E8E93")
+        }
+    }
+
+    var energyLevel: String {
+        switch self {
+        case .menstrual: return "Rest & recover"
+        case .follicular: return "Rising energy"
+        case .ovulation: return "Peak energy"
+        case .luteal: return "Winding down"
+        case .unknown: return "Track to learn"
         }
     }
 }
