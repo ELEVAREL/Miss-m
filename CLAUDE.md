@@ -3,186 +3,210 @@
 
 ---
 
-## ⚠️ CRITICAL RULES — NEVER BREAK THESE
+## ⚠️ ABSOLUTE RULES — NEVER BREAK
 
-1. ALWAYS read this entire file first before starting any task
-2. ALWAYS check which Phase we are in (see CURRENT PHASE below)
-3. NEVER hardcode API keys — always use KeychainManager.swift
-4. NEVER use ObservableObject — always use @Observable (Swift 5.9+)
-5. NEVER use completion handlers — always use async/await
-6. ALWAYS follow the pink design system in Theme.swift exactly
-7. ALWAYS reference the HTML design files in docs/design/ before building any UI
-8. NEVER invent features not in this file
-9. ALWAYS ask the user before starting a new Phase
-10. NEVER delete existing files — only add or modify
-
----
-
-## 🎯 WHAT THIS APP IS
-
-Name: Miss M
-Type: Native macOS menu bar app (NOT iOS, NOT web)
-Purpose: Personal AI assistant for a Marketing university student
-User: Miss M — female Marketing student who also manages home and family
-Platform: macOS 14.0+ only
-Distribution: NOT on App Store — runs locally on her Mac
-AI Brain: Claude Sonnet 4.6 via Anthropic API
-Bundle ID: com.missm.assistant
-
-What makes it special:
-- Lives in the menu bar (♛ icon) — one click away always
-- Two-way iMessage AI — she texts her Mac from iPhone, AI replies
-- Morning briefing — auto iMessage at 7:30am with schedule + weather + tasks
-- Knows her whole life — school, home, meals, budget, wellness
-- Feels like a luxury product — pink, glass, elegant
+1. Read this ENTIRE file before starting any task
+2. Only build what is in this file — never invent features
+3. NEVER hardcode API keys — always KeychainManager.swift
+4. NEVER use ObservableObject — always @Observable (Swift 5.9+)
+5. NEVER use completion handlers — always async/await
+6. ALWAYS follow Theme.swift for ALL colors, fonts, spacing
+7. ALWAYS open the matching design file in docs/design/ before building any UI screen
+8. Ask user before starting a new Phase — confirm previous Phase works first
+9. NEVER delete existing files — only add or modify
+10. NEVER store sensitive data anywhere except Keychain
 
 ---
 
-## 📱 CURRENT PHASE: PHASE 1 — NOT STARTED
+## 🎯 PROJECT IDENTITY
 
-Build in this exact order:
-[ ] 1. Create Xcode project: macOS App, SwiftUI, Bundle ID com.missm.assistant, deployment macOS 14.0
-[ ] 2. Copy all existing Swift files into correct Xcode groups (match folder structure)
-[ ] 3. Add Info.plist permissions (see PERMISSIONS section)
-[ ] 4. Menu bar icon ♛ showing via AppDelegate.swift
-[ ] 5. Popover 420x620pt opens on click
-[ ] 6. Onboarding screen if no API key in Keychain
-[ ] 7. API key saved to Keychain when entered
-[ ] 8. Main app + tab bar shows after setup
-[ ] 9. Claude chat working with streaming
-[ ] 10. Thinking indicator before response arrives
-[ ] 11. Tool-use pills when Claude uses Apple APIs
-[ ] 12. Apple Calendar read access (CalendarService.swift)
-[ ] 13. Apple Reminders read + write (RemindersService.swift)
-[ ] 14. Pink design system applied to all views
-[ ] 15. Test end-to-end — tell user Phase 1 complete
+App name:         Miss M
+Type:             Native macOS menu bar app (NOT iOS, NOT web)
+User:             Miss M — female Marketing university student + home manager
+Platform:         macOS 14.0+ only
+Distribution:     NOT App Store — runs locally on her Mac only
+AI model:         Claude Sonnet 4.6 — claude-sonnet-4-20250514
+Bundle ID:        com.missm.assistant
+Popover size:     420 × 620pt — NEVER change this
 
 ---
 
-## 🏗️ ALL PHASES OVERVIEW
+## 👤 KEY PEOPLE
 
-PHASE 1 — Foundation (CURRENT)
-  Menu bar app, onboarding, Claude chat (all 7 states), Calendar, Reminders, Settings, pink design
+Husband name:     NyRiian
+Saved in her Contacts as: "NyRiian"
+When Miss M says "my husband", "text my husband", "call my husband" — ALWAYS resolve to NyRiian via CNContactStore
+NyRiian is always pinned #1 in People Hub regardless of message frequency
 
-PHASE 2 — School
-  Assignment kanban (3 cols), Essay writer (3 panels), Study planner + Pomodoro,
-  Flashcards, Marketing tools (SWOT/STP/Persona/Campaign), Research + citations, Calendar view
-
-PHASE 3 — iMessage AI
-  Incoming message monitor (AppleScript poll 10s), Auto-reply via Claude,
-  Morning briefing 7:30am weekdays, Evening wind-down 9pm, Sunday weekly plan 7pm, Deadline warnings
-
-PHASE 4 — Home and Life
-  Meal planner (7-day grid), Grocery list (sections, tap to check),
-  Budget tracker (donut chart, categories, savings goals), Email drafter (tone selector + templates)
-
-PHASE 5 — Marketing Tools
-  SWOT/PESTLE builders, STP walkthrough, Persona builder, Campaign generator,
-  Social media planner, LinkedIn drafter, Marketing news briefing
-
-PHASE 6 — Wellness
-  Hydration tracker (reminders every 2hrs), Mood check-in (5 options),
-  Study break alerts (after 90min), Sleep reminder 10:30pm, Wellness dashboard
-
-PHASE 7 — Polish
-  Touch ID lock, Voice input (Speech), Text-to-speech (AVFoundation),
-  Keyboard shortcuts, Spotlight, Onboarding flows, App icon
+App owner/builder: NyRiian (husband) — he manages the repo and runs Claude Code
+Miss M:           The user of the app — always address her as "Miss M"
 
 ---
 
-## 🎨 DESIGN SYSTEM — USE THEME.SWIFT ALWAYS
+## 📱 CURRENT PHASE: PHASE 1 — BUILD THIS FIRST
 
-Never use raw hex values. Always use Theme.* constants.
-
-COLORS (all in Theme.Colors.*):
-  rosePrimary   #E91E8C   — buttons, active states, highlights
-  roseDeep      #C2185B   — button gradients, icon backgrounds
-  roseDark      #880E4F   — hero card gradients
-  roseMid       #F06292   — thinking dots, secondary accents
-  roseLight     #F8BBD9   — borders, chip outlines
-  rosePale      #FCE4EC   — pale backgrounds
-  roseUltra     #FFF0F8   — body background
-  gold          #D4AF7A   — premium accent
-  textPrimary   #1A0A10   — main text
-  textMedium    #5C3049   — secondary text
-  textSoft      #9A6B80   — hints, descriptions
-  textXSoft     #C4A0B2   — placeholder text, disabled
-  glassWhite    white 62% — card backgrounds
-  glassBorder   white 82% — card borders
-  shadow        rose 13%  — card shadows
-
-TYPOGRAPHY:
-  Display/headers:  Playfair Display Italic (large headings, hero titles)
-  Section labels:   Cormorant Garamond SemiBold + 2.5pt tracking + uppercase
-  All body text:    DM Sans (system font is acceptable fallback)
-
-GLASS CARD PATTERN:
-  .glassCard() modifier — defined in Theme.swift
-  white 62% background + ultraThinMaterial + white 82% border + rose shadow
-
-GRADIENT HERO CARDS:
-  Theme.Gradients.heroCard — rose to deep to dark
-  Always overflow:hidden with two decorative white circles
-
-BUTTONS:
-  Primary: .buttonStyle(RoseButtonStyle()) — gradient, white text, rose shadow
-  Ghost: white 75% bg + rose border + medium text + hover darkens
-
-POPOVER SIZE: 420 x 620pt — NEVER change this
+Complete in this exact order:
+[ ] 1. Create Xcode project: macOS App · SwiftUI · Bundle ID com.missm.assistant · macOS 14.0
+[ ] 2. Copy all existing Swift files into correct Xcode groups (match folder structure exactly)
+[ ] 3. Add all Info.plist permissions (see PERMISSIONS section below)
+[ ] 4. Menu bar icon ♛ showing — use AppDelegate.swift
+[ ] 5. Popover 420×620pt opens when icon clicked
+[ ] 6. OnboardingView shows if no API key in Keychain
+[ ] 7. API key saved to Keychain — never anywhere else
+[ ] 8. MainAppView + tab bar shows after setup complete
+[ ] 9. Claude API chat working with streaming responses
+[ ] 10. Thinking state shows before first token arrives
+[ ] 11. Tool-use pills show when Claude calls Apple APIs
+[ ] 12. CalendarService.swift — EventKit read access
+[ ] 13. RemindersService.swift — EventKit read + write
+[ ] 14. Pink design system from Theme.swift applied everywhere
+[ ] 15. Test full flow end-to-end — confirm working before Phase 2
 
 ---
 
-## 📐 DESIGN FILES — OPEN THESE BEFORE BUILDING ANY UI
+## 🗂️ ALL PHASES
 
-docs/design/01-chat-advanced.html      — All 7 chat states (click right panel cards)
-docs/design/02-morning-briefing.html   — Hero card, stats, schedule, iMessage preview
-docs/design/03-assignments-kanban.html — 3-col kanban, progress bars, AI banner
-docs/design/04-essay-writer.html       — Outline + editor + citations (3 panels)
-docs/design/05-study-meals-budget.html — Pomodoro, week view, meal grid, budget donut, grocery
-docs/design/06-imessage-wellness-settings.html — iPhone mockup, wellness cards, mood, settings
+### Phase 1 — Foundation ← BUILD NOW
+Menu bar app · Onboarding · Claude streaming chat (all 7 states) · Calendar · Reminders · Settings · Pink design
+
+### Phase 2 — School
+Assignment Kanban · Essay Writer (3-panel) · Study Planner + Pomodoro · Flashcards · Marketing Tools (SWOT/STP/Persona/Campaign/PESTLE) · Research + Citations · Calendar full view · Smart Writing (NSSpellChecker + NaturalLanguage + Claude)
+
+### Phase 3 — iMessage AI
+Two-way iMessage monitor (AppleScript, 10s poll) · Auto-reply via Claude · Morning briefing 7:30am · Evening wind-down 9pm · Sunday weekly plan 7pm · Deadline warnings 3d/1d/morning
+
+### Phase 4 — Home & Life
+Meal planner (7-day grid) · Grocery list (sections, tap to check) · Budget tracker (donut chart, savings goals) · Email drafter (tone selector, professor templates) · Home hub overview
+
+### Phase 5 — Mac Power Tools
+PDF reader (PDFKit + Vision OCR) · Screenshot OCR · Menu bar mini view · Safari companion · File command centre · Pomodoro in menu bar · Quick launcher (Cmd+Shift+M)
+
+### Phase 6 — Health & Wellness
+HealthKit: sleep · steps · heart rate · HRV · calories · mindful sessions · Cycle tracking (HealthKit CycleTracking) · Mood × phase correlation · Full wellness dashboard
+
+### Phase 7 — Polish & Power
+Siri Shortcuts (App Intents) · Touch ID lock · Text-to-speech (AVFoundation) · Voice input (Speech framework) · Apple Notes sync · System dashboard · Global keyboard shortcut · App icon
 
 ---
 
 ## 📁 FILE STRUCTURE
 
 MissM/App/
-  MissMApp.swift        — @main entry, no main window, Settings scene only
-  AppDelegate.swift     — NSStatusItem setup, popover toggle, NSApp.setActivationPolicy(.accessory)
-  ContentView.swift     — Root: shows OnboardingView or MainAppView based on Keychain
+  MissMApp.swift        @main entry — no main window, Settings scene only, NSApp.setActivationPolicy(.accessory)
+  AppDelegate.swift     NSStatusItem + NSPopover setup, togglePopover()
+  ContentView.swift     Root: OnboardingView if no API key, else MainAppView with tab bar
 
 MissM/Core/Claude/
-  ClaudeService.swift   — Streaming API, system prompt, tool event handling
+  ClaudeService.swift   Streaming API, system prompt, tool event handling — already written
 
 MissM/Core/Apple/
-  CalendarService.swift   — CREATE IN PHASE 1: EKEventStore, request access, get/add events
-  RemindersService.swift  — CREATE IN PHASE 1: EKEventStore, request access, get/add reminders
-  MessagesService.swift   — NSAppleScript send + receive, MessageMonitor polling class
+  CalendarService.swift   CREATE Phase 1: EKEventStore, requestFullAccessToEvents, get/add events
+  RemindersService.swift  CREATE Phase 1: EKEventStore, requestFullAccessToReminders, get/add reminders
+  MessagesService.swift   NSAppleScript send + receive — already written
+  HealthService.swift     CREATE Phase 6: HKHealthStore, read steps/sleep/heart rate/cycle
 
 MissM/Core/Storage/
-  KeychainManager.swift   — save/load API key and phone number, kSecClassGenericPassword
-  DataStore.swift         — CREATE WHEN NEEDED: actor-based JSON persistence
+  KeychainManager.swift   API key + phone number + husband name — already written
+  DataStore.swift         CREATE when needed: actor-based JSON persistence for assignments/meals/budget/grocery
 
-MissM/Features/Chat/
-  ChatView.swift        — Full chat UI: all 7 states, ThinkingBubble, ToolPill, streaming cursor
-
-MissM/Features/Briefing/
-  BriefingScheduler.swift — Timer, morning/evening send, buildContext() uses CalendarService
+MissM/Features/
+  Chat/ChatView.swift              All 7 chat states — already written
+  Briefing/BriefingScheduler.swift Morning/evening auto-iMessage — already written (Phase 3: connect CalendarService)
+  Assignments/                     CREATE Phase 2
+  Essay/                           CREATE Phase 2
+  Study/                           CREATE Phase 2
+  Marketing/                       CREATE Phase 2
+  Home/                            CREATE Phase 4
+  Wellness/                        CREATE Phase 6
+  Settings/SettingsView.swift      EXPAND Phase 1
 
 MissM/Shared/
-  Theme.swift           — ALL design tokens, GlassCard modifier, RoseButtonStyle, Color(hex:)
+  Theme.swift   ALL design tokens, GlassCard modifier, RoseButtonStyle, Color(hex:) — already written
 
-docs/design/            — 6 HTML design reference files
+docs/design/    29 HTML reference files — open before building any screen
 
 ---
 
-## 🤖 CLAUDE API — EXACT DETAILS
+## 🎨 DESIGN SYSTEM — ALWAYS USE THEME.SWIFT
 
-Model string: "claude-sonnet-4-20250514"
-Default maxTokens: 1024
-Streaming: always use for chat
-Non-streaming: use for briefings, background tasks
+Never use raw hex values. Never use system colors. Always Theme.*
 
-System prompt (use EXACTLY this):
+Colors:
+  rosePrimary   #E91E8C   Primary actions, active states, pills
+  roseDeep      #C2185B   Button gradients, hover states
+  roseDark      #880E4F   Hero card gradients
+  roseMid       #F06292   Thinking dots, secondary accents
+  roseLight     #F8BBD9   Borders, chip outlines
+  rosePale      #FCE4EC   Section backgrounds
+  roseUltra     #FFF0F8   App background
+  gold          #D4AF7A   Premium accent
+  textPrimary   #1A0A10   Main body text
+  textMedium    #5C3049   Secondary text
+  textSoft      #9A6B80   Hints, placeholders, descriptions
+  textXSoft     #C4A0B2   Disabled, very soft text
+  glassWhite    white 62%  Card backgrounds
+  glassBorder   white 82%  Card borders
+  shadow        rose 13%   Card shadows
+
+Typography:
+  Display:  Playfair Display Italic — large headings, hero titles, greeting cards
+  Heading:  Cormorant Garamond SemiBold + 2.5pt tracking + uppercase — section labels
+  Body:     DM Sans — all UI text, buttons, inputs, messages
+
+Glass card pattern — use .glassCard() modifier from Theme.swift:
+  .background(Theme.Colors.glassWhite)
+  .background(.ultraThinMaterial)
+  .cornerRadius(Theme.Radius.md)
+  .overlay(RoundedRectangle(cornerRadius: 16).stroke(Theme.Colors.glassBorder, lineWidth: 1))
+  .shadow(color: Theme.Colors.shadow, radius: 10, x: 0, y: 4)
+
+Gradient hero cards: Theme.Gradients.heroCard (rose → deep → dark)
+Primary buttons: .buttonStyle(RoseButtonStyle()) — defined in Theme.swift
+
+---
+
+## 📐 DESIGN FILES — OPEN BEFORE BUILDING ANY SCREEN
+
+docs/design/00-feature-gallery.html   MASTER INDEX — click any card to preview all screens
+docs/design/01-chat-advanced.html     All 7 chat states (click state cards on right panel)
+docs/design/02-morning-briefing.html  Morning card + iMessage preview + schedule settings
+docs/design/03-assignments-kanban.html  3-col kanban + AI priority banner + progress bars
+docs/design/04-essay-writer.html      Outline sidebar + editor + citations (3 panels)
+docs/design/05-study-meals-budget.html Pomodoro timer + week calendar + meal grid + budget donut + grocery
+docs/design/06-imessage-wellness-settings.html  iPhone mockup + wellness cards + mood + settings toggles
+docs/design/07-marketing-tools.html   SWOT/STP/Persona/Campaign/PESTLE (tabbed)
+docs/design/08-calendar-view.html     Month grid + day time blocks + AI scheduling
+docs/design/09-research-citations.html  Web search + AI summary + source cards + citation manager
+docs/design/10-home-hub-email.html    Home hub grid + chores + bills + email drafter with tone
+docs/design/11-flashcards-quiz.html   3D flip card + progress dots + decks + generate from notes
+docs/design/12-nyriian-message.html   NyRiian profile hero + quick chips + chat history + compose
+docs/design/13-reminders.html         Smart list sidebar + all reminders + priority add panel
+docs/design/14-onboarding.html        5-step first-launch: welcome → API key → permissions → phone → done
+docs/design/15-people-hub.html        Dynamic contacts from real Messages history — no fake people
+docs/design/16-pdf-dropzone.html      Drag PDF → AI reads via PDFKit + Vision OCR → summary + flashcards
+docs/design/17-screenshot-ocr.html    Capture screen region → Vision OCR → AI explains any text
+docs/design/18-menubar-mini.html      Compact ♛ popover: stats + next event + quick chat
+docs/design/19-safari-companion.html  Reads current browser page → summarise + cite + save to essay
+docs/design/20-file-command-centre.html  Drag any file → AI reads/summarises/generates study content
+docs/design/21-pomodoro-menubar.html  Timer in menu bar → DND + Apple Music auto-control
+docs/design/22-apple-health.html      HealthKit: steps + heart rate + HRV + sleep + activity rings
+docs/design/23-cycle-tracker.html     HealthKit CycleTracking: phase ring + mood correlation + calendar
+docs/design/24-siri-shortcuts.html    App Intents: 8 voice commands + lock screen widget
+docs/design/25-smart-writing.html     NSSpellChecker + NaturalLanguage + Claude: real-time essay check
+docs/design/26-system-dashboard.html  Battery + WiFi + storage + system controls + automations
+docs/design/27-quick-launcher.html    Cmd+Shift+M spotlight: natural language → any feature instantly
+docs/design/28-apple-notes-sync.html  Read/write Apple Notes: save summaries + study notes
+
+---
+
+## 🤖 CLAUDE API
+
+Model:      claude-sonnet-4-20250514  ← EXACT string, never change
+MaxTokens:  1024 (chat) · 512 (briefing) · 2048 (essay generation)
+Streaming:  Always use for chat
+API key:    Always load from KeychainManager.loadAPIKey()
+
+System prompt (use EXACTLY):
 """
 You are Miss M's personal AI assistant — warm, smart, and always on her side.
 She is a Marketing university student who also manages her home and family tasks.
@@ -193,29 +217,30 @@ Use emojis naturally but not excessively (1-2 per message max).
 When you use a tool, briefly mention what you are doing.
 Always end with a helpful follow-up offer when appropriate.
 You have access to her Apple Calendar, Reminders, and can send iMessages.
+Her husband's name is NyRiian — when she says "my husband" always resolve to NyRiian in Contacts.
 """
 
-Tool names Claude uses:
+---
+
+## 💬 THE 7 CHAT STATES — ALL MUST BE IMPLEMENTED
+
+1. Normal reply         White bubble, rose border, complete text
+2. Thinking             ThinkingBubble: spinning 🧠 + bouncing 3 dots + italic "thinking…"
+3. Tool Use — Running   Blue ToolPill + ProgressView spinner, shows which Apple system
+4. Tool Use — Done      Green ToolPill ✓, RichCard below showing real data
+5. Streaming            Text builds char by char (26ms) with blinking rose cursor at end
+6. Write-Back Action    Action pill (adding reminder/sending message), turns green when done
+7. Voice Input          7-bar animated waveform + pulsing voice button + seconds timer
+
+All components already written in MissM/Features/Chat/ChatView.swift
+
+Tool names Claude uses → Swift handler:
   read_calendar    → CalendarService.getEventsToday()
   add_reminder     → RemindersService.addReminder(title:due:)
   read_reminders   → RemindersService.getIncompleteReminders()
   send_imessage    → MessagesService.send(_:to:)
-  get_weather      → WeatherKit or URLSession weather API
-  web_search       → URLSession for research
-
----
-
-## 💬 THE 7 CHAT STATES — IMPLEMENT ALL
-
-STATE 1 — Normal reply: white bubble, rose border, assistant role
-STATE 2 — Thinking: ThinkingBubble (spinning 🧠 + bouncing dots + italic text)
-STATE 3 — Tool running: blue ToolPill + ProgressView spinner
-STATE 4 — Tool done + rich card: green ToolPill with ✓, data shown as RichCard below
-STATE 5 — Streaming: text builds char by char (26ms interval), blinking rose cursor
-STATE 6 — Write-back: shows action pill (adding reminder etc), turns green when done
-STATE 7 — Voice: animated 7-bar waveform, pulsing voice button, seconds timer
-
-All component implementations are in MissM/Features/Chat/ChatView.swift already.
+  get_weather      → WeatherKit or URLSession
+  web_search       → URLSession research queries
 
 ---
 
@@ -223,656 +248,164 @@ All component implementations are in MissM/Features/Chat/ChatView.swift already.
 
 NSCalendarsUsageDescription:
   "Miss M reads your calendar to give you daily briefings and smart scheduling suggestions."
-
 NSRemindersUsageDescription:
   "Miss M manages your reminders so you never miss a deadline or important task."
-
 NSSpeechRecognitionUsageDescription:
   "Miss M listens when you want to speak your request instead of typing."
-
 NSMicrophoneUsageDescription:
   "Miss M uses your microphone to hear your voice commands."
+NSHealthShareUsageDescription:
+  "Miss M reads your health data to give personalised wellness and energy insights."
+NSHealthUpdateUsageDescription:
+  "Miss M logs your mood and wellness data to HealthKit."
 
 ---
 
-## 💬 TWO-WAY iMESSAGE — PHASE 3
+## 🍎 APPLE INTEGRATIONS — ALL NATIVE, NO THIRD-PARTY
 
-Flow:
-1. Miss M texts Mac from iPhone
-2. MessageMonitor (10s timer) detects via AppleScript
-3. Message sent to Claude with full context
-4. Claude responds (may call calendar/reminders tools)
-5. Reply sent back to her phone number via AppleScript
-6. She receives it as normal iMessage
-
-Phone number saved in Keychain via KeychainManager.savePhoneNumber()
-MessagesService.swift already has send() and MessageMonitor class
+EventKit (Calendar):    EKEventStore — read + write events and reminders
+Messages (AppleScript): NSAppleScript — send iMessage, poll incoming
+Contacts:               CNContactStore — look up NyRiian and other contacts by name
+HealthKit:              HKHealthStore — steps, sleep, heart rate, HRV, cycle tracking
+Vision:                 VNRecognizeTextRequest — OCR from screenshots + scanned PDFs
+PDFKit:                 PDFDocument — extract text from lecture PDFs
+NaturalLanguage:        NLTagger, NLTokenizer — sentiment, grammar, readability
+NSSpellChecker:         Grammar + spelling in essay writer
+Speech:                 SFSpeechRecognizer — voice input transcription
+AVFoundation:           AVSpeechSynthesizer — text-to-speech for responses
+WeatherKit:             WKWeatherService — weather for morning briefing
+CoreLocation:           CLLocationManager — location for weather + nearby study spots
+UserNotifications:      UNUserNotificationCenter — local push notifications
+LocalAuthentication:    LAContext — Touch ID lock (Phase 7)
+NSPasteboard:           Read + write clipboard
+NSWorkspace:            Open apps, files, URLs
+AppIntents:             Siri Shortcuts — voice commands (Phase 7)
+IOKit:                  Battery level + charging status
+SystemConfiguration:    WiFi reachability check
+NSScreen:               Multi-display awareness for popover placement
+Notes (AppleScript):    Read + write Apple Notes
+Mail (AppleScript):     Send emails via Mail app
+Apple Music (AppleScript): Play focus playlists during Pomodoro
 
 ---
 
-## 🌅 MORNING BRIEFING FORMAT
+## 💬 PEOPLE HUB — DYNAMIC FROM REAL MESSAGES
 
-Sent weekdays at 7:30am. Claude generates from real CalendarService + RemindersService data.
+NO hardcoded contacts. Flow:
+1. AppleScript reads real Messages history
+2. Ranks contacts by frequency (most messaged = top card)
+3. CNContactStore matches number to saved name
+4. Claude infers relationship from last 20 messages
+5. Claude generates 4 smart reply chips per relationship type
 
-Template:
+NyRiian is ALWAYS pinned at position 1 — never moved by frequency ranking
+Gradient colours by relationship:
+  Husband:     rose (#E91E8C → #C2185B → #880E4F)
+  Family:      warm pink (#FF6B9D → #E91E8C)
+  Friend:      orange (#FF9800 → #F57C00)
+  Classmate:   teal (#26A69A → #00796B)
+  Lecturer:    deep blue (#1976D2 → #1565C0)
+  Group chat:  dark teal (#00838F → #006064)
+
+---
+
+## 🌅 MORNING BRIEFING — EXACT FORMAT (Phase 3)
+
+Sent weekdays 7:30am via iMessage to her phone number (from Keychain):
 Good morning Miss M! ☀️
 
 [Day], [Date]
 
-📚 [Urgent deadline] — [X] days left
-📅 [First event] [time] · [Second event] [time]
+📚 [Most urgent deadline] — [X] days left
+📅 [Event 1 time] · [Event 2 time]
 🌤 [Temperature]°C · [brief weather note]
 ✅ [X] tasks today
 
 [1 line encouragement]
 Reply to ask me anything 💬
 
----
-
-## 🔐 SECURITY RULES
-
-Store API key:      KeychainManager.saveAPIKey(_:)
-Load API key:       KeychainManager.loadAPIKey()
-Store phone:        KeychainManager.savePhoneNumber(_:)
-NEVER store in:     UserDefaults, hardcoded strings, plist, console logs
-NEVER print:        API key anywhere in logs
+Data sources: CalendarService.getEventsToday() + RemindersService.getIncompleteReminders() + WeatherKit
 
 ---
 
-## 💰 COST MANAGEMENT
+## 🔐 SECURITY — NON-NEGOTIABLE
 
-Balance: $24.00 USD (estimated 4-8 months daily use)
-Chat: claude-sonnet-4-20250514, maxTokens 1024
-Simple queries: consider claude-haiku-4-5 (cheaper)
-Briefings: maxTokens 512
-Essay generation: maxTokens 2048
+Store API key:     KeychainManager.saveAPIKey(_:)    — service: "com.missm.assistant", account: "anthropic-api-key"
+Store phone:       KeychainManager.savePhoneNumber(_:)
+Store husband:     KeychainManager — save "NyRiian" as husband name
+NEVER store in:    UserDefaults, hardcoded strings, .plist, print/log statements
+NEVER print:       API key in any log, debug or error output
+
+---
+
+## 💰 API COST — $24 ANTHROPIC ACCOUNT
+
+Model pricing: Sonnet 4.6 = $3 input / $15 output per million tokens
+Estimated daily use: ~500-1500 tokens per interaction
+Estimated monthly cost: $3-8/month
+Estimated runway: 3-8 months on $24
+
+Optimization:
+  Simple tasks (quick answers, weather, reminders) → consider claude-haiku-4-5 ($1/$5)
+  Complex tasks (essay drafting, research, planning) → claude-sonnet-4-20250514
+  Max tokens for chat: 1024 — never exceed unless essay generation
 
 ---
 
 ## 🚫 NEVER BUILD THESE
 
-No iOS version, no iCloud sync, no App Store submission,
-no third-party packages (pure Swift only), no analytics,
-no ads, no cloud storage of any kind, no APNs push notifications
+No iOS version · No iCloud sync (local only) · No App Store submission
+No third-party packages (pure Swift + Apple frameworks only)
+No analytics · No ads · No cloud storage · No APNs push (local UserNotifications only)
+No Grammarly SDK · No Spotify SDK · No Google SDK · No third-party auth
+
+Everything must use Apple-native frameworks ONLY.
 
 ---
 
-## 🏁 FIRST SESSION INSTRUCTIONS
+## 🐛 ERROR HANDLING
 
-1. Say: "I have read CLAUDE.md. Building Phase 1. Starting with Xcode project setup."
-2. Create new macOS Xcode project with settings above
-3. Copy all Swift files into correct Xcode groups
-4. Add Info.plist permissions
-5. Run cmd+B, fix errors
-6. Run cmd+R, confirm ♛ in menu bar
-7. Enter API key in onboarding, confirm chat streams
-8. Tell user: "Phase 1 foundation working. Chat is live, design is pink, menu bar active. What next?"
+API errors:          Show friendly message in chat — never raw error strings
+Permission denied:   Show permission request view with clear reason WHY before asking
+iMessage fails:      "Couldn't send — is Messages signed in on this Mac?"
+Calendar fails:      "Couldn't read calendar — permission may have been revoked in System Settings"
+Keychain errors:     Show "API key error — please re-enter in Settings"
+HealthKit errors:    "Health data unavailable — grant access in System Settings → Privacy → Health"
 
 ---
 
-## 📋 KEY DATA MODELS
+## 🏁 FIRST SESSION — DO THIS EXACTLY
 
-Assignment: id, title, subject, description, dueDate, status (.todo/.inProgress/.done), progressPercent, wordCount, wordTarget
-
-GroceryItem: id, name, quantity, section (.produce/.protein/.dairy/.pantry/.other), isChecked
-
-MoodEntry: id, date, mood (.great=5/.good=4/.okay=3/.low=2/.stressed=1), note
-
-BudgetEntry: id, date, amount, category (.food/.school/.transport/.subscriptions/.health/.home/.other), note
+1. Say: "I have read CLAUDE.md in full. Starting Phase 1. Opening docs/design/01-chat-advanced.html and docs/design/14-onboarding.html as reference."
+2. Create new macOS Xcode project: MissM · com.missm.assistant · SwiftUI · macOS 14.0
+3. Add all existing Swift files to correct Xcode groups
+4. Add Info.plist permissions listed above
+5. Run ⌘B — fix every compile error before proceeding
+6. Run ⌘R — confirm ♛ appears in menu bar
+7. Click ♛ — confirm onboarding appears
+8. Enter API key — confirm chat tab opens
+9. Send test message — confirm streaming works
+10. Tell user: "Phase 1 working — menu bar live, chat streaming, design is pink. Ready for Calendar + Reminders integration or shall I continue Phase 1 checklist?"
 
 ---
 
-## 📞 PROJECT CONTEXT
+## 📊 BUILD TIMELINE ESTIMATE (Claude Code · $100 Max Plan)
 
-This app is a gift from husband to wife.
-Wife is the user — always "Miss M" in UI.
-Husband manages the repo and runs Claude Code.
-Goal: Working app tonight, full app over coming weeks.
-Keep all instructions simple — owner is not a developer.
+Phase 1 — Foundation:     1 evening (2-3 hrs) — working app same night
+Phase 2 — School:         3-4 evenings across 1-2 weeks
+Phase 3 — iMessage AI:    1-2 evenings
+Phase 4 — Home & Life:    2-3 evenings
+Phase 5 — Mac Tools:      2-3 evenings
+Phase 6 — Health:         1-2 evenings
+Phase 7 — Polish:         2-3 evenings
+
+Total: ~4-6 weeks of light evening sessions
+Full app usable by Miss M: after Phase 1-3 (within first week)
+
+Max Plan capacity: More than enough — $100/month Max plan handles heavy daily Claude Code use.
+This project fits comfortably within 2-3 months even with daily building sessions.
 
 ---
 
 Last updated: April 2026 — Miss M v1.0
-If anything is unclear in this file, ask before building.
-
----
-
-## 🖥️ EXPANDED MAC TOOLS — FULL CAPABILITY LIST
-
-Being native macOS gives Miss M access to the entire Apple ecosystem.
-All of these are available via AppleScript, macOS frameworks, or system APIs.
-Add these to phases as appropriate.
-
----
-
-### 📧 MAIL APP (AppleScript)
-Send real emails — not just drafts. AI composes, user confirms, Mail sends.
-```applescript
-tell application "Mail"
-    set newMsg to make new outgoing message with properties
-        {subject:"[subject]", content:"[body]", visible:true}
-    tell newMsg
-        make new to recipient with properties {address:"[email]"}
-    end tell
-    send newMsg
-end tell
-```
-Use cases: Email professor, send assignment submissions, respond to group project
-
----
-
-### 📝 APPLE NOTES (AppleScript)
-Read and create notes. Sync study notes, save AI outputs, essay drafts.
-```applescript
--- Create note
-tell application "Notes"
-    tell account "iCloud"
-        make new note at folder "Notes" with properties
-            {name:"[title]", body:"[content]"}
-    end tell
-end tell
-
--- Read notes (search)
-tell application "Notes"
-    set matchingNotes to notes whose name contains "[search]"
-end tell
-```
-Use cases: Save essay drafts to Notes, read lecture notes for summarising, create study summaries
-
----
-
-### 👥 CONTACTS (AddressBook/CNContactStore)
-Look up contacts by name for iMessage sending.
-```swift
-import Contacts
-let store = CNContactStore()
-let request = CNContactFetchRequest(keysToFetch: [CNContactPhoneNumbersKey, CNContactGivenNameKey] as [CNKeyDescriptor])
-try store.enumerateContacts(with: request) { contact, _ in ... }
-```
-Use cases: "Text my husband" → looks up number → sends via MessagesService
-
----
-
-### 📄 PDF READING (PDFKit + Vision OCR)
-Read lecture slides, textbooks, assignment briefs uploaded as PDFs.
-```swift
-import PDFKit
-import Vision
-
-// Extract text from PDF
-let pdf = PDFDocument(url: fileURL)
-let text = (0..<pdf.pageCount).compactMap { pdf.page(at: $0)?.string }.joined(separator: "\n")
-
-// OCR scanned PDFs (Vision)
-let request = VNRecognizeTextRequest()
-VNImageRequestHandler(cgImage: pageImage).perform([request])
-let text = request.results?.compactMap { $0.topCandidates(1).first?.string }.joined()
-```
-Use cases: "Summarise this lecture PDF", "Generate flashcards from this reading", "Find the deadline in this brief"
-
----
-
-### 📋 CLIPBOARD MANAGER (NSPasteboard)
-Read and write the clipboard. Copy AI outputs directly, paste research.
-```swift
-// Read clipboard
-let clipboard = NSPasteboard.general.string(forType: .string) ?? ""
-
-// Write to clipboard
-NSPasteboard.general.clearContents()
-NSPasteboard.general.setString(text, forType: .string)
-```
-Use cases: "Copy my essay to clipboard", "Summarise what I just copied", "Format this text I copied"
-
----
-
-### 🎵 APPLE MUSIC (AppleScript)
-Play focus playlists, control music during study sessions.
-```applescript
-tell application "Music"
-    play playlist "Study Focus"
-    -- or: set volume to 30
-    -- or: pause / play / next track
-end tell
-```
-Use cases: "Play my focus playlist", "Turn music down while I study", auto-pause music during Pomodoro break
-
----
-
-### 🔕 FOCUS MODE / DO NOT DISTURB (System Events)
-Enable Focus/DND during study sessions automatically.
-```swift
-// Via shortcuts URL scheme
-NSWorkspace.shared.open(URL(string: "shortcuts://run-shortcut?name=StudyFocus")!)
-```
-Use cases: Auto-enable Focus mode when Pomodoro starts, disable when break
-
----
-
-### 📁 FINDER / FILES (NSOpenPanel + FileManager)
-Let Miss M open PDFs, documents, images directly in the app.
-```swift
-let panel = NSOpenPanel()
-panel.allowedContentTypes = [.pdf, .plainText, .image]
-panel.begin { response in
-    if response == .OK, let url = panel.url { ... }
-}
-```
-Use cases: "Summarise this PDF", "Read my essay draft", "Generate flashcards from this file"
-
----
-
-### 🖼️ SCREENSHOT + VISION OCR
-Capture screen or a selected area, extract text with Vision framework.
-```swift
-// Capture screen
-let image = CGDisplayCreateImage(CGMainDisplayID())
-
-// Extract text
-let handler = VNImageRequestHandler(cgImage: image!)
-let request = VNRecognizeTextRequest()
-try handler.perform([request])
-let text = request.results?.compactMap { $0.topCandidates(1).first?.string }.joined(separator: "\n")
-```
-Use cases: "What does this say?" (points at screen), capture assignment from browser, read text from any app
-
----
-
-### 🌐 SAFARI (AppleScript + WKWebView)
-Get current browser URL, page title, selected text.
-```applescript
-tell application "Safari"
-    set currentURL to URL of current tab of window 1
-    set pageTitle to name of current tab of window 1
-end tell
-```
-Use cases: "Summarise the page I'm reading", "Save this article to my research", "What is the deadline on this page"
-
----
-
-### 📊 MICROSOFT WORD / GOOGLE DOCS (AppleScript + API)
-Open, read, and write Word documents directly.
-```applescript
-tell application "Microsoft Word"
-    open POSIX file "/path/to/essay.docx"
-    set docText to content of text object of active document
-end tell
-```
-Google Docs via REST API with OAuth.
-Use cases: Open essay in Word, export AI draft to .docx, read existing assignment
-
----
-
-### 📅 ZOOM / TEAMS (URL Schemes)
-Join meetings automatically based on calendar events.
-```swift
-// Zoom join
-NSWorkspace.shared.open(URL(string: "zoommtg://zoom.us/join?confno=[ID]")!)
-// Teams
-NSWorkspace.shared.open(URL(string: "msteams://teams.microsoft.com/l/meetup-join/[ID]")!)
-```
-Use cases: Auto-detect Zoom links in calendar events, "Join my 3pm lecture"
-
----
-
-### 🔋 SYSTEM STATUS (IOKit + SystemConfiguration)
-Battery level, WiFi status, storage space — for smart notifications.
-```swift
-// Battery
-import IOKit.ps
-let info = IOPSCopyPowerSourcesInfo().takeRetainedValue()
-let list = IOPSCopyList(info).takeRetainedValue() as! [[String: Any]]
-let battery = list.first?[kIOPSCurrentCapacityKey] as? Int ?? 0
-
-// WiFi
-import SystemConfiguration
-let reachability = SCNetworkReachabilityCreateWithName(nil, "api.anthropic.com")
-```
-Use cases: "Charge your Mac — 15% battery", warn if offline before study session, smart notifications
-
----
-
-### 🗣️ TEXT TO SPEECH (AVSpeechSynthesizer)
-Read AI responses aloud — hands-free when cooking or commuting.
-```swift
-let synth = AVSpeechSynthesizer()
-let utterance = AVSpeechUtterance(string: text)
-utterance.rate = 0.5
-utterance.voice = AVSpeechSynthesisVoice(language: "en-AU")
-synth.speak(utterance)
-```
-Use cases: Read morning briefing aloud, narrate flashcard answers, read essay back to her
-
----
-
-### 🎙️ VOICE INPUT (Speech Framework)
-Already planned in Phase 7 but can add sooner. Transcribes speech to text.
-```swift
-import Speech
-let recogniser = SFSpeechRecognizer(locale: Locale(identifier: "en-AU"))
-let request = SFSpeechAudioBufferRecognitionRequest()
-// Feed AVAudioEngine buffer → get live transcription
-```
-Use cases: Voice chat, dictate reminders, speak commands, hands-free operation
-
----
-
-### 📍 LOCATION (CoreLocation)
-Location-aware suggestions — nearest library, coffee shop, campus.
-```swift
-import CoreLocation
-let manager = CLLocationManager()
-manager.requestWhenInUseAuthorization()
-// CLGeocoder for reverse geocoding
-```
-Use cases: "Find a quiet cafe near me to study", weather uses location, campus navigation
-
----
-
-### 🔔 RICH NOTIFICATIONS (UserNotifications)
-Already using basic notifications — enhance with actions and images.
-```swift
-let content = UNMutableNotificationContent()
-content.title = "Miss M ♛"
-content.body = "Essay due in 2 hours!"
-content.categoryIdentifier = "DEADLINE"  // custom action buttons
-
-// Action buttons on notification
-let snooze = UNNotificationAction(identifier: "SNOOZE", title: "Snooze 30min")
-let start = UNNotificationAction(identifier: "START", title: "Start Writing")
-let category = UNNotificationCategory(identifier: "DEADLINE", actions: [snooze, start], ...)
-```
-Use cases: Tap "Start Writing" on notification → opens essay, "Snooze" delays reminder
-
----
-
-### ☁️ GOOGLE DRIVE (REST API)
-Access her university documents, lecture slides, shared files.
-```swift
-// OAuth2 + Drive REST API
-// GET https://www.googleapis.com/drive/v3/files
-// Needs OAuth setup — add in Phase 2 or later
-```
-Use cases: "Find my marketing lecture slides", "Save essay to Drive", access shared group project files
-
----
-
-### 📲 PHONE CALL via FaceTime (URL Scheme)
-Initiate FaceTime audio calls to contacts.
-```swift
-NSWorkspace.shared.open(URL(string: "facetime-audio://+[number]")!)
-```
-Use cases: "Call mum", quick family contact from the assistant
-
----
-
-### ⌨️ GLOBAL KEYBOARD SHORTCUT
-Trigger Miss M from anywhere on the Mac — not just clicking menu bar.
-```swift
-// Via CGEventTap or NSEvent global monitor
-// Example: Cmd+Shift+M opens Miss M from any app
-NSEvent.addGlobalMonitorForEvents(matching: .keyDown) { event in
-    if event.modifierFlags.contains([.command, .shift]) && event.keyCode == 46 {
-        appDelegate.togglePopover()
-    }
-}
-```
-
----
-
-### 📸 CAMERA (AVCaptureSession)
-Mood detection from facial expression — optional, privacy-first.
-```swift
-// AVCaptureSession + Vision VNDetectFaceLandmarksRequest
-// Can detect smile/neutral/frown for mood logging
-// Only with explicit user permission — OFF by default
-```
-Use cases: Auto mood check-in, detect stress during study
-
----
-
-### 🖥️ MULTI-DISPLAY AWARENESS (NSScreen)
-Show popover on correct screen if she uses multiple displays.
-```swift
-let screens = NSScreen.screens
-let mainScreen = NSScreen.main
-// Position popover relative to menu bar on active screen
-```
-
----
-
-### SUMMARY — TOOLS TO ADD BY PHASE
-
-Phase 1 (NOW): Calendar, Reminders, Keychain, Menu bar ← already planned
-Phase 2: PDF reading (PDFKit+Vision), Clipboard, Files/NSOpenPanel, Safari reading
-Phase 3: iMessage monitor ← already planned, Mail send, Contacts lookup
-Phase 4: Notes app, Google Drive API, Zoom/Teams join
-Phase 5: Apple Music, Focus Mode, Text-to-speech
-Phase 6: Battery/WiFi status, Rich notifications with actions, Voice input
-Phase 7: Screenshot OCR, Camera mood detection, Global keyboard shortcut, FaceTime, Location
-
----
-
----
-
-## 👤 CONTACTS & PEOPLE REFERENCE
-
-Miss M's husband contact name in her phone: "Husband"
-When she says "text my husband", "message my husband", "call my husband" etc:
-  → Look up contact named "Husband" via CNContactStore
-  → Use that number for MessagesService.send() or FaceTime URL scheme
-  → Never ask her for his number — always look it up from Contacts
-
-The AI should feel like it knows her life. Examples:
-  "Text my husband I'll be home by 7" → finds "Husband" in Contacts → sends iMessage
-  "Call my husband" → finds number → opens facetime-audio:// URL
-  "What's my husband's number?" → looks up and reads it back to her
-
-Add more named contacts as user provides them.
-Future: Mum, Dad, friends etc can be added to this section.
-
----
-
-## 👤 HUSBAND — CONTACT ASSOCIATION
-
-Miss M's husband's name is: NyRiian
-He is saved in her Contacts as: "NyRiian"
-
-When Miss M says ANY of these:
-  "my husband", "text my husband", "call my husband",
-  "tell my husband", "message my husband", "where is my husband",
-  "let my husband know", "NyRiian" directly
-
-→ The AI MUST look up "NyRiian" in CNContactStore
-→ Use that number for MessagesService.send() or FaceTime
-→ Never ask Miss M for his number — always resolve it from Contacts
-→ The AI should feel like it naturally knows who her husband is
-
-Examples:
-  "Text my husband I'm on my way home"
-  → Finds NyRiian in Contacts → sends iMessage: "I'm on my way home 🩷"
-
-  "Tell my husband dinner is at 7"
-  → Finds NyRiian → sends: "Dinner is at 7! 🍽️"
-
-  "Call my husband"
-  → Finds NyRiian's number → opens facetime-audio://[number]
-
-  "What is my husband doing tonight?"
-  → Checks if NyRiian has shared calendar events (if available)
-  → Or just suggests she ask him directly via message
-
-Smart association examples (AI should handle naturally):
-  "Can you check if my husband is free Saturday?" → check shared calendar or message him
-  "Remind my husband to pick up milk" → sends him an iMessage reminder
-  "Draft a message to my husband saying I'll be late" → drafts then sends to NyRiian
-
----
-
-## 👥 PEOPLE HUB — HOW TO BUILD IT (Phase 3)
-
-### Core concept
-NO hardcoded contacts. The app reads Miss M's real Messages history via AppleScript,
-ranks contacts by frequency, looks them up in CNContactStore, then Claude infers
-the relationship from message tone. Cards build themselves automatically.
-
-### Step 1 — Scan Messages history (AppleScript)
-```applescript
-tell application "Messages"
-    set allChats to chats
-    -- For each chat, get participant + message count + last message
-    -- Return sorted by message count descending
-end tell
-```
-
-### Step 2 — Rank contacts
-```swift
-struct ContactFrequency {
-    let phoneNumber: String
-    let messageCount: Int      // total messages this week
-    let lastMessage: String    // preview text
-    let lastMessageDate: Date
-    let isGroup: Bool
-    let participantCount: Int  // for group chats
-}
-// Sort by messageCount descending → top 5-8 get profile cards
-```
-
-### Step 3 — Match to CNContact
-```swift
-// Use CNContactStore to find contact by phone number
-// Get: displayName, thumbnailImage (if any)
-// If no contact found → show phone number, let Miss M name them
-```
-
-### Step 4 — Claude infers relationship
-```swift
-// Send last 20 messages to Claude with prompt:
-// "Based on these messages, who is this person to Miss M?
-//  Options: Husband, Family, Close Friend, Friend, Colleague,
-//           Lecturer, Classmate, Group Chat, Unknown
-//  Also generate 4 quick reply chips appropriate for this relationship.
-//  Return JSON only."
-```
-
-### Step 5 — Build card with real data
-```swift
-struct PersonCard {
-    let contact: CNContact
-    let relationship: RelationshipType
-    let messageCountWeek: Int
-    let messageCountToday: Int
-    let lastMessage: String
-    let lastMessageDate: Date
-    let aiSmartChips: [String]    // Claude generated
-    let gradientColors: [Color]   // assigned by relationship type
-    let isGroup: Bool
-    let isPinned: Bool
-}
-```
-
-### NyRiian — always special-cased
-```swift
-// NyRiian is always recognised as "my husband"
-// Saved in Contacts as "NyRiian"
-// Always pinned at position 1 regardless of message frequency
-// When Miss M says "my husband" → always resolves to NyRiian
-let husbandName = "NyRiian"  // stored in settings
-```
-
-### Gradient colours by relationship
-```swift
-// Husband:     rose gradient      (#E91E8C → #C2185B → #880E4F)
-// Family:      warm pink          (#FF6B9D → #E91E8C → #C2185B)
-// Close friend: purple            (#AB47BC → #8E24AA → #6A1B9A)
-// Friend:       orange            (#FF9800 → #F57C00 → #E65100)
-// Classmate:    teal              (#26A69A → #00796B → #004D40)
-// Lecturer:     deep blue         (#1976D2 → #1565C0 → #0D47A1)
-// Group chat:   dark teal         (#00838F → #006064 → #004D40)
-// Unknown:      grey-rose         (#9A6B80 → #5C3049)
-```
-
-### Smart chips — Claude generates per person
-Prompt: "Miss M needs to message [relationship]. Generate 4 short, natural reply chips.
-Match tone: husband=warm/loving, family=caring, friend=casual/fun,
-lecturer=professional, group=brief/practical. Max 6 words each."
-
-### Refresh frequency
-- Refresh card order every time app opens
-- Re-rank weekly (Sunday night alongside weekly briefing)
-- Smart chips regenerate when message pattern changes significantly
-- Always keep NyRiian pinned at top regardless of frequency
-
-### Design file reference
-docs/design/15-people-hub.html — shows all states:
-  - Scanning/loading state (spinner + progress text)
-  - How it works banner (4 steps)
-  - Dynamic cards with real-data placeholders
-  - NyRiian expanded detail panel
-  - AI relationship intelligence explanation
-  - Add card for manual pins
-
-
----
-
-## 🍎 APPLE-ONLY INTEGRATIONS — ADDED FEATURES
-
-### HealthKit (Phase 6)
-Framework: HealthKit — HKHealthStore
-```swift
-let typesToRead: Set<HKObjectType> = [
-    HKObjectType.quantityType(forIdentifier: .stepCount)!,
-    HKObjectType.quantityType(forIdentifier: .heartRate)!,
-    HKObjectType.quantityType(forIdentifier: .heartRateVariabilitySDNN)!,
-    HKObjectType.categoryType(forIdentifier: .sleepAnalysis)!,
-    HKObjectType.categoryType(forIdentifier: .menstrualFlow)!,
-    HKObjectType.quantityType(forIdentifier: .activeEnergyBurned)!,
-    HKObjectType.categoryType(forIdentifier: .mindfulSession)!,
-]
-healthStore.requestAuthorization(toShare: nil, read: typesToRead) { ... }
-```
-Add to Info.plist: NSHealthUpdateUsageDescription + NSHealthShareUsageDescription
-Design file: docs/design/22-apple-health.html
-
-### Cycle Tracking — HealthKit CycleTracking (Phase 6)
-Framework: HealthKit — HKCategoryTypeIdentifierMenstrualFlow
-- Read cycle data to infer current phase (menstrual/follicular/ovulation/luteal)
-- Correlate phase with mood logs and energy levels
-- AI adjusts study schedule recommendations based on phase
-- Predicts next period — warns Miss M 3 days before
-- ALL data stays on device — completely private
-- Design file: docs/design/23-cycle-tracker.html
-
-### App Intents / Siri Shortcuts (Phase 7)
-Framework: AppIntents — iOS 16+ / macOS 13+
-```swift
-struct GetCalendarIntent: AppIntent {
-    static var title: LocalizedStringResource = "Get Miss M Calendar"
-    static var description = IntentDescription("Ask Miss M what's on your calendar")
-    func perform() async throws -> some IntentResult & ProvidesDialog {
-        let events = await CalendarService.shared.getEventsToday()
-        let summary = try await claudeService.ask("Summarise these events: \(events)")
-        return .result(dialog: IntentDialog(summary))
-    }
-}
-// Register all intents: Calendar, Reminder, Message, Pomodoro, Briefing, Grocery, Quiz
-```
-Design file: docs/design/24-siri-shortcuts.html
-
-### Smart Writing — NSSpellChecker + NaturalLanguage (Phase 2)
-Frameworks: AppKit NSSpellChecker, NaturalLanguage, Claude API
-```swift
-// Real-time grammar check as she types
-let checker = NSSpellChecker.shared
-checker.setLanguage("en")
-let grammarRange = checker.checkGrammar(of: text, startingAt: 0,
-    language: "en", wrap: false, inSpellDocumentWithTag: 0,
-    details: &grammarDetails)
-
-// Sentiment + style via NaturalLanguage
-let tagger = NLTagger(tagSchemes: [.sentimentScore, .lexicalClass])
-tagger.string = text
-// Claude API for academic tone + style suggestions
-```
-Design file: docs/design/25-smart-writing.html
-Privacy: text never leaves device except Claude API calls for style suggestions
+If anything in this file is unclear, ASK before building.
