@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Miss M — Screenshot OCR</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=Playfair+Display:ital,wght@0,400;0,700&display=swap" rel="stylesheet">
+<style>
+:root{--r5:#E91E8C;--r6:#C2185B;--r7:#880E4F;--r2:#F8BBD9;--r3:#F48FB1;--text:#1A0A10;--text-m:#5C3049;--text-s:#9A6B80;--text-xs:#C4A0B2;--glass-b:rgba(255,255,255,.82);--shadow:rgba(194,24,91,.13);--green:#34C759;--blue:#007AFF;--orange:#FF9500}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:linear-gradient(155deg,#FFF0F8,#FCE4EC 40%,#F8BBD9 70%,#FDE8F3);min-height:100vh;padding:28px;display:flex;gap:20px;flex-wrap:wrap;align-items:start;color:var(--text)}
+body::before{content:'';position:fixed;top:-150px;right:-150px;width:500px;height:500px;background:radial-gradient(circle,rgba(233,30,140,.11),transparent 70%);border-radius:50%;pointer-events:none}
+.panel{background:rgba(255,255,255,.65);border:1px solid var(--glass-b);border-radius:20px;padding:18px;box-shadow:0 2px 12px var(--shadow);margin-bottom:14px}
+.plbl{font-family:'Cormorant Garamond',serif;font-size:10px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:var(--r5);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.plbl::after{content:'';flex:1;height:1px;background:rgba(233,30,140,.14)}
+.btn-p{background:linear-gradient(135deg,var(--r5),var(--r6));color:white;border:none;border-radius:12px;padding:10px 20px;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;box-shadow:0 4px 14px rgba(233,30,140,.32);transition:all .2s}
+.btn-p:hover{transform:translateY(-1px)}
+.btn-g{background:rgba(255,255,255,.75);border:1.5px solid var(--r2);color:var(--text-m);border-radius:12px;padding:9px 16px;font-size:11px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+.btn-g:hover{background:white;border-color:var(--r3);color:var(--r5)}
+
+/* CAPTURE MODES */
+.cap-modes{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.cap-mode{background:rgba(255,255,255,.7);border:1.5px solid var(--glass-b);border-radius:16px;padding:16px;cursor:pointer;text-align:center;transition:all .2s}
+.cap-mode:hover,.cap-mode.on{background:white;border-color:rgba(233,30,140,.3);box-shadow:0 6px 18px var(--shadow)}
+.cap-mode.on{background:linear-gradient(135deg,rgba(233,30,140,.08),rgba(194,24,91,.04))}
+.cm-icon{font-size:26px;margin-bottom:8px;display:block}
+.cm-name{font-size:12px;font-weight:600;color:var(--text);margin-bottom:3px}
+.cm-desc{font-size:10px;color:var(--text-s);line-height:1.4}
+
+/* SCREENSHOT PREVIEW */
+.screen-preview{background:#1A1A2E;border-radius:16px;overflow:hidden;box-shadow:0 8px 28px rgba(0,0,0,.2);margin-bottom:14px;position:relative}
+.sp-bar{background:#2D2D44;padding:8px 14px;display:flex;align-items:center;gap:8px}
+.sp-dots{display:flex;gap:5px}
+.sp-dot{width:10px;height:10px;border-radius:50%}
+.sp-title{font-size:11px;color:rgba(255,255,255,.5);flex:1;text-align:center}
+.sp-content{padding:16px;min-height:160px;position:relative}
+.sp-text{font-size:11px;color:rgba(255,255,255,.8);line-height:1.7;font-family:monospace}
+/* Selection overlay */
+.sp-selection{position:absolute;top:20px;left:20px;right:20px;bottom:20px;border:2px solid rgba(233,30,140,.8);border-radius:4px;background:rgba(233,30,140,.06)}
+.sp-selection::after{content:'OCR Active';position:absolute;top:-10px;left:10px;background:var(--r5);color:white;font-size:9px;font-weight:700;padding:2px 8px;border-radius:6px;letter-spacing:1px}
+.sp-handles{position:absolute;width:8px;height:8px;background:var(--r5);border-radius:50%}
+
+/* OCR RESULT */
+.ocr-result{background:rgba(255,255,255,.82);border:1px solid rgba(233,30,140,.2);border-radius:14px;padding:14px}
+.ocr-text{font-size:12px;color:var(--text-m);line-height:1.7;margin-bottom:12px;font-style:italic;border-left:3px solid var(--r3);padding-left:12px}
+.ocr-actions{display:flex;gap:8px;flex-wrap:wrap}
+
+/* AI RESPONSE */
+.ai-resp{background:rgba(255,255,255,.9);border:1px solid rgba(233,30,140,.15);border-radius:16px;padding:14px;margin-top:12px}
+.ai-resp-hdr{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--r5);font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:7px}
+.ai-resp-body{font-size:12px;color:var(--text-m);line-height:1.7}
+
+/* SHORTCUT BADGE */
+.shortcut{display:inline-flex;align-items:center;gap:6px;background:rgba(0,0,0,.06);border:1px solid rgba(0,0,0,.1);border-radius:8px;padding:5px 10px;font-size:11px;font-weight:600;color:var(--text-m)}
+.key{background:white;border:1px solid rgba(0,0,0,.15);border-radius:5px;padding:2px 6px;font-size:10px;font-weight:700;box-shadow:0 1px 2px rgba(0,0,0,.1)}
+
+/* HOW IT WORKS STEPS */
+.step{display:flex;align-items:flex-start;gap:11px;margin-bottom:12px}
+.step-n{width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,var(--r5),var(--r6));color:white;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.step-t{font-size:12px;font-weight:500;color:var(--text);margin-bottom:2px}
+.step-d{font-size:10.5px;color:var(--text-s);line-height:1.5}
+</style>
+</head>
+<body>
+
+<!-- LEFT: CAPTURE -->
+<div style="width:380px">
+  <div style="font-family:'Playfair Display',serif;font-size:22px;font-style:italic;color:var(--text);margin-bottom:16px">Screenshot <span style="color:var(--r5)">+ OCR</span></div>
+
+  <div class="panel">
+    <div class="plbl">Capture Mode</div>
+    <div class="cap-modes">
+      <div class="cap-mode on">
+        <span class="cm-icon">✂️</span>
+        <div class="cm-name">Select Area</div>
+        <div class="cm-desc">Draw a box around any text on screen</div>
+      </div>
+      <div class="cap-mode">
+        <span class="cm-icon">🖥️</span>
+        <div class="cm-name">Full Screen</div>
+        <div class="cm-desc">Capture and read the entire screen</div>
+      </div>
+      <div class="cap-mode">
+        <span class="cm-icon">🪟</span>
+        <div class="cm-name">Active Window</div>
+        <div class="cm-desc">Read whatever app is open</div>
+      </div>
+      <div class="cap-mode">
+        <span class="cm-icon">📷</span>
+        <div class="cm-name">From Image</div>
+        <div class="cm-desc">Read text from any photo or image</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <div class="shortcut"><span class="key">⌘</span><span class="key">⇧</span><span class="key">S</span> Capture anywhere</div>
+    </div>
+    <button class="btn-p" style="width:100%">📸 Capture Now</button>
+  </div>
+
+  <!-- Screen preview with selection -->
+  <div class="panel">
+    <div class="plbl">Screen Preview</div>
+    <div class="screen-preview">
+      <div class="sp-bar">
+        <div class="sp-dots">
+          <div class="sp-dot" style="background:#FF5F57"></div>
+          <div class="sp-dot" style="background:#FEBC2E"></div>
+          <div class="sp-dot" style="background:#27C93F"></div>
+        </div>
+        <div class="sp-title">Safari — Marketing Textbook Chapter 7</div>
+      </div>
+      <div class="sp-content">
+        <div class="sp-text">
+          <div style="color:rgba(255,255,255,.4);font-size:9px;margin-bottom:10px">Chapter 7: Market Segmentation and Targeting</div>
+          Market segmentation is the process of dividing a broad target<br>
+          market into subsets of consumers who have common needs,<br>
+          priorities, and characteristics. The STP framework — comprising<br>
+          Segmentation, Targeting, and Positioning — represents the<br>
+          foundational approach to modern marketing strategy.<br><br>
+          Effective segmentation enables organisations to allocate<br>
+          resources efficiently and communicate more precisely...
+        </div>
+        <div class="sp-selection">
+          <div class="sp-handles" style="top:-4px;left:-4px"></div>
+          <div class="sp-handles" style="top:-4px;right:-4px"></div>
+          <div class="sp-handles" style="bottom:-4px;left:-4px"></div>
+          <div class="sp-handles" style="bottom:-4px;right:-4px"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- OCR extracted text -->
+    <div class="ocr-result">
+      <div style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-s);font-weight:600;margin-bottom:8px">✦ Text Extracted via Vision OCR</div>
+      <div class="ocr-text">"Market segmentation is the process of dividing a broad target market into subsets of consumers who have common needs, priorities, and characteristics. The STP framework — comprising Segmentation, Targeting, and Positioning — represents the foundational approach to modern marketing strategy..."</div>
+      <div class="ocr-actions">
+        <button class="btn-p" style="font-size:10px;padding:7px 14px">✦ Explain This</button>
+        <button class="btn-g" style="font-size:10px">📋 Copy Text</button>
+        <button class="btn-g" style="font-size:10px">📚 Add Citation</button>
+        <button class="btn-g" style="font-size:10px">✍️ Use in Essay</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RIGHT: AI RESPONSE + HOW IT WORKS -->
+<div style="width:340px">
+  <div class="panel">
+    <div class="plbl">Miss M AI Explains</div>
+    <div class="ai-resp">
+      <div class="ai-resp-hdr">✦ AI Response</div>
+      <div class="ai-resp-body">
+        This passage is describing the <strong>STP Framework</strong> — one of the most important concepts in your Marketing degree! 🩷<br><br>
+        <strong>In simple terms:</strong><br>
+        • <strong>Segmentation</strong> — split the market into groups<br>
+        • <strong>Targeting</strong> — choose which group to focus on<br>
+        • <strong>Positioning</strong> — decide how to be seen in their minds<br><br>
+        This is directly relevant to your <strong>Consumer Behaviour essay</strong> — want me to add this as a source with an APA citation?
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <button class="btn-p" style="flex:1;font-size:11px">Add to Essay</button>
+      <button class="btn-g" style="font-size:11px">+ Citation</button>
+      <button class="btn-g" style="font-size:11px">🃏 Flashcard</button>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="plbl">How It Works</div>
+    <div class="step"><div class="step-n">1</div><div><div class="step-t">Press ⌘⇧S anywhere on Mac</div><div class="step-d">Works from any app — Safari, Word, Zoom lecture, anywhere</div></div></div>
+    <div class="step"><div class="step-n">2</div><div><div class="step-t">Draw a box around text</div><div class="step-d">Or capture full screen / active window</div></div></div>
+    <div class="step"><div class="step-n">3</div><div><div class="step-t">Vision OCR reads every word</div><div class="step-d">Apple's Vision framework — accurate, private, instant</div></div></div>
+    <div class="step"><div class="step-n">4</div><div><div class="step-t">AI explains, cites, or adds to essay</div><div class="step-d">Miss M AI processes the text with full context of her course</div></div></div>
+  </div>
+
+  <div class="panel">
+    <div class="plbl">Quick Actions from OCR</div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div style="background:rgba(255,255,255,.7);border:1px solid var(--glass-b);border-radius:12px;padding:10px 13px;font-size:12px;color:var(--text-m);cursor:pointer;transition:all .15s" onmouseover="this.style.background='white'" onmouseout="this.style.background='rgba(255,255,255,.7)'">📝 <strong>Explain this</strong> — plain English breakdown</div>
+      <div style="background:rgba(255,255,255,.7);border:1px solid var(--glass-b);border-radius:12px;padding:10px 13px;font-size:12px;color:var(--text-m);cursor:pointer;transition:all .15s" onmouseover="this.style.background='white'" onmouseout="this.style.background='rgba(255,255,255,.7)'">🃏 <strong>Make flashcard</strong> — add to active deck</div>
+      <div style="background:rgba(255,255,255,.7);border:1px solid var(--glass-b);border-radius:12px;padding:10px 13px;font-size:12px;color:var(--text-m);cursor:pointer;transition:all .15s" onmouseover="this.style.background='white'" onmouseout="this.style.background='rgba(255,255,255,.7)'">📚 <strong>Cite this source</strong> — APA or Harvard</div>
+      <div style="background:rgba(255,255,255,.7);border:1px solid var(--glass-b);border-radius:12px;padding:10px 13px;font-size:12px;color:var(--text-m);cursor:pointer;transition:all .15s" onmouseover="this.style.background='white'" onmouseout="this.style.background='rgba(255,255,255,.7)'">✍️ <strong>Add to essay</strong> — inserts as supporting evidence</div>
+      <div style="background:rgba(255,255,255,.7);border:1px solid var(--glass-b);border-radius:12px;padding:10px 13px;font-size:12px;color:var(--text-m);cursor:pointer;transition:all .15s" onmouseover="this.style.background='white'" onmouseout="this.style.background='rgba(255,255,255,.7)'">📅 <strong>Find date/deadline</strong> — adds to Reminders</div>
+      <div style="background:rgba(255,255,255,.7);border:1px solid var(--glass-b);border-radius:12px;padding:10px 13px;font-size:12px;color:var(--text-m);cursor:pointer;transition:all .15s" onmouseover="this.style.background='white'" onmouseout="this.style.background='rgba(255,255,255,.7)'">🌐 <strong>Translate</strong> — any language to English</div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
