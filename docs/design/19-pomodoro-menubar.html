@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Miss M — Pomodoro Menu Bar</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=Playfair+Display:ital,wght@0,400;0,700&display=swap" rel="stylesheet">
+<style>
+:root{--r5:#E91E8C;--r6:#C2185B;--r7:#880E4F;--r2:#F8BBD9;--text:#1A0A10;--text-m:#5C3049;--text-s:#9A6B80;--text-xs:#C4A0B2;--glass-b:rgba(255,255,255,.82);--shadow:rgba(194,24,91,.13);--green:#34C759;--blue:#007AFF}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:#1A1A2E;min-height:100vh;padding:28px;display:flex;gap:28px;flex-wrap:wrap;align-items:start;color:white}
+body::before{content:'';position:fixed;top:-100px;right:-100px;width:400px;height:400px;background:radial-gradient(circle,rgba(233,30,140,.08),transparent 70%);border-radius:50%;pointer-events:none}
+
+.menubar-sim{background:rgba(30,30,50,.95);backdrop-filter:blur(20px);border-radius:12px;padding:6px 16px;display:flex;align-items:center;justify-content:space-between;width:100%;max-width:760px;border:1px solid rgba(255,255,255,.08)}
+.mb-left{display:flex;align-items:center;gap:16px;font-size:13px;color:rgba(255,255,255,.85);font-weight:500}
+.mb-right{display:flex;align-items:center;gap:10px;font-size:12px;color:rgba(255,255,255,.7)}
+.mb-pomo{display:flex;align-items:center;gap:6px;background:rgba(233,30,140,.18);border:1px solid rgba(233,30,140,.35);border-radius:8px;padding:4px 10px;cursor:pointer;transition:all .15s}
+.mb-pomo:hover{background:rgba(233,30,140,.25)}
+.pomo-countdown{font-size:13px;font-weight:700;color:white;letter-spacing:.5px;font-variant-numeric:tabular-nums}
+.pomo-label{font-size:10px;color:rgba(255,255,255,.6)}
+.pomo-ring-mini{width:18px;height:18px;border-radius:50%;border:2px solid rgba(255,255,255,.2);position:relative}
+.pomo-ring-mini::before{content:'';position:absolute;inset:0;border-radius:50%;border:2px solid transparent;border-top-color:var(--r5);border-right-color:rgba(233,30,140,.5);animation:spin 25s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.mb-missm-small{background:linear-gradient(135deg,var(--r5),var(--r6));border-radius:6px;width:22px;height:18px;display:flex;align-items:center;justify-content:center;font-size:11px;cursor:pointer}
+.mb-time{font-weight:600;font-size:13px}
+
+/* POMODORO EXPANDED CARD */
+.pomo-card{background:rgba(28,28,40,.96);border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:20px;width:340px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.pc-subject{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(233,30,140,.8);font-weight:600;margin-bottom:8px;text-align:center}
+.pc-ring{width:140px;height:140px;margin:0 auto 12px;border-radius:50%;border:6px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;position:relative}
+.pc-ring::before{content:'';position:absolute;inset:0;border-radius:50%;border:6px solid transparent;border-top-color:var(--r5);border-right-color:rgba(233,30,140,.6);border-bottom-color:rgba(233,30,140,.3);animation:spin 25s linear infinite}
+.pc-time{font-family:'Cormorant Garamond',serif;font-size:48px;font-weight:600;line-height:1;color:white;text-align:center}
+.pc-status{font-size:11px;color:rgba(255,255,255,.55);text-align:center;letter-spacing:.5px;margin-bottom:14px}
+.pc-btns{display:flex;gap:8px;justify-content:center;margin-bottom:14px}
+.pcb{border-radius:11px;border:none;padding:9px 20px;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+.pcb-p{background:linear-gradient(135deg,var(--r5),var(--r6));color:white;box-shadow:0 4px 12px rgba(233,30,140,.3)}
+.pcb-g{background:rgba(255,255,255,.1);color:rgba(255,255,255,.8);border:1px solid rgba(255,255,255,.15)}
+.pcb:hover{transform:scale(1.04)}
+.pc-sessions{display:flex;gap:7px;justify-content:center;margin-bottom:14px}
+.ps-dot{width:10px;height:10px;border-radius:50%}
+.pc-task{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:10px 14px;display:flex;align-items:center;gap:10px}
+.pt-ic{font-size:16px;flex-shrink:0}
+.pt-name{font-size:12px;color:rgba(255,255,255,.85);font-weight:500}
+.pt-sub{font-size:10px;color:rgba(255,255,255,.4);margin-top:1px}
+.pt-change{font-size:10px;color:rgba(233,30,140,.8);margin-left:auto;cursor:pointer}
+
+.focus-mode-row{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:rgba(52,199,89,.08);border:1px solid rgba(52,199,89,.18);border-radius:12px;margin-top:10px}
+.fm-label{font-size:11px;color:rgba(52,199,89,.9);font-weight:500}
+.tog-sm{width:36px;height:20px;border-radius:10px;background:var(--green);position:relative;cursor:pointer}
+.tog-sm::after{content:'';position:absolute;right:3px;top:3px;width:14px;height:14px;border-radius:50%;background:white;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+
+/* DESCRIPTION */
+.desc{width:280px}
+.dc{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:14px;margin-bottom:10px}
+.dc-title{font-size:12px;font-weight:600;color:white;margin-bottom:4px;display:flex;align-items:center;gap:7px}
+.dc-body{font-size:11px;color:rgba(255,255,255,.5);line-height:1.6}
+</style>
+</head>
+<body>
+<div style="width:100%;max-width:760px">
+  <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:8px;font-weight:600">macOS Menu Bar — Pomodoro Active</div>
+  <div class="menubar-sim">
+    <div class="mb-left"><span>🍎</span><span>Finder</span><span>File</span><span>Edit</span></div>
+    <div class="mb-right">
+      <div class="mb-pomo">
+        <div class="pomo-ring-mini"></div>
+        <div><div class="pomo-countdown">23:41</div><div class="pomo-label">Focus · Essay</div></div>
+      </div>
+      <div class="mb-missm-small">♛</div>
+      <span>🔋</span><span>📶</span>
+      <div class="mb-time">10:17 AM</div>
+    </div>
+  </div>
+  <div style="margin-top:4px;font-size:10px;color:rgba(255,255,255,.25);text-align:right;margin-right:20px">↑ Timer shows live in menu bar while she works in any app</div>
+</div>
+
+<!-- EXPANDED CARD -->
+<div class="pomo-card">
+  <div class="pc-subject">Focus Session · Pomodoro 2 of 4</div>
+  <div class="pc-ring"><div class="pc-time">23:41</div></div>
+  <div class="pc-status">Deep focus mode active · 🎵 Music paused</div>
+  <div class="pc-btns">
+    <div class="pcb pcb-g">⏸ Pause</div>
+    <div class="pcb pcb-p">⏭ Skip Break</div>
+    <div class="pcb pcb-g">✕ End</div>
+  </div>
+  <div class="pc-sessions">
+    <div class="ps-dot" style="background:var(--r5)"></div>
+    <div class="ps-dot" style="background:var(--r5)"></div>
+    <div class="ps-dot" style="background:rgba(233,30,140,.35)"></div>
+    <div class="ps-dot" style="background:rgba(255,255,255,.15)"></div>
+  </div>
+  <div class="pc-task">
+    <div class="pt-ic">✍️</div>
+    <div><div class="pt-name">Consumer Behaviour Essay</div><div class="pt-sub">Section 2 — Theoretical Framework</div></div>
+    <div class="pt-change">Change</div>
+  </div>
+  <div class="focus-mode-row">
+    <div class="fm-label">🔕 Focus Mode (Do Not Disturb)</div>
+    <div class="tog-sm"></div>
+  </div>
+</div>
+
+<!-- DESCRIPTION -->
+<div class="desc">
+  <div style="font-family:'Playfair Display',serif;font-size:18px;font-style:italic;color:white;margin-bottom:14px">Pomodoro <span style="color:var(--r5)">Menu Bar</span></div>
+  <div class="dc"><div class="dc-title">⏱ Always visible countdown</div><div class="dc-body">Timer shows right in the menu bar — she can see it while working in Word, Safari, anywhere on her Mac</div></div>
+  <div class="dc"><div class="dc-title">🔕 Auto Focus Mode</div><div class="dc-body">Enables macOS Do Not Disturb automatically when Pomodoro starts — no interruptions</div></div>
+  <div class="dc"><div class="dc-title">🎵 Music control</div><div class="dc-body">Pauses Apple Music when session starts, plays chill music on break automatically</div></div>
+  <div class="dc"><div class="dc-title">💬 Break notifications</div><div class="dc-body">Sends iMessage: "Break time Miss M! 5 mins — grab water 💧" when session ends</div></div>
+  <div class="dc"><div class="dc-title">✦ AI task coaching</div><div class="dc-body">AI suggests what to work on each session based on deadlines and priority</div></div>
+</div>
+</body>
+</html>
