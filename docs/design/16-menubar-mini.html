@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Miss M — Menu Bar Mini</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=Playfair+Display:ital,wght@0,400;0,700&display=swap" rel="stylesheet">
+<style>
+:root{--r5:#E91E8C;--r6:#C2185B;--r7:#880E4F;--r2:#F8BBD9;--r3:#F48FB1;--text:#1A0A10;--text-m:#5C3049;--text-s:#9A6B80;--text-xs:#C4A0B2;--glass-b:rgba(255,255,255,.82);--shadow:rgba(194,24,91,.13);--green:#34C759;--blue:#007AFF;--orange:#FF9500}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:#1A1A2E;min-height:100vh;padding:28px;display:flex;gap:28px;flex-wrap:wrap;align-items:start;color:white}
+body::before{content:'';position:fixed;top:-100px;right:-100px;width:400px;height:400px;background:radial-gradient(circle,rgba(233,30,140,.08),transparent 70%);border-radius:50%;pointer-events:none}
+
+/* FAKE MACOS MENUBAR */
+.menubar-sim{background:rgba(30,30,50,.95);backdrop-filter:blur(20px);border-radius:12px;padding:6px 16px;display:flex;align-items:center;justify-content:space-between;width:100%;max-width:760px;border:1px solid rgba(255,255,255,.08);box-shadow:0 4px 20px rgba(0,0,0,.3)}
+.mb-left{display:flex;align-items:center;gap:16px;font-size:13px;color:rgba(255,255,255,.85);font-weight:500}
+.mb-apple{font-size:16px}
+.mb-right{display:flex;align-items:center;gap:12px;font-size:12px;color:rgba(255,255,255,.7)}
+.mb-icon{width:26px;height:20px;display:flex;align-items:center;justify-content:center;border-radius:5px;transition:all .15s;cursor:pointer}
+.mb-icon:hover{background:rgba(255,255,255,.1)}
+.mb-missm{background:linear-gradient(135deg,var(--r5),var(--r6));border-radius:7px;width:28px;height:20px;display:flex;align-items:center;justify-content:center;font-size:12px;cursor:pointer;box-shadow:0 2px 8px rgba(233,30,140,.4);transition:all .15s;position:relative}
+.mb-missm:hover{transform:scale(1.08)}
+.mb-missm::after{content:'ACTIVE';position:absolute;bottom:-16px;font-size:7px;letter-spacing:1px;color:rgba(233,30,140,.8);white-space:nowrap}
+.mb-time{font-weight:600;font-size:13px}
+
+/* DROPDOWN POPUP */
+.dropdown{width:340px;background:rgba(28,28,40,.96);backdrop-filter:blur(24px) saturate(180%);border:1px solid rgba(255,255,255,.1);border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.5),0 0 0 0.5px rgba(255,255,255,.05);overflow:hidden;margin-top:8px}
+.dd-arrow{width:12px;height:12px;background:rgba(28,28,40,.96);border-top:1px solid rgba(255,255,255,.1);border-left:1px solid rgba(255,255,255,.1);transform:rotate(45deg);margin:-6px auto 0;position:relative;z-index:1}
+
+/* GREETING STRIP */
+.greeting-strip{background:linear-gradient(135deg,var(--r5),var(--r6));padding:12px 16px;display:flex;align-items:center;gap:10px}
+.gs-av{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.2);border:1.5px solid rgba(255,255,255,.35);display:flex;align-items:center;justify-content:center;font-size:14px}
+.gs-name{font-size:13px;font-weight:600;color:white}
+.gs-time{font-size:10px;color:rgba(255,255,255,.75);margin-top:1px}
+.gs-dot{margin-left:auto;display:flex;align-items:center;gap:4px;font-size:9px;color:rgba(255,255,255,.75)}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:gl 2s infinite}
+@keyframes gl{0%,100%{box-shadow:0 0 4px rgba(52,199,89,.6)}50%{box-shadow:0 0 10px rgba(52,199,89,.9)}}
+
+/* MINI STATS */
+.mini-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:rgba(255,255,255,.05)}
+.ms{background:rgba(28,28,40,.96);padding:10px 8px;text-align:center}
+.ms-n{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;color:var(--r5)}
+.ms-l{font-size:8px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.5px;margin-top:1px}
+
+/* MINI CHAT */
+.mini-chat{padding:12px 14px 8px}
+.mc-bubble{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.08);border-radius:12px 12px 12px 4px;padding:9px 12px;font-size:12px;color:rgba(255,255,255,.85);line-height:1.55;margin-bottom:8px}
+.mc-input-row{display:flex;gap:7px}
+.mc-input{flex:1;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:8px 12px;font-size:12px;color:white;font-family:'DM Sans',sans-serif;outline:none}
+.mc-input::placeholder{color:rgba(255,255,255,.3)}
+.mc-send{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--r5),var(--r6));border:none;color:white;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+
+/* QUICK ACTIONS */
+.quick-row{display:flex;gap:6px;padding:8px 14px;overflow-x:auto;scrollbar-width:none}
+.quick-row::-webkit-scrollbar{display:none}
+.qa{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:7px 11px;font-size:11px;color:rgba(255,255,255,.75);cursor:pointer;white-space:nowrap;transition:all .14s;display:flex;align-items:center;gap:5px}
+.qa:hover{background:rgba(233,30,140,.15);border-color:rgba(233,30,140,.3);color:white}
+
+/* TODAY STRIP */
+.today-strip{padding:8px 14px}
+.ts-row{display:flex;align-items:center;gap:10px;padding:8px 10px;background:rgba(255,255,255,.05);border-radius:10px;margin-bottom:5px;cursor:pointer;transition:all .14s}
+.ts-row:hover{background:rgba(255,255,255,.09)}
+.ts-time{font-size:10px;font-weight:700;color:var(--r5);min-width:36px}
+.ts-bar{width:3px;height:24px;border-radius:3px;flex-shrink:0}
+.ts-title{font-size:12px;color:rgba(255,255,255,.85)}
+.ts-loc{font-size:10px;color:rgba(255,255,255,.4);margin-top:1px}
+
+/* FOOTER */
+.dd-footer{padding:10px 14px;border-top:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between}
+.df-open{font-size:11px;color:rgba(233,30,140,.85);cursor:pointer;font-weight:500;transition:color .14s}
+.df-open:hover{color:var(--r5)}
+.df-sep{width:1px;height:14px;background:rgba(255,255,255,.1)}
+.df-quit{font-size:11px;color:rgba(255,255,255,.35);cursor:pointer;transition:color .14s}
+.df-quit:hover{color:rgba(255,255,255,.65)}
+
+/* DESCRIPTION PANEL */
+.desc-panel{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:18px;width:320px}
+.dp-title{font-family:'Playfair Display',serif;font-size:18px;font-style:italic;color:white;margin-bottom:12px}
+.dp-item{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px}
+.dp-ic{font-size:16px;flex-shrink:0;margin-top:1px}
+.dp-t{font-size:12px;font-weight:500;color:rgba(255,255,255,.85);margin-bottom:2px}
+.dp-d{font-size:10.5px;color:rgba(255,255,255,.45);line-height:1.5}
+</style>
+</head>
+<body>
+
+<div style="width:100%;max-width:760px">
+  <!-- macOS Menu Bar Simulation -->
+  <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:8px;font-weight:600">macOS Menu Bar</div>
+  <div class="menubar-sim">
+    <div class="mb-left">
+      <span class="mb-apple">🍎</span>
+      <span>Finder</span><span>File</span><span>Edit</span><span>View</span><span>Go</span><span>Window</span>
+    </div>
+    <div class="mb-right">
+      <div class="mb-icon">🔋</div>
+      <div class="mb-icon">📶</div>
+      <div class="mb-icon">🔍</div>
+      <div class="mb-missm">♛</div>
+      <div class="mb-time">9:41 AM</div>
+    </div>
+  </div>
+
+  <div style="display:flex;justify-content:flex-end;margin-right:86px;margin-top:4px;font-size:10px;color:rgba(255,255,255,.3)">↑ Click ♛ to open</div>
+
+  <!-- DROPDOWN APPEARS BELOW ICON -->
+  <div style="display:flex;justify-content:flex-end;margin-right:64px;margin-top:2px">
+    <div>
+      <div class="dd-arrow"></div>
+      <div class="dropdown">
+        <!-- Greeting -->
+        <div class="greeting-strip">
+          <div class="gs-av">✦</div>
+          <div><div class="gs-name">Good morning, Miss M!</div><div class="gs-time">Tuesday · April 7th · 9:41 AM</div></div>
+          <div class="gs-dot"><div class="live-dot"></div>Live</div>
+        </div>
+
+        <!-- Stats row -->
+        <div class="mini-stats">
+          <div class="ms"><div class="ms-n">2</div><div class="ms-l">Classes</div></div>
+          <div class="ms"><div class="ms-n">3</div><div class="ms-l">Tasks</div></div>
+          <div class="ms"><div class="ms-n">4d</div><div class="ms-l">Essay</div></div>
+          <div class="ms"><div class="ms-n">22°</div><div class="ms-l">Weather</div></div>
+        </div>
+
+        <!-- Quick actions -->
+        <div class="quick-row">
+          <div class="qa">📅 Calendar</div>
+          <div class="qa">✍️ Essay</div>
+          <div class="qa">🔔 Reminder</div>
+          <div class="qa">💬 NyRiian</div>
+          <div class="qa">🎓 Study</div>
+          <div class="qa">🛒 Groceries</div>
+        </div>
+
+        <!-- Today's schedule -->
+        <div class="today-strip">
+          <div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.3);font-weight:600;margin-bottom:6px">Today</div>
+          <div class="ts-row"><div class="ts-time">9:00</div><div class="ts-bar" style="background:#E91E8C"></div><div><div class="ts-title">Marketing Lecture</div><div class="ts-loc">Room 204</div></div></div>
+          <div class="ts-row"><div class="ts-time">12:30</div><div class="ts-bar" style="background:#FF9500"></div><div><div class="ts-title">Study Group</div><div class="ts-loc">Library Lvl 2</div></div></div>
+          <div class="ts-row"><div class="ts-time">3:00</div><div class="ts-bar" style="background:#9C27B0"></div><div><div class="ts-title">Digital Marketing</div><div class="ts-loc">Zoom</div></div></div>
+        </div>
+
+        <!-- Mini chat -->
+        <div class="mini-chat">
+          <div class="mc-bubble">Hey Miss M! 🩷 Your Consumer Behaviour essay is due <strong>Friday</strong> — only 15% written. Want me to block study time right now?</div>
+          <div class="mc-input-row">
+            <input class="mc-input" placeholder="Ask anything…">
+            <button class="mc-send">↑</button>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="dd-footer">
+          <span class="df-open">Open Full App →</span>
+          <div class="df-sep"></div>
+          <span class="df-open">Settings</span>
+          <div class="df-sep"></div>
+          <span class="df-quit">Quit Miss M</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DESCRIPTION -->
+<div class="desc-panel">
+  <div class="dp-title">Menu Bar Mini View</div>
+  <div class="dp-item"><span class="dp-ic">♛</span><div><div class="dp-t">Always in the menu bar</div><div class="dp-d">One click from any app — no need to switch windows</div></div></div>
+  <div class="dp-item"><span class="dp-ic">📊</span><div><div class="dp-t">At-a-glance stats</div><div class="dp-d">Classes, tasks, essay deadline, weather — instantly</div></div></div>
+  <div class="dp-item"><span class="dp-ic">⚡</span><div><div class="dp-t">Quick actions strip</div><div class="dp-d">One-tap to most used features without opening full app</div></div></div>
+  <div class="dp-item"><span class="dp-ic">📅</span><div><div class="dp-t">Today's schedule inline</div><div class="dp-d">See her full day without leaving what she's working on</div></div></div>
+  <div class="dp-item"><span class="dp-ic">💬</span><div><div class="dp-t">Mini chat built in</div><div class="dp-d">Ask anything right from the dropdown — no full app needed</div></div></div>
+  <div class="dp-item"><span class="dp-ic">🌙</span><div><div class="dp-t">Dark glass design</div><div class="dp-d">Matches macOS dark menu bar — feels completely native</div></div></div>
+</div>
+
+</body>
+</html>
