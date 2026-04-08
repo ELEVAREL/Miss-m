@@ -7,6 +7,15 @@ struct ChatMessage: Identifiable {
     var content: String
     var state: MessageState = .complete
     var toolCalls: [ToolCall] = []
+    let timestamp: Date
+
+    init(role: Role, content: String, state: MessageState = .complete, toolCalls: [ToolCall] = []) {
+        self.role = role
+        self.content = content
+        self.state = state
+        self.toolCalls = toolCalls
+        self.timestamp = Date()
+    }
 
     enum Role { case user, assistant }
 
@@ -18,11 +27,18 @@ struct ChatMessage: Identifiable {
         case complete
     }
 
+    var timestampString: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "h:mm a"
+        return formatter.string(from: timestamp)
+    }
+
     struct ToolCall: Identifiable {
         let id = UUID()
         let name: String
         var isComplete: Bool = false
         var result: String? = nil
+        var resultItems: [RichCardItem] = []
 
         var displayName: String {
             switch name {
@@ -32,6 +48,16 @@ struct ChatMessage: Identifiable {
             case "read_reminders":  return "Checking Reminders…"
             case "get_weather":     return "Fetching weather…"
             default:                return "\(name)…"
+            }
+        }
+        var completeName: String {
+            switch name {
+            case "read_calendar":   return "Read calendar events"
+            case "add_reminder":    return "Reminder added"
+            case "send_imessage":   return "iMessage sent"
+            case "read_reminders":  return "Checked reminders"
+            case "get_weather":     return "Weather fetched"
+            default:                return name
             }
         }
         var icon: String {
@@ -44,6 +70,20 @@ struct ChatMessage: Identifiable {
             default:                return "🔧"
             }
         }
+        var richCardTitle: String? {
+            switch name {
+            case "read_calendar":   return "📅 Today's Events"
+            case "read_reminders":  return "✅ Reminders"
+            default:                return nil
+            }
+        }
+    }
+
+    struct RichCardItem: Identifiable {
+        let id = UUID()
+        let title: String
+        let detail: String
+        let dotColor: String // hex
     }
 }
 
@@ -118,6 +158,69 @@ class ChatViewModel {
     }
 }
 
+// MARK: - Chat Header (per design: gradient bar with avatar, title, status, actions)
+struct ChatHeader: View {
+    var body: some View {
+        HStack(spacing: 10) {
+            // AI avatar
+            Text("✦")
+                .font(.system(size: 15))
+                .foregroundColor(.white)
+                .frame(width: 34, height: 34)
+                .background(Color.white.opacity(0.2))
+                .clipShape(Circle())
+                .overlay(Circle().stroke(Color.white.opacity(0.35), lineWidth: 2))
+
+            VStack(alignment: .leading, spacing: 1) {
+                Text("Miss M AI")
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundColor(.white)
+                HStack(spacing: 4) {
+                    Circle()
+                        .fill(Color.green)
+                        .frame(width: 5, height: 5)
+                    Text("Active · Sonnet 4.6")
+                        .font(.system(size: 10))
+                        .foregroundColor(.white.opacity(0.75))
+                }
+            }
+
+            Spacer()
+
+            // Action buttons
+            HStack(spacing: 7) {
+                ChatHeaderButton(icon: "🎙")
+                ChatHeaderButton(icon: "📎")
+                ChatHeaderButton(icon: "⋯")
+            }
+        }
+        .padding(.horizontal, 18)
+        .padding(.vertical, 14)
+        .background(
+            LinearGradient(
+                colors: [Theme.Colors.rosePrimary, Theme.Colors.roseDeep],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        )
+    }
+}
+
+struct ChatHeaderButton: View {
+    let icon: String
+    @State private var isHovered = false
+
+    var body: some View {
+        Text(icon)
+            .font(.system(size: 14))
+            .frame(width: 30, height: 30)
+            .background(isHovered ? Color.white.opacity(0.28) : Color.white.opacity(0.15))
+            .cornerRadius(9)
+            .overlay(RoundedRectangle(cornerRadius: 9).stroke(Color.white.opacity(0.22), lineWidth: 1))
+            .onHover { isHovered = $0 }
+    }
+}
+
 // MARK: - Chat View
 struct ChatView: View {
     let claudeService: ClaudeService
@@ -131,11 +234,23 @@ struct ChatView: View {
 
     var body: some View {
         VStack(spacing: 0) {
+            // Header bar
+            ChatHeader()
+
             // Messages
             ScrollViewReader { proxy in
                 ScrollView {
                     LazyVStack(alignment: .leading, spacing: 8) {
-                        ForEach(viewModel.messages) { message in
+                        ForEach(Array(viewModel.messages.enumerated()), id: \.element.id) { index, message in
+                            // Show timestamp before first message or when gap > 5 min
+                            if index == 0 || shouldShowTimestamp(at: index) {
+                                Text(timestampLabel(for: message))
+                                    .font(.system(size: 9))
+                                    .foregroundColor(Theme.Colors.textXSoft)
+                                    .tracking(0.5)
+                                    .frame(maxWidth: .infinity, alignment: .center)
+                                    .padding(.vertical, 6)
+                            }
                             MessageBubble(message: message)
                                 .id(message.id)
                         }
@@ -163,29 +278,8 @@ struct ChatView: View {
 
             // Input row or voice waveform
             if viewModel.isListening {
-                // Voice input mode (State 6)
-                HStack(spacing: 12) {
-                    VoiceWaveform()
-                    Text("Listening…")
-                        .font(.system(size: 12, weight: .medium))
-                        .foregroundColor(Theme.Colors.rosePrimary)
-                    Spacer()
-                    Button(action: { viewModel.isListening = false }) {
-                        Text("Done")
-                            .font(.system(size: 11, weight: .semibold))
-                            .foregroundColor(.white)
-                            .padding(.horizontal, 14)
-                            .padding(.vertical, 7)
-                            .background(Theme.Gradients.rosePrimary)
-                            .cornerRadius(10)
-                    }
-                    .buttonStyle(.plain)
-                }
-                .padding(.horizontal, 14)
-                .padding(.bottom, 12)
-                .padding(.top, 10)
-                .background(Color.white.opacity(0.5))
-                .overlay(Rectangle().frame(height: 1).foregroundColor(Theme.Colors.glassBorder), alignment: .top)
+                // Voice input mode (State 7 per design)
+                VoiceInputRow(isListening: $viewModel.isListening)
             } else {
                 HStack(spacing: 8) {
                     TextField("Ask me anything, Miss M…", text: $viewModel.inputText)
@@ -227,7 +321,28 @@ struct ChatView: View {
     }
 
     var quickPrompts: [String] {
-        ["📅 My calendar today", "✍️ Help my essay", "🎯 Quiz me", "🛒 Shopping list", "📧 Email draft"]
+        ["📅 My calendar today", "✍️ Help my essay", "🎯 Quiz me", "🛒 Shopping list"]
+    }
+
+    private func shouldShowTimestamp(at index: Int) -> Bool {
+        guard index > 0 else { return true }
+        let prev = viewModel.messages[index - 1].timestamp
+        let curr = viewModel.messages[index].timestamp
+        return curr.timeIntervalSince(prev) > 300 // 5 min gap
+    }
+
+    private func timestampLabel(for message: ChatMessage) -> String {
+        let cal = Calendar.current
+        let now = Date()
+        if cal.isDateInToday(message.timestamp) {
+            return "Today · \(message.timestampString)"
+        } else if cal.isDateInYesterday(message.timestamp) {
+            return "Yesterday · \(message.timestampString)"
+        } else {
+            let df = DateFormatter()
+            df.dateFormat = "MMM d · h:mm a"
+            return df.string(from: message.timestamp)
+        }
     }
 }
 
@@ -255,6 +370,10 @@ struct MessageBubble: View {
                 if !message.toolCalls.isEmpty {
                     ForEach(message.toolCalls) { tool in
                         ToolPill(tool: tool)
+                        // Rich card after tool completes with items
+                        if tool.isComplete, let cardTitle = tool.richCardTitle, !tool.resultItems.isEmpty {
+                            RichCard(title: cardTitle, items: tool.resultItems)
+                        }
                     }
                 }
 
@@ -324,6 +443,140 @@ struct MessageBubble: View {
     }
 }
 
+// MARK: - Rich Card (per design: embedded result card after tool completion)
+struct RichCard: View {
+    let title: String
+    let items: [ChatMessage.RichCardItem]
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            // Header
+            HStack(spacing: 6) {
+                Text(title)
+                    .font(.system(size: 9, weight: .semibold))
+                    .tracking(1.5)
+                    .textCase(.uppercase)
+                    .foregroundColor(Theme.Colors.rosePrimary)
+            }
+            .padding(.bottom, 8)
+
+            // Rows
+            ForEach(items) { item in
+                HStack(spacing: 7) {
+                    Circle()
+                        .fill(Color(hex: item.dotColor))
+                        .frame(width: 7, height: 7)
+                    Text(item.title)
+                        .font(.system(size: 11))
+                        .foregroundColor(Theme.Colors.textPrimary)
+                        .lineLimit(1)
+                    Spacer()
+                    Text(item.detail)
+                        .font(.system(size: 9, weight: .semibold))
+                        .foregroundColor(Theme.Colors.rosePrimary)
+                }
+                .padding(.vertical, 6)
+                if item.id != items.last?.id {
+                    Divider()
+                        .background(Theme.Colors.rosePrimary.opacity(0.05))
+                }
+            }
+        }
+        .padding(.horizontal, 13)
+        .padding(.vertical, 11)
+        .background(Color.white)
+        .cornerRadius(13)
+        .overlay(RoundedRectangle(cornerRadius: 13).stroke(Theme.Colors.rosePrimary.opacity(0.12), lineWidth: 1))
+        .shadow(color: Color(hex: "#C2185B").opacity(0.06), radius: 4, x: 0, y: 2)
+        .frame(maxWidth: 260, alignment: .leading)
+    }
+}
+
+// MARK: - Voice Input Row (per design: pulsing mic, waveform, timer)
+struct VoiceInputRow: View {
+    @Binding var isListening: Bool
+    @State private var seconds = 0
+    @State private var timer: Timer? = nil
+
+    var body: some View {
+        HStack(spacing: 12) {
+            // Pulsing mic icon
+            VoiceMicButton()
+
+            VoiceWaveform()
+
+            Text("Listening to Miss M…")
+                .font(.system(size: 11))
+                .italic()
+                .foregroundColor(Theme.Colors.textSoft)
+
+            Spacer()
+
+            // Timer
+            Text(timerString)
+                .font(.system(size: 11, weight: .semibold))
+                .foregroundColor(Theme.Colors.rosePrimary)
+
+            Button(action: { stopListening() }) {
+                Text("Done")
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 7)
+                    .background(Theme.Gradients.rosePrimary)
+                    .cornerRadius(10)
+            }
+            .buttonStyle(.plain)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 11)
+        .background(Color.white.opacity(0.85))
+        .overlay(RoundedRectangle(cornerRadius: 18).stroke(Theme.Colors.roseLight, lineWidth: 1))
+        .cornerRadius(18)
+        .padding(.horizontal, 14)
+        .padding(.bottom, 12)
+        .padding(.top, 6)
+        .onAppear { startTimer() }
+        .onDisappear { timer?.invalidate() }
+    }
+
+    private var timerString: String {
+        let m = seconds / 60
+        let s = seconds % 60
+        return "\(m):\(String(format: "%02d", s))"
+    }
+
+    private func startTimer() {
+        seconds = 0
+        timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
+            seconds += 1
+        }
+    }
+
+    private func stopListening() {
+        timer?.invalidate()
+        isListening = false
+    }
+}
+
+struct VoiceMicButton: View {
+    @State private var pulsing = false
+
+    var body: some View {
+        Text("🎙")
+            .font(.system(size: 14))
+            .frame(width: 32, height: 32)
+            .background(
+                LinearGradient(colors: [Theme.Colors.rosePrimary, Theme.Colors.roseDeep],
+                               startPoint: .topLeading, endPoint: .bottomTrailing)
+            )
+            .clipShape(Circle())
+            .shadow(color: Theme.Colors.rosePrimary.opacity(pulsing ? 0.4 : 0), radius: pulsing ? 10 : 0)
+            .animation(.easeInOut(duration: 1.4).repeatForever(autoreverses: true), value: pulsing)
+            .onAppear { pulsing = true }
+    }
+}
+
 // MARK: - Thinking Bubble
 struct ThinkingBubble: View {
     @State private var phase = 0.0
@@ -369,21 +622,24 @@ struct ToolPill: View {
                 .frame(width: 20, height: 20)
                 .background(tool.isComplete ? Color.green.opacity(0.12) : Color.blue.opacity(0.1))
                 .clipShape(Circle())
-            Text(tool.isComplete ? tool.displayName.replacingOccurrences(of: "…", with: "") : tool.displayName)
+            Text(tool.isComplete ? tool.completeName : tool.displayName)
                 .font(.system(size: 11, weight: .medium))
-                .foregroundColor(tool.isComplete ? .green : Color.blue)
+                .foregroundColor(tool.isComplete ? Color(red: 0.18, green: 0.49, blue: 0.20) : Color.blue)
             Spacer()
             if tool.isComplete {
-                Text("✓").font(.system(size: 11)).foregroundColor(.green)
+                Text("✓")
+                    .font(.system(size: 12))
+                    .foregroundColor(Color(red: 0.20, green: 0.78, blue: 0.35))
             } else {
                 ProgressView().scaleEffect(0.6)
             }
         }
         .padding(.horizontal, 11)
         .padding(.vertical, 5)
-        .background(tool.isComplete ? Color(red: 0.95, green: 1, blue: 0.96) : Color(red: 0.95, green: 0.97, blue: 1))
+        .background(tool.isComplete ? Color(red: 0.95, green: 1, blue: 0.96).opacity(0.95) : Color(red: 0.95, green: 0.97, blue: 1))
         .cornerRadius(18)
-        .overlay(RoundedRectangle(cornerRadius: 18).stroke(tool.isComplete ? Color.green.opacity(0.25) : Color.blue.opacity(0.2), lineWidth: 1))
+        .overlay(RoundedRectangle(cornerRadius: 18).stroke(tool.isComplete ? Color.green.opacity(0.25) : Color.blue.opacity(0.22), lineWidth: 1))
+        .shadow(color: (tool.isComplete ? Color.green : Color.blue).opacity(0.07), radius: 4, x: 0, y: 2)
         .frame(maxWidth: 260, alignment: .leading)
     }
 }

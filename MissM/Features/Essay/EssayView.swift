@@ -1,7 +1,8 @@
 import SwiftUI
 
 // MARK: - Essay Writer View (Phase 2)
-// 3-panel layout: Outline sidebar · Editor · Citations
+// 3-panel layout: Outline sidebar · Editor · Citations + AI Tools
+// Matches docs/design/04-essay-writer.html
 
 struct EssayView: View {
     let claudeService: ClaudeService
@@ -40,7 +41,6 @@ struct EssayView: View {
                     }
                     .buttonStyle(RoseButtonStyle())
 
-                    // Panel toggle
                     Button(action: { viewModel.showCitations.toggle() }) {
                         Image(systemName: "books.vertical")
                             .font(.system(size: 11))
@@ -55,7 +55,6 @@ struct EssayView: View {
             if viewModel.currentEssay == nil {
                 EssayEmptyState(onNew: { viewModel.showNewEssay = true })
             } else {
-                // 3-panel layout (stacked vertically in 420pt popover)
                 ScrollView {
                     VStack(spacing: 10) {
                         // Outline panel
@@ -63,6 +62,9 @@ struct EssayView: View {
 
                         // Editor panel
                         EditorPanel(viewModel: viewModel)
+
+                        // AI Writing Tools
+                        AIWritingToolsPanel(viewModel: viewModel)
 
                         // Citations panel (collapsible)
                         if viewModel.showCitations {
@@ -104,47 +106,48 @@ struct EssayEmptyState: View {
     }
 }
 
-// MARK: - Outline Panel
+// MARK: - Outline Panel (per design: numbered items with descriptions)
 struct OutlinePanel: View {
     let viewModel: EssayViewModel
     @State private var newPoint = ""
+    @State private var selectedIndex: Int? = 0
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 0) {
+            // Section label
             HStack {
-                Text("OUTLINE")
+                Text("ESSAY OUTLINE")
                     .font(.custom("CormorantGaramond-SemiBold", size: 10))
-                    .tracking(2)
-                    .foregroundColor(Theme.Colors.textSoft)
+                    .tracking(2.5)
+                    .foregroundColor(Theme.Colors.rosePrimary)
                 Spacer()
-                Button("AI Outline") {
-                    Task { await viewModel.generateOutline() }
-                }
-                .font(.system(size: 9, weight: .medium))
-                .foregroundColor(Theme.Colors.rosePrimary)
+                Rectangle()
+                    .fill(Theme.Colors.rosePrimary.opacity(0.14))
+                    .frame(height: 1)
+                    .frame(maxWidth: 80)
+            }
+            .padding(.bottom, 12)
+
+            // Essay info
+            if let essay = viewModel.currentEssay {
+                Text("\(essay.title)\n\(essay.course.isEmpty ? "" : "\(essay.course) · ")Due date TBD")
+                    .font(.system(size: 11))
+                    .foregroundColor(Theme.Colors.textSoft)
+                    .lineSpacing(2)
+                    .padding(.bottom, 12)
             }
 
-            if viewModel.isGeneratingOutline {
-                HStack(spacing: 6) {
-                    ProgressView().scaleEffect(0.6)
-                    Text("Generating outline...")
-                        .font(.system(size: 10))
-                        .foregroundColor(Theme.Colors.textSoft)
-                }
+            // Outline items with numbered circles
+            ForEach(Array((viewModel.currentEssay?.outline ?? []).enumerated()), id: \.element.id) { index, item in
+                OutlineItemRow(
+                    index: index + 1,
+                    item: item,
+                    isSelected: selectedIndex == index,
+                    onTap: { selectedIndex = index }
+                )
             }
 
-            ForEach(viewModel.currentEssay?.outline ?? []) { item in
-                HStack(spacing: 6) {
-                    Circle()
-                        .fill(Theme.Colors.rosePrimary)
-                        .frame(width: 5, height: 5)
-                    Text(item.text)
-                        .font(.system(size: 11))
-                        .foregroundColor(Theme.Colors.textPrimary)
-                }
-                .padding(.leading, CGFloat(item.level * 12))
-            }
-
+            // Add outline point
             HStack(spacing: 6) {
                 TextField("Add outline point...", text: $newPoint)
                     .textFieldStyle(.plain)
@@ -162,70 +165,337 @@ struct OutlinePanel: View {
                 }
                 .buttonStyle(.plain)
             }
+            .padding(.top, 8)
+
+            // Action buttons (per design)
+            VStack(spacing: 7) {
+                Button(action: { Task { await viewModel.generateDraft() } }) {
+                    HStack(spacing: 4) {
+                        Text("✦")
+                        Text(viewModel.isGeneratingDraft ? "Generating…" : "Generate Full Draft")
+                    }
+                    .font(.system(size: 11, weight: .semibold))
+                    .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(RoseButtonStyle())
+                .disabled(viewModel.isGeneratingDraft)
+
+                OutlineActionButton(icon: "📚", label: "Add All Citations")
+                OutlineActionButton(icon: "🔄", label: "Rewrite in My Voice")
+                OutlineActionButton(icon: "📥", label: "Export as Word Doc")
+            }
+            .padding(.top, 14)
+
+            // Progress bar
+            if let essay = viewModel.currentEssay, !essay.outline.isEmpty {
+                VStack(spacing: 6) {
+                    HStack {
+                        Text("Overall Progress")
+                            .font(.system(size: 10))
+                            .foregroundColor(Theme.Colors.textSoft)
+                        Spacer()
+                        Text("\(essayProgress(essay))%")
+                            .font(.system(size: 10, weight: .semibold))
+                            .foregroundColor(Theme.Colors.rosePrimary)
+                    }
+                    GeometryReader { geo in
+                        ZStack(alignment: .leading) {
+                            RoundedRectangle(cornerRadius: 4)
+                                .fill(Theme.Colors.rosePrimary.opacity(0.1))
+                                .frame(height: 5)
+                            RoundedRectangle(cornerRadius: 4)
+                                .fill(
+                                    LinearGradient(colors: [Theme.Colors.rosePrimary, Theme.Colors.roseMid],
+                                                   startPoint: .leading, endPoint: .trailing)
+                                )
+                                .frame(width: geo.size.width * Double(essayProgress(essay)) / 100.0, height: 5)
+                        }
+                    }
+                    .frame(height: 5)
+                }
+                .padding(.top, 16)
+            }
         }
-        .padding(10)
+        .padding(16)
         .glassCard(padding: 0)
+    }
+
+    private func essayProgress(_ essay: Essay) -> Int {
+        let words = essay.content.split(whereSeparator: { $0.isWhitespace || $0.isNewline }).count
+        let target = 2500 // default target
+        return min(100, Int(Double(words) / Double(target) * 100))
     }
 }
 
-// MARK: - Editor Panel
-struct EditorPanel: View {
-    let viewModel: EssayViewModel
+// MARK: - Outline Item Row (per design: numbered circle + title + subtitle)
+struct OutlineItemRow: View {
+    let index: Int
+    let item: OutlineItem
+    let isSelected: Bool
+    let onTap: () -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                Text("EDITOR")
-                    .font(.custom("CormorantGaramond-SemiBold", size: 10))
-                    .tracking(2)
-                    .foregroundColor(Theme.Colors.textSoft)
-                Spacer()
-                Text(wordCount)
-                    .font(.system(size: 9, design: .monospaced))
-                    .foregroundColor(Theme.Colors.textXSoft)
+        Button(action: onTap) {
+            HStack(alignment: .top, spacing: 9) {
+                // Numbered circle
+                Text("\(index)")
+                    .font(.system(size: 9, weight: .bold))
+                    .foregroundColor(.white)
+                    .frame(width: 21, height: 21)
+                    .background(
+                        LinearGradient(
+                            colors: [Theme.Colors.rosePrimary, Theme.Colors.roseDeep],
+                            startPoint: .topLeading, endPoint: .bottomTrailing
+                        )
+                    )
+                    .clipShape(Circle())
 
-                Button("AI Draft") {
-                    Task { await viewModel.generateDraft() }
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(item.text)
+                        .font(.system(size: 11.5, weight: .medium))
+                        .foregroundColor(Theme.Colors.textPrimary)
                 }
-                .font(.system(size: 9, weight: .medium))
-                .foregroundColor(Theme.Colors.rosePrimary)
             }
+            .padding(9)
+            .background(isSelected ? Theme.Colors.rosePrimary.opacity(0.08) : Color.clear)
+            .cornerRadius(11)
+            .overlay(
+                RoundedRectangle(cornerRadius: 11)
+                    .stroke(isSelected ? Theme.Colors.rosePrimary.opacity(0.15) : Color.clear, lineWidth: 1)
+            )
+        }
+        .buttonStyle(.plain)
+        .padding(.bottom, 3)
+    }
+}
 
-            if viewModel.isGeneratingDraft {
+struct OutlineActionButton: View {
+    let icon: String
+    let label: String
+
+    var body: some View {
+        Button(action: {}) {
+            HStack(spacing: 4) {
+                Text(icon).font(.system(size: 10))
+                Text(label)
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundColor(Theme.Colors.textMedium)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 8)
+            .background(Color.white.opacity(0.75))
+            .cornerRadius(11)
+            .overlay(RoundedRectangle(cornerRadius: 11).stroke(Theme.Colors.roseLight, lineWidth: 1.5))
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+// MARK: - Editor Panel (per design: toolbar, title, stats bar)
+struct EditorPanel: View {
+    let viewModel: EssayViewModel
+    @State private var activeMode = "AI Draft"
+
+    private let modes = ["✦ AI Draft", "📝 Edit", "📚 Citations", "🎨 Tone", "✅ Check", "📥 Export"]
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            // Editor head: title + badge
+            HStack {
+                Text(viewModel.currentEssay?.title ?? "Untitled")
+                    .font(.custom("PlayfairDisplay-Italic", size: 16))
+                    .foregroundColor(Theme.Colors.textPrimary)
+                    .lineLimit(1)
+                Spacer()
+                Text("AI Draft Mode")
+                    .font(.system(size: 10, weight: .semibold))
+                    .foregroundColor(Color(hex: "#C65200"))
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 3)
+                    .background(Color.orange.opacity(0.12))
+                    .cornerRadius(8)
+            }
+            .padding(.bottom, 14)
+
+            // Toolbar (per design: 6 mode buttons)
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 6) {
+                    ForEach(modes, id: \.self) { mode in
+                        Button(action: { activeMode = mode }) {
+                            Text(mode)
+                                .font(.system(size: 11, weight: .medium))
+                                .foregroundColor(activeMode == mode ? .white : Theme.Colors.textMedium)
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 6)
+                                .background(activeMode == mode ? Theme.Colors.rosePrimary : Color.white.opacity(0.8))
+                                .cornerRadius(10)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 10)
+                                        .stroke(activeMode == mode ? Theme.Colors.rosePrimary : Theme.Colors.roseLight, lineWidth: 1)
+                                )
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+            }
+            .padding(.bottom, 14)
+
+            Divider()
+                .background(Theme.Colors.rosePrimary.opacity(0.08))
+                .padding(.bottom, 14)
+
+            // Loading indicator
+            if viewModel.isGeneratingDraft || viewModel.isGeneratingOutline {
                 HStack(spacing: 6) {
                     ProgressView().scaleEffect(0.6)
-                    Text("Writing draft...")
+                    Text(viewModel.isGeneratingDraft ? "Writing draft…" : "Generating outline…")
                         .font(.system(size: 10))
                         .foregroundColor(Theme.Colors.textSoft)
                 }
+                .padding(.bottom, 8)
             }
 
+            // Editor area
             TextEditor(text: Binding(
                 get: { viewModel.currentEssay?.content ?? "" },
                 set: { viewModel.updateContent($0) }
             ))
-            .font(.system(size: 12))
+            .font(.system(size: 13, weight: .light))
             .foregroundColor(Theme.Colors.textPrimary)
             .scrollContentBackground(.hidden)
-            .frame(minHeight: 180)
+            .lineSpacing(5)
+            .frame(minHeight: 200)
             .padding(8)
-            .background(Color.white.opacity(0.7))
+            .background(Color.white.opacity(0.72))
             .cornerRadius(8)
-            .overlay(RoundedRectangle(cornerRadius: 8).stroke(Theme.Colors.roseLight, lineWidth: 1))
-        }
-        .padding(10)
-        .glassCard(padding: 0)
-    }
+            .overlay(RoundedRectangle(cornerRadius: 8).stroke(Theme.Colors.roseLight.opacity(0.5), lineWidth: 1))
 
-    private var wordCount: String {
-        let count = viewModel.currentEssay?.content
-            .split(whereSeparator: { $0.isWhitespace || $0.isNewline })
-            .count ?? 0
-        return "\(count) words"
+            // Stats bar (per design)
+            EssayStatsBar(viewModel: viewModel)
+                .padding(.top, 12)
+        }
+        .padding(22)
+        .background(Color.white.opacity(0.72))
+        .cornerRadius(20)
+        .overlay(RoundedRectangle(cornerRadius: 20).stroke(Theme.Colors.glassBorder, lineWidth: 1))
+        .shadow(color: Theme.Colors.shadow, radius: 10, x: 0, y: 4)
     }
 }
 
-// MARK: - Citations Panel
+// MARK: - Essay Stats Bar (per design: words, section, reading level, tone, citations, plagiarism)
+struct EssayStatsBar: View {
+    let viewModel: EssayViewModel
+
+    var body: some View {
+        HStack(spacing: 0) {
+            ForEach(stats, id: \.label) { stat in
+                HStack(spacing: 0) {
+                    Text("\(stat.label): ")
+                        .font(.system(size: 10))
+                        .foregroundColor(Theme.Colors.textSoft)
+                    Text(stat.value)
+                        .font(.system(size: 10, weight: .semibold))
+                        .foregroundColor(Theme.Colors.rosePrimary)
+                }
+                if stat.label != stats.last?.label {
+                    Spacer()
+                }
+            }
+        }
+        .padding(.top, 12)
+        .overlay(
+            Rectangle()
+                .fill(Theme.Colors.rosePrimary.opacity(0.07))
+                .frame(height: 1),
+            alignment: .top
+        )
+    }
+
+    private var stats: [(label: String, value: String)] {
+        let content = viewModel.currentEssay?.content ?? ""
+        let words = content.split(whereSeparator: { $0.isWhitespace || $0.isNewline }).count
+        let citations = viewModel.currentEssay?.citations.count ?? 0
+        return [
+            ("Words", "\(words)"),
+            ("Tone", "Academic"),
+            ("Citations", "\(citations)"),
+        ]
+    }
+}
+
+// MARK: - AI Writing Tools Panel (per design: 6 tool items)
+struct AIWritingToolsPanel: View {
+    let viewModel: EssayViewModel
+
+    private let tools: [(icon: String, name: String, desc: String)] = [
+        ("✦", "Continue Writing", "AI writes the next paragraph in your academic voice"),
+        ("🎨", "Adjust Tone", "Academic · Formal · Persuasive · Analytical"),
+        ("🔄", "Rephrase Selection", "Rewrite selected text while keeping meaning"),
+        ("📖", "Expand Section", "Add depth, examples and evidence to any paragraph"),
+        ("✂️", "Make Concise", "Reduce word count without losing substance"),
+        ("🔬", "Add Evidence", "Insert supporting research and academic sources"),
+    ]
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            HStack {
+                Text("AI WRITING TOOLS")
+                    .font(.custom("CormorantGaramond-SemiBold", size: 10))
+                    .tracking(2.5)
+                    .foregroundColor(Theme.Colors.rosePrimary)
+                Spacer()
+                Rectangle()
+                    .fill(Theme.Colors.rosePrimary.opacity(0.14))
+                    .frame(height: 1)
+                    .frame(maxWidth: 80)
+            }
+            .padding(.bottom, 10)
+
+            ForEach(tools, id: \.name) { tool in
+                AIToolItem(icon: tool.icon, name: tool.name, desc: tool.desc)
+            }
+        }
+        .padding(16)
+        .glassCard(padding: 0)
+    }
+}
+
+struct AIToolItem: View {
+    let icon: String
+    let name: String
+    let desc: String
+    @State private var isHovered = false
+
+    var body: some View {
+        Button(action: {}) {
+            VStack(alignment: .leading, spacing: 2) {
+                HStack(spacing: 7) {
+                    Text(icon).font(.system(size: 11))
+                    Text(name)
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundColor(Theme.Colors.textPrimary)
+                }
+                Text(desc)
+                    .font(.system(size: 10))
+                    .foregroundColor(Theme.Colors.textSoft)
+                    .lineSpacing(2)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, 13)
+            .padding(.vertical, 11)
+            .background(isHovered ? Color.white : Color.white.opacity(0.7))
+            .cornerRadius(13)
+            .overlay(RoundedRectangle(cornerRadius: 13).stroke(Theme.Colors.glassBorder, lineWidth: 1))
+            .shadow(color: isHovered ? Theme.Colors.shadow : .clear, radius: isHovered ? 7 : 0, x: 0, y: 2)
+            .offset(x: isHovered ? 2 : 0)
+        }
+        .buttonStyle(.plain)
+        .onHover { isHovered = $0 }
+        .padding(.bottom, 6)
+    }
+}
+
+// MARK: - Citations Panel (per design: colored dots, tags, AI search)
 struct CitationsPanel: View {
     let viewModel: EssayViewModel
     @State private var author = ""
@@ -233,31 +503,47 @@ struct CitationsPanel: View {
     @State private var year = ""
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 0) {
             HStack {
-                Text("CITATIONS")
+                Text("CITATIONS ADDED")
                     .font(.custom("CormorantGaramond-SemiBold", size: 10))
-                    .tracking(2)
-                    .foregroundColor(Theme.Colors.textSoft)
+                    .tracking(2.5)
+                    .foregroundColor(Theme.Colors.rosePrimary)
                 Spacer()
-                Text("\(viewModel.currentEssay?.citations.count ?? 0) sources")
-                    .font(.system(size: 9))
-                    .foregroundColor(Theme.Colors.textXSoft)
+                Rectangle()
+                    .fill(Theme.Colors.rosePrimary.opacity(0.14))
+                    .frame(height: 1)
+                    .frame(maxWidth: 80)
             }
+            .padding(.bottom, 10)
 
             ForEach(viewModel.currentEssay?.citations ?? []) { citation in
-                HStack(alignment: .top, spacing: 6) {
-                    Text("📚").font(.system(size: 10))
-                    Text(citation.formatted)
-                        .font(.system(size: 10))
-                        .foregroundColor(Theme.Colors.textMedium)
-                }
-                .padding(6)
-                .background(Theme.Colors.rosePale.opacity(0.5))
-                .cornerRadius(6)
+                CitationItemRow(citation: citation)
             }
 
-            // Add citation
+            // Placeholder for next citation
+            HStack(alignment: .top, spacing: 8) {
+                Circle()
+                    .fill(Theme.Colors.textXSoft)
+                    .frame(width: 8, height: 8)
+                    .padding(.top, 3)
+                VStack(alignment: .leading, spacing: 1) {
+                    Text("Add next citation…")
+                        .font(.system(size: 10.5, weight: .medium))
+                        .foregroundColor(Theme.Colors.textSoft)
+                    Text("\(max(0, 8 - (viewModel.currentEssay?.citations.count ?? 0))) more needed")
+                        .font(.system(size: 9))
+                        .foregroundColor(Theme.Colors.textSoft)
+                }
+            }
+            .padding(9)
+            .background(Color.white.opacity(0.7))
+            .cornerRadius(11)
+            .overlay(RoundedRectangle(cornerRadius: 11).stroke(Theme.Colors.glassBorder, lineWidth: 1))
+            .opacity(0.5)
+            .padding(.bottom, 6)
+
+            // Add citation fields
             VStack(spacing: 6) {
                 HStack(spacing: 6) {
                     TextField("Author", text: $author)
@@ -284,9 +570,72 @@ struct CitationsPanel: View {
             .padding(6)
             .background(Color.white.opacity(0.7))
             .cornerRadius(6)
+            .padding(.bottom, 8)
+
+            // Action buttons (per design)
+            Button(action: {}) {
+                HStack(spacing: 4) {
+                    Text("📚")
+                    Text("Find Sources with AI")
+                }
+                .font(.system(size: 11, weight: .semibold))
+                .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(RoseButtonStyle())
+
+            Button(action: {}) {
+                HStack(spacing: 4) {
+                    Text("📋")
+                    Text("Generate Reference List")
+                        .font(.system(size: 11, weight: .medium))
+                        .foregroundColor(Theme.Colors.textMedium)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 8)
+                .background(Color.white.opacity(0.75))
+                .cornerRadius(11)
+                .overlay(RoundedRectangle(cornerRadius: 11).stroke(Theme.Colors.roseLight, lineWidth: 1.5))
+            }
+            .buttonStyle(.plain)
+            .padding(.top, 6)
         }
-        .padding(10)
+        .padding(16)
         .glassCard(padding: 0)
+    }
+}
+
+struct CitationItemRow: View {
+    let citation: Citation
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 8) {
+            Circle()
+                .fill(Color.blue)
+                .frame(width: 8, height: 8)
+                .padding(.top, 3)
+            VStack(alignment: .leading, spacing: 1) {
+                Text("\(citation.author) (\(citation.year))")
+                    .font(.system(size: 10.5, weight: .medium))
+                    .foregroundColor(Theme.Colors.textPrimary)
+                Text(citation.title)
+                    .font(.system(size: 9))
+                    .foregroundColor(Theme.Colors.textSoft)
+                    .lineLimit(2)
+                Text("APA")
+                    .font(.system(size: 9, weight: .medium))
+                    .foregroundColor(.blue)
+                    .padding(.horizontal, 7)
+                    .padding(.vertical, 1)
+                    .background(Color.blue.opacity(0.09))
+                    .cornerRadius(6)
+                    .padding(.top, 2)
+            }
+        }
+        .padding(9)
+        .background(Color.white.opacity(0.7))
+        .cornerRadius(11)
+        .overlay(RoundedRectangle(cornerRadius: 11).stroke(Theme.Colors.glassBorder, lineWidth: 1))
+        .padding(.bottom, 6)
     }
 }
 
@@ -330,7 +679,7 @@ struct NewEssaySheet: View {
             }
         }
         .padding(24)
-        .frame(width: 320)
+        .frame(width: 350)
         .background(Theme.Colors.roseUltra)
     }
 }
@@ -421,7 +770,7 @@ class EssayViewModel {
             essays[index].updatedAt = Date()
             saveData()
         } catch {
-            // Error handled silently — user sees no loading spinner
+            // Error handled silently
         }
     }
 

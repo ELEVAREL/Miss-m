@@ -44,87 +44,92 @@ struct StudyView: View {
     }
 }
 
-// MARK: - Pomodoro Timer Card
+// MARK: - Pomodoro Timer Card (per design: dark gradient, large ring, session dots)
 struct PomodoroCard: View {
     let viewModel: StudyViewModel
 
     var body: some View {
-        VStack(spacing: 14) {
-            // Timer display
+        VStack(spacing: 0) {
+            // Timer ring
             ZStack {
                 // Background ring
                 Circle()
-                    .stroke(Theme.Colors.rosePale, lineWidth: 6)
-                    .frame(width: 120, height: 120)
+                    .stroke(Color.white.opacity(0.14), lineWidth: 5)
+                    .frame(width: 130, height: 130)
 
                 // Progress ring
                 Circle()
                     .trim(from: 0, to: viewModel.progress)
                     .stroke(
-                        Theme.Gradients.rosePrimary,
-                        style: StrokeStyle(lineWidth: 6, lineCap: .round)
+                        Color.white,
+                        style: StrokeStyle(lineWidth: 5, lineCap: .round)
                     )
-                    .frame(width: 120, height: 120)
+                    .frame(width: 130, height: 130)
                     .rotationEffect(.degrees(-90))
                     .animation(.linear(duration: 1), value: viewModel.progress)
 
-                // Time text
-                VStack(spacing: 2) {
-                    Text(viewModel.timeString)
-                        .font(.system(size: 28, weight: .light, design: .monospaced))
-                        .foregroundColor(Theme.Colors.textPrimary)
-                    Text(viewModel.phaseLabel)
-                        .font(.system(size: 10, weight: .medium))
-                        .foregroundColor(Theme.Colors.textSoft)
-                }
+                // Time text (per design: large Cormorant)
+                Text(viewModel.timeString)
+                    .font(.custom("CormorantGaramond-SemiBold", size: 48))
+                    .foregroundColor(.white)
             }
+            .padding(.top, 4)
 
-            // Subject input
-            if !viewModel.isRunning {
+            // Phase label
+            Text("POMODORO SESSION")
+                .font(.system(size: 10, weight: .semibold))
+                .tracking(2)
+                .foregroundColor(.white.opacity(0.65))
+                .padding(.top, 8)
+
+            // Subject label
+            if viewModel.isRunning {
+                Text(viewModel.currentSubject.isEmpty ? "Study session" : viewModel.currentSubject)
+                    .font(.system(size: 12, weight: .light))
+                    .foregroundColor(.white.opacity(0.85))
+                    .padding(.top, 4)
+            } else {
                 TextField("What are you studying?", text: $viewModel.currentSubject)
                     .textFieldStyle(.plain)
                     .font(.system(size: 12))
+                    .foregroundColor(.white)
                     .multilineTextAlignment(.center)
                     .padding(8)
-                    .background(Color.white.opacity(0.7))
+                    .background(Color.white.opacity(0.1))
                     .cornerRadius(8)
-                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(Theme.Colors.roseLight, lineWidth: 1))
                     .padding(.horizontal, 40)
-            } else {
-                Text(viewModel.currentSubject.isEmpty ? "Study session" : viewModel.currentSubject)
-                    .font(.system(size: 12, weight: .medium))
-                    .foregroundColor(Theme.Colors.textMedium)
+                    .padding(.top, 4)
             }
 
-            // Controls
-            HStack(spacing: 16) {
+            // Controls (per design: white primary, glass secondary)
+            HStack(spacing: 10) {
                 if viewModel.isRunning {
-                    Button(action: { viewModel.pauseTimer() }) {
-                        HStack(spacing: 4) {
-                            Image(systemName: "pause.fill")
-                            Text("Pause")
-                        }
-                        .font(.system(size: 12, weight: .medium))
-                    }
-                    .buttonStyle(RoseButtonStyle())
-
-                    Button(action: { viewModel.resetTimer() }) {
-                        Text("Reset")
-                            .font(.system(size: 11))
-                            .foregroundColor(Theme.Colors.textSoft)
-                    }
-                    .buttonStyle(.plain)
+                    PomodoroButton(label: "⏸ Pause", isPrimary: true) { viewModel.pauseTimer() }
+                    PomodoroButton(label: "⏭ Skip", isPrimary: false) { viewModel.resetTimer() }
+                    PomodoroButton(label: "⚙", isPrimary: false) {}
                 } else {
-                    Button(action: { viewModel.startTimer() }) {
-                        HStack(spacing: 4) {
-                            Image(systemName: "play.fill")
-                            Text(viewModel.isPaused ? "Resume" : "Start")
-                        }
-                        .font(.system(size: 12, weight: .medium))
-                    }
-                    .buttonStyle(RoseButtonStyle())
+                    PomodoroButton(label: "▶ Start", isPrimary: true) { viewModel.startTimer() }
+                    PomodoroButton(label: "⏭ Skip", isPrimary: false) {}
+                    PomodoroButton(label: "⚙", isPrimary: false) {}
                 }
             }
+            .padding(.top, 16)
+
+            // Session dots (per design)
+            HStack(spacing: 8) {
+                ForEach(0..<4, id: \.self) { i in
+                    Circle()
+                        .fill(i < viewModel.completedPomodoros ? Color.white : (i == viewModel.completedPomodoros ? Color.white.opacity(0.7) : Color.white.opacity(0.25)))
+                        .frame(width: 10, height: 10)
+                        .shadow(color: i == viewModel.completedPomodoros ? Color.white.opacity(0.5) : .clear, radius: 4)
+                }
+            }
+            .padding(.top, 14)
+
+            Text("Session \(viewModel.completedPomodoros + 1) of 4 · \(viewModel.phaseLabel)")
+                .font(.system(size: 10))
+                .foregroundColor(.white.opacity(0.55))
+                .padding(.top, 10)
 
             // Duration selector
             if !viewModel.isRunning && !viewModel.isPaused {
@@ -134,22 +139,50 @@ struct PomodoroCard: View {
                             viewModel.setDuration(minutes)
                         }
                         .font(.system(size: 10, weight: viewModel.durationMinutes == minutes ? .bold : .regular))
-                        .foregroundColor(viewModel.durationMinutes == minutes ? .white : Theme.Colors.textMedium)
+                        .foregroundColor(viewModel.durationMinutes == minutes ? Theme.Colors.rosePrimary : .white.opacity(0.7))
                         .padding(.horizontal, 10)
                         .padding(.vertical, 5)
-                        .background(
-                            viewModel.durationMinutes == minutes
-                            ? AnyView(Theme.Gradients.rosePrimary)
-                            : AnyView(Color.white.opacity(0.6))
-                        )
+                        .background(viewModel.durationMinutes == minutes ? Color.white : Color.white.opacity(0.15))
                         .cornerRadius(8)
                         .buttonStyle(.plain)
                     }
                 }
+                .padding(.top, 10)
             }
         }
-        .padding(16)
-        .glassCard(padding: 0)
+        .padding(22)
+        .background(
+            LinearGradient(
+                colors: [Theme.Colors.roseDark, Theme.Colors.roseDeep],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        )
+        .cornerRadius(22)
+        .shadow(color: Color(hex: "#C2185B").opacity(0.22), radius: 20, x: 0, y: 6)
+    }
+}
+
+struct PomodoroButton: View {
+    let label: String
+    let isPrimary: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Text(label)
+                .font(.system(size: 12, weight: .semibold))
+                .foregroundColor(isPrimary ? Theme.Colors.rosePrimary : .white)
+                .padding(.horizontal, 20)
+                .padding(.vertical, 10)
+                .background(isPrimary ? Color.white : Color.white.opacity(0.15))
+                .cornerRadius(12)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(isPrimary ? .clear : Color.white.opacity(0.25), lineWidth: 1)
+                )
+        }
+        .buttonStyle(.plain)
     }
 }
 
@@ -189,43 +222,63 @@ struct StatItem: View {
     }
 }
 
-// MARK: - Week Study View
+// MARK: - Week Study View (per design: calendar-style day cells with dots)
 struct WeekStudyView: View {
     let viewModel: StudyViewModel
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("THIS WEEK")
-                .font(.custom("CormorantGaramond-SemiBold", size: 10))
-                .tracking(2)
-                .foregroundColor(Theme.Colors.textSoft)
+            HStack {
+                Text("THIS WEEK")
+                    .font(.custom("CormorantGaramond-SemiBold", size: 10))
+                    .tracking(2.5)
+                    .foregroundColor(Theme.Colors.rosePrimary)
+                Spacer()
+                Rectangle()
+                    .fill(Theme.Colors.rosePrimary.opacity(0.14))
+                    .frame(height: 1)
+                    .frame(maxWidth: 80)
+            }
+            .padding(.bottom, 4)
 
-            HStack(spacing: 4) {
+            HStack(spacing: 6) {
                 ForEach(viewModel.weekDays, id: \.label) { day in
                     VStack(spacing: 4) {
                         Text(day.label)
-                            .font(.system(size: 9, weight: .medium))
-                            .foregroundColor(day.isToday ? .white : Theme.Colors.textSoft)
+                            .font(.system(size: 8, weight: .semibold))
+                            .tracking(1)
+                            .foregroundColor(Theme.Colors.textSoft)
 
-                        ZStack {
-                            Circle()
-                                .fill(day.isToday ? Theme.Colors.rosePrimary : Theme.Colors.rosePale.opacity(0.5))
-                                .frame(width: 32, height: 32)
-                            Text("\(day.minutes)")
-                                .font(.system(size: 9, weight: .bold))
-                                .foregroundColor(day.isToday ? .white : Theme.Colors.textMedium)
+                        Text("\(day.dayNumber)")
+                            .font(.custom("CormorantGaramond-SemiBold", size: 20))
+                            .foregroundColor(day.isToday ? Theme.Colors.rosePrimary : Theme.Colors.textPrimary)
+
+                        // Activity dots
+                        HStack(spacing: 2) {
+                            ForEach(0..<min(3, max(1, day.minutes / 25)), id: \.self) { _ in
+                                Circle()
+                                    .fill(day.isToday ? Theme.Colors.roseMid : Theme.Colors.rosePrimary)
+                                    .frame(width: 4, height: 4)
+                            }
                         }
-
-                        // Activity bar
-                        RoundedRectangle(cornerRadius: 2)
-                            .fill(day.minutes > 0 ? Theme.Gradients.rosePrimary : LinearGradient(colors: [Theme.Colors.rosePale], startPoint: .bottom, endPoint: .top))
-                            .frame(width: 16, height: CGFloat(min(day.minutes, 120)) / 3)
+                        .frame(height: 4)
                     }
                     .frame(maxWidth: .infinity)
+                    .padding(.vertical, 8)
+                    .background(
+                        day.isToday
+                        ? LinearGradient(colors: [Theme.Colors.rosePrimary.opacity(0.13), Theme.Colors.roseDeep.opacity(0.07)], startPoint: .top, endPoint: .bottom)
+                        : LinearGradient(colors: [Color.white.opacity(0.55)], startPoint: .top, endPoint: .bottom)
+                    )
+                    .cornerRadius(12)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(day.isToday ? Theme.Colors.rosePrimary.opacity(0.3) : Theme.Colors.glassBorder, lineWidth: 1)
+                    )
                 }
             }
         }
-        .padding(12)
+        .padding(14)
         .glassCard(padding: 0)
     }
 }
@@ -353,6 +406,7 @@ class StudyViewModel {
 
     struct WeekDay {
         let label: String
+        let dayNumber: Int
         let minutes: Int
         let isToday: Bool
     }
@@ -367,10 +421,11 @@ class StudyViewModel {
         return (0..<7).map { offset in
             let day = calendar.date(byAdding: .day, value: offset, to: startOfWeek)!
             let dayEnd = calendar.date(byAdding: .day, value: 1, to: day)!
+            let dayNum = calendar.component(.day, from: day)
             let mins = sessions
                 .filter { $0.date >= day && $0.date < dayEnd }
                 .reduce(0) { $0 + $1.durationMinutes }
-            return WeekDay(label: labels[offset], minutes: mins, isToday: calendar.isDate(day, inSameDayAs: today))
+            return WeekDay(label: labels[offset], dayNumber: dayNum, minutes: mins, isToday: calendar.isDate(day, inSameDayAs: today))
         }
     }
 

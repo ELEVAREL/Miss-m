@@ -14,17 +14,14 @@ struct FlashcardsView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            // Header
-            HStack {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("FLASHCARDS")
-                        .font(.custom("CormorantGaramond-SemiBold", size: 11))
-                        .tracking(2.5)
-                        .foregroundColor(Theme.Colors.textSoft)
-                    Text("Study Cards")
-                        .font(.custom("PlayfairDisplay-Italic", size: 18))
-                        .foregroundColor(Theme.Colors.rosePrimary)
-                }
+            // Header (per design: Playfair "Flashcard Quiz")
+            HStack(alignment: .firstTextBaseline) {
+                Text("Flashcard ")
+                    .font(.custom("PlayfairDisplay-Italic", size: 22))
+                    .foregroundColor(Theme.Colors.textPrimary)
+                + Text("Quiz")
+                    .font(.custom("PlayfairDisplay-Italic", size: 22))
+                    .foregroundColor(Theme.Colors.rosePrimary)
                 Spacer()
                 Button(action: { viewModel.showNewDeck = true }) {
                     HStack(spacing: 4) {
@@ -36,7 +33,14 @@ struct FlashcardsView: View {
                 .buttonStyle(RoseButtonStyle())
             }
             .padding(.horizontal, 16)
-            .padding(.vertical, 10)
+            .padding(.top, 10)
+
+            Text("AI-generated from notes · spaced repetition")
+                .font(.system(size: 11))
+                .foregroundColor(Theme.Colors.textSoft)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, 16)
+                .padding(.bottom, 10)
 
             if viewModel.currentDeck == nil {
                 // Deck list
@@ -84,199 +88,327 @@ struct DeckListView: View {
     }
 }
 
-// MARK: - Deck Card
+// MARK: - Deck Card (per design: colored dot, info, badge)
 struct DeckCard: View {
     let deck: FlashcardDeck
     let onTap: () -> Void
+    @State private var isHovered = false
 
     var body: some View {
         Button(action: onTap) {
-            HStack(spacing: 12) {
-                VStack(spacing: 4) {
-                    Text("\(deck.cards.count)")
-                        .font(.system(size: 18, weight: .bold))
-                        .foregroundColor(.white)
-                    Text("cards")
-                        .font(.system(size: 8))
-                        .foregroundColor(.white.opacity(0.8))
-                }
-                .frame(width: 50, height: 50)
-                .background(Theme.Gradients.rosePrimary)
-                .cornerRadius(12)
+            HStack(spacing: 10) {
+                // Colored dot
+                Circle()
+                    .fill(deckDotColor)
+                    .frame(width: 10, height: 10)
 
-                VStack(alignment: .leading, spacing: 3) {
+                // Info
+                VStack(alignment: .leading, spacing: 1) {
                     Text(deck.title)
-                        .font(.system(size: 13, weight: .medium))
+                        .font(.system(size: 12, weight: .medium))
                         .foregroundColor(Theme.Colors.textPrimary)
-                    Text(deck.course)
+                    Text("\(deck.cards.count) cards · \(deck.masteredCount) mastered")
                         .font(.system(size: 10))
                         .foregroundColor(Theme.Colors.textSoft)
-                    // Progress
-                    HStack(spacing: 4) {
-                        ProgressView(value: Double(deck.masteredCount), total: max(Double(deck.cards.count), 1))
-                            .tint(Theme.Colors.rosePrimary)
-                            .frame(width: 80)
-                        Text("\(deck.masteredCount)/\(deck.cards.count)")
-                            .font(.system(size: 9))
-                            .foregroundColor(Theme.Colors.textXSoft)
-                    }
                 }
+
                 Spacer()
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 10))
-                    .foregroundColor(Theme.Colors.textXSoft)
+
+                // Badge
+                Text(deckBadgeLabel)
+                    .font(.system(size: 9, weight: .semibold))
+                    .foregroundColor(deckBadgeColor)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 2)
+                    .background(deckBadgeColor.opacity(0.1))
+                    .cornerRadius(8)
             }
-            .padding(10)
-            .glassCard(padding: 0)
+            .padding(.horizontal, 13)
+            .padding(.vertical, 11)
+            .background(isHovered ? Color.white : Color.white.opacity(0.65))
+            .cornerRadius(13)
+            .overlay(RoundedRectangle(cornerRadius: 13).stroke(Theme.Colors.glassBorder, lineWidth: 1))
+            .offset(x: isHovered ? 2 : 0)
         }
         .buttonStyle(.plain)
+        .onHover { isHovered = $0 }
+    }
+
+    private var deckDotColor: Color {
+        if deck.masteredCount == deck.cards.count && !deck.cards.isEmpty { return .green }
+        if deck.masteredCount > 0 { return .orange }
+        return .red
+    }
+
+    private var deckBadgeLabel: String {
+        if deck.cards.isEmpty { return "New" }
+        if deck.masteredCount == deck.cards.count { return "✓ OK" }
+        if deck.masteredCount > 0 { return "Review" }
+        return "Due"
+    }
+
+    private var deckBadgeColor: Color {
+        if deck.cards.isEmpty { return Color.purple }
+        if deck.masteredCount == deck.cards.count { return .green }
+        if deck.masteredCount > 0 { return .orange }
+        return .red
     }
 }
 
-// MARK: - Flashcard Study View
+// MARK: - Flashcard Study View (per design: progress dots, stats, 3-button controls)
 struct FlashcardStudyView: View {
     let viewModel: FlashcardsViewModel
 
     var body: some View {
-        VStack(spacing: 12) {
-            // Back button + deck info
-            HStack {
-                Button(action: { viewModel.deselectDeck() }) {
-                    HStack(spacing: 4) {
-                        Image(systemName: "chevron.left")
-                        Text("Decks")
-                    }
-                    .font(.system(size: 11))
-                    .foregroundColor(Theme.Colors.rosePrimary)
-                }
-                .buttonStyle(.plain)
-                Spacer()
-                Text("\(viewModel.currentCardIndex + 1)/\(viewModel.currentDeck?.cards.count ?? 0)")
-                    .font(.system(size: 11, weight: .medium))
-                    .foregroundColor(Theme.Colors.textSoft)
-            }
-            .padding(.horizontal, 16)
-
-            // Progress dots
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 4) {
-                    ForEach(0..<(viewModel.currentDeck?.cards.count ?? 0), id: \.self) { index in
-                        Circle()
-                            .fill(dotColor(for: index))
-                            .frame(width: 6, height: 6)
-                    }
-                }
-                .padding(.horizontal, 16)
-            }
-
-            // Flip card
-            if let card = viewModel.currentCard {
-                FlipCard(
-                    front: card.front,
-                    back: card.back,
-                    isFlipped: viewModel.isFlipped
-                )
-                .onTapGesture { viewModel.flipCard() }
-                .padding(.horizontal, 16)
-            }
-
-            // Controls
-            HStack(spacing: 20) {
-                Button(action: { viewModel.previousCard() }) {
-                    Image(systemName: "arrow.left.circle.fill")
-                        .font(.system(size: 28))
-                        .foregroundColor(Theme.Colors.roseLight)
-                }
-                .buttonStyle(.plain)
-                .disabled(viewModel.currentCardIndex == 0)
-
-                Button(action: { viewModel.markMastered() }) {
-                    HStack(spacing: 4) {
-                        Image(systemName: viewModel.currentCard?.isMastered == true ? "checkmark.circle.fill" : "checkmark.circle")
-                        Text(viewModel.currentCard?.isMastered == true ? "Mastered" : "Mark Known")
-                    }
-                    .font(.system(size: 11, weight: .medium))
-                    .foregroundColor(viewModel.currentCard?.isMastered == true ? .green : Theme.Colors.textMedium)
-                }
-                .buttonStyle(.plain)
-
-                Button(action: { viewModel.nextCard() }) {
-                    Image(systemName: "arrow.right.circle.fill")
-                        .font(.system(size: 28))
+        ScrollView {
+            VStack(spacing: 12) {
+                // Back button + deck badge + card count
+                HStack {
+                    Button(action: { viewModel.deselectDeck() }) {
+                        HStack(spacing: 4) {
+                            Image(systemName: "chevron.left")
+                            Text("Decks")
+                        }
+                        .font(.system(size: 11))
                         .foregroundColor(Theme.Colors.rosePrimary)
-                }
-                .buttonStyle(.plain)
-                .disabled(viewModel.currentCardIndex >= (viewModel.currentDeck?.cards.count ?? 1) - 1)
-            }
-            .padding(.vertical, 8)
+                    }
+                    .buttonStyle(.plain)
 
-            // Add card
-            AddCardInline(viewModel: viewModel)
+                    // Active deck badge
+                    if let deck = viewModel.currentDeck {
+                        Text("\(deck.title) ×")
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundColor(Theme.Colors.rosePrimary)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 5)
+                            .background(Theme.Colors.rosePrimary.opacity(0.1))
+                            .cornerRadius(18)
+                    }
+
+                    Spacer()
+                    Text("Card \(viewModel.currentCardIndex + 1) of \(viewModel.currentDeck?.cards.count ?? 0)")
+                        .font(.system(size: 11))
+                        .foregroundColor(Theme.Colors.textSoft)
+                }
                 .padding(.horizontal, 16)
 
-            Spacer()
+                // Progress dots (per design: colored segments)
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 4) {
+                        ForEach(0..<(viewModel.currentDeck?.cards.count ?? 0), id: \.self) { index in
+                            RoundedRectangle(cornerRadius: 3)
+                                .fill(dotColor(for: index))
+                                .frame(height: 4)
+                        }
+                    }
+                    .padding(.horizontal, 16)
+                }
+
+                // Flip card
+                if let card = viewModel.currentCard {
+                    FlipCard(
+                        front: card.front,
+                        back: card.back,
+                        course: viewModel.currentDeck?.course ?? "",
+                        isFlipped: viewModel.isFlipped
+                    )
+                    .onTapGesture { viewModel.flipCard() }
+                    .padding(.horizontal, 16)
+                }
+
+                // Stats row (per design: 4 stats)
+                FlashcardStatsRow(viewModel: viewModel)
+                    .padding(.horizontal, 16)
+
+                // 3-button controls (per design: Wrong, Almost, Got It)
+                HStack(spacing: 10) {
+                    AnswerButton(label: "✕ Wrong", color: .red) {
+                        viewModel.nextCard()
+                    }
+                    AnswerButton(label: "~ Almost", color: .orange) {
+                        viewModel.nextCard()
+                    }
+                    AnswerButton(label: "✓ Got It", color: .green) {
+                        viewModel.markMastered()
+                        viewModel.nextCard()
+                    }
+                }
+                .padding(.horizontal, 16)
+
+                // Additional buttons
+                HStack(spacing: 8) {
+                    Button("⏭ Skip") { viewModel.nextCard() }
+                        .frame(maxWidth: .infinity)
+                        .font(.system(size: 11, weight: .medium))
+                        .foregroundColor(Theme.Colors.textMedium)
+                        .padding(.vertical, 8)
+                        .background(Color.white.opacity(0.75))
+                        .cornerRadius(11)
+                        .overlay(RoundedRectangle(cornerRadius: 11).stroke(Theme.Colors.roseLight, lineWidth: 1.5))
+
+                    Button("🔀 Shuffle") {}
+                        .frame(maxWidth: .infinity)
+                        .font(.system(size: 11, weight: .medium))
+                        .foregroundColor(Theme.Colors.textMedium)
+                        .padding(.vertical, 8)
+                        .background(Color.white.opacity(0.75))
+                        .cornerRadius(11)
+                        .overlay(RoundedRectangle(cornerRadius: 11).stroke(Theme.Colors.roseLight, lineWidth: 1.5))
+
+                    Button("End Session") { viewModel.deselectDeck() }
+                        .frame(maxWidth: .infinity)
+                        .buttonStyle(RoseButtonStyle())
+                }
+                .buttonStyle(.plain)
+                .padding(.horizontal, 16)
+
+                // Add card
+                AddCardInline(viewModel: viewModel)
+                    .padding(.horizontal, 16)
+            }
+            .padding(.bottom, 16)
         }
     }
 
     private func dotColor(for index: Int) -> Color {
         let cards = viewModel.currentDeck?.cards ?? []
         if index == viewModel.currentCardIndex {
-            return Theme.Colors.rosePrimary
+            return Theme.Colors.roseMid
         }
         if index < cards.count && cards[index].isMastered {
             return .green
         }
-        return Theme.Colors.rosePale
+        return Theme.Colors.rosePrimary.opacity(0.12)
     }
 }
 
-// MARK: - 3D Flip Card
+// MARK: - Answer Button (per design: colored border + bg)
+struct AnswerButton: View {
+    let label: String
+    let color: Color
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Text(label)
+                .font(.system(size: 12, weight: .semibold))
+                .foregroundColor(color == .red ? Color(hex: "#B71C1C") : color == .orange ? Color(hex: "#C65200") : Color(hex: "#2E7D32"))
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 11)
+                .background(color.opacity(0.08))
+                .cornerRadius(14)
+                .overlay(RoundedRectangle(cornerRadius: 14).stroke(color.opacity(0.25), lineWidth: 1.5))
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+// MARK: - Stats Row (per design: 4 stat cards)
+struct FlashcardStatsRow: View {
+    let viewModel: FlashcardsViewModel
+
+    var body: some View {
+        HStack(spacing: 10) {
+            StatCell(value: "\(viewModel.masteredInSession)", label: "Got It ✓", color: .green)
+            StatCell(value: "\(viewModel.wrongInSession)", label: "Wrong ✕", color: .red)
+            StatCell(value: "\(viewModel.remainingCount)", label: "Remaining", color: Theme.Colors.textSoft)
+            StatCell(value: "\(viewModel.accuracy)%", label: "Accuracy", color: Theme.Colors.textPrimary)
+        }
+    }
+}
+
+struct StatCell: View {
+    let value: String
+    let label: String
+    let color: Color
+
+    var body: some View {
+        VStack(spacing: 2) {
+            Text(value)
+                .font(.custom("CormorantGaramond-SemiBold", size: 22))
+                .foregroundColor(color)
+            Text(label)
+                .font(.system(size: 9, weight: .medium))
+                .foregroundColor(Theme.Colors.textSoft)
+                .tracking(0.5)
+                .textCase(.uppercase)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 10)
+        .background(Color.white.opacity(0.65))
+        .cornerRadius(14)
+        .overlay(RoundedRectangle(cornerRadius: 14).stroke(Theme.Colors.glassBorder, lineWidth: 1))
+    }
+}
+
+// MARK: - 3D Flip Card (per design: gradient front, white back)
 struct FlipCard: View {
     let front: String
     let back: String
+    var course: String = ""
     let isFlipped: Bool
 
     var body: some View {
         ZStack {
-            // Front
-            VStack(spacing: 12) {
-                Text("Q")
-                    .font(.system(size: 10, weight: .bold))
-                    .foregroundColor(Theme.Colors.rosePrimary.opacity(0.5))
-                Text(front)
-                    .font(.system(size: 14, weight: .medium))
-                    .foregroundColor(Theme.Colors.textPrimary)
-                    .multilineTextAlignment(.center)
+            // Front — gradient (per design: r7 → r6 → r5)
+            VStack(alignment: .leading, spacing: 0) {
+                Text(course.isEmpty ? "FLASHCARD" : course.uppercased())
+                    .font(.system(size: 9, weight: .semibold))
+                    .tracking(2)
+                    .foregroundColor(.white.opacity(0.65))
+                    .padding(.bottom, 10)
+
                 Spacer()
-                Text("Tap to flip")
-                    .font(.system(size: 9))
-                    .foregroundColor(Theme.Colors.textXSoft)
+
+                Text(front)
+                    .font(.custom("PlayfairDisplay-Italic", size: 17))
+                    .foregroundColor(.white)
+                    .lineSpacing(4)
+
+                Spacer()
+
+                Text("Tap to reveal answer →")
+                    .font(.system(size: 10))
+                    .foregroundColor(.white.opacity(0.5))
+                    .tracking(0.5)
             }
-            .padding(20)
+            .padding(28)
             .frame(maxWidth: .infinity, minHeight: 180)
-            .glassCard(padding: 0)
+            .background(
+                LinearGradient(
+                    colors: [Theme.Colors.roseDark, Theme.Colors.roseDeep, Theme.Colors.rosePrimary.opacity(0.9)],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+            )
+            .cornerRadius(22)
+            .shadow(color: Color(hex: "#C2185B").opacity(0.25), radius: 20, x: 0, y: 8)
             .opacity(isFlipped ? 0 : 1)
             .rotation3DEffect(.degrees(isFlipped ? 180 : 0), axis: (x: 0, y: 1, z: 0))
 
-            // Back
-            VStack(spacing: 12) {
-                Text("A")
-                    .font(.system(size: 10, weight: .bold))
-                    .foregroundColor(.white.opacity(0.6))
-                Text(back)
-                    .font(.system(size: 14, weight: .medium))
-                    .foregroundColor(.white)
-                    .multilineTextAlignment(.center)
+            // Back — white card
+            VStack(alignment: .leading, spacing: 0) {
+                Text("ANSWER")
+                    .font(.system(size: 9, weight: .semibold))
+                    .tracking(2)
+                    .foregroundColor(Theme.Colors.textSoft)
+                    .padding(.bottom, 8)
+
                 Spacer()
-                Text("Tap to flip back")
-                    .font(.system(size: 9))
-                    .foregroundColor(.white.opacity(0.5))
+
+                Text(back)
+                    .font(.system(size: 13))
+                    .foregroundColor(Theme.Colors.textMedium)
+                    .lineSpacing(5)
+
+                Spacer()
             }
-            .padding(20)
+            .padding(28)
             .frame(maxWidth: .infinity, minHeight: 180)
-            .background(Theme.Gradients.heroCard)
-            .cornerRadius(Theme.Radius.md)
-            .shadow(color: Theme.Colors.shadow, radius: 10, x: 0, y: 4)
+            .background(Color.white)
+            .cornerRadius(22)
+            .overlay(RoundedRectangle(cornerRadius: 22).stroke(Theme.Colors.glassBorder, lineWidth: 1))
+            .shadow(color: Color(hex: "#C2185B").opacity(0.12), radius: 20, x: 0, y: 8)
             .opacity(isFlipped ? 1 : 0)
             .rotation3DEffect(.degrees(isFlipped ? 0 : -180), axis: (x: 0, y: 1, z: 0))
         }
@@ -428,6 +560,26 @@ class FlashcardsViewModel {
     var currentCard: Flashcard? {
         guard let deck = currentDeck, currentCardIndex < deck.cards.count else { return nil }
         return deck.cards[currentCardIndex]
+    }
+
+    var masteredInSession: Int {
+        currentDeck?.cards.filter { $0.isMastered }.count ?? 0
+    }
+
+    var wrongInSession: Int {
+        let total = currentDeck?.cards.count ?? 0
+        return max(0, total - masteredInSession - remainingCount)
+    }
+
+    var remainingCount: Int {
+        let total = currentDeck?.cards.count ?? 0
+        return max(0, total - currentCardIndex - 1)
+    }
+
+    var accuracy: Int {
+        let total = masteredInSession + wrongInSession
+        if total == 0 { return 0 }
+        return Int(Double(masteredInSession) / Double(total) * 100)
     }
 
     func loadData() async {

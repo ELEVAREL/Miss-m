@@ -51,42 +51,54 @@ struct MessagesView: View {
     }
 }
 
-// MARK: - NyRiian Card (always #1)
+// MARK: - NyRiian Card (always #1, per design: 58px avatar, stats row)
 struct NyRiianCard: View {
     let viewModel: MessagesViewModel
 
     var body: some View {
         VStack(spacing: 0) {
-            // Hero header
-            HStack(spacing: 12) {
-                // Avatar
-                ZStack {
-                    Circle()
-                        .fill(Theme.Gradients.heroCard)
-                        .frame(width: 44, height: 44)
-                    Text("N")
-                        .font(.system(size: 18, weight: .bold))
-                        .foregroundColor(.white)
+            // Hero header (per design: larger avatar, stats)
+            VStack(spacing: 10) {
+                HStack(spacing: 14) {
+                    // 58px Avatar
+                    ZStack {
+                        Circle()
+                            .fill(Color.white.opacity(0.2))
+                            .frame(width: 58, height: 58)
+                        Text("N")
+                            .font(.system(size: 24, weight: .bold))
+                            .foregroundColor(.white)
+                    }
+                    .overlay(Circle().stroke(Color.white.opacity(0.35), lineWidth: 2))
+
+                    VStack(alignment: .leading, spacing: 3) {
+                        HStack(spacing: 6) {
+                            Text("NyRiian")
+                                .font(.system(size: 16, weight: .semibold))
+                                .foregroundColor(.white)
+                            Text("💕")
+                                .font(.system(size: 13))
+                        }
+                        Text("Husband · Always Pinned")
+                            .font(.system(size: 10))
+                            .foregroundColor(.white.opacity(0.7))
+                    }
+                    Spacer()
+                    Image(systemName: "pin.fill")
+                        .font(.system(size: 12))
+                        .foregroundColor(Theme.Colors.gold)
                 }
 
-                VStack(alignment: .leading, spacing: 2) {
-                    HStack(spacing: 6) {
-                        Text("NyRiian")
-                            .font(.system(size: 14, weight: .semibold))
-                            .foregroundColor(.white)
-                        Text("💕")
-                            .font(.system(size: 12))
-                    }
-                    Text("Husband")
-                        .font(.system(size: 10))
-                        .foregroundColor(.white.opacity(0.7))
+                // Stats row (per design)
+                HStack(spacing: 0) {
+                    NyRiianStat(value: "—", label: "Messages")
+                    Divider().frame(height: 20).background(Color.white.opacity(0.2))
+                    NyRiianStat(value: "—", label: "Events")
+                    Divider().frame(height: 20).background(Color.white.opacity(0.2))
+                    NyRiianStat(value: "—", label: "AI Sent")
                 }
-                Spacer()
-                Image(systemName: "pin.fill")
-                    .font(.system(size: 10))
-                    .foregroundColor(Theme.Colors.gold)
             }
-            .padding(14)
+            .padding(16)
             .background(Theme.Gradients.heroCard)
             .cornerRadius(Theme.Radius.md, corners: [.topLeft, .topRight])
 
@@ -135,6 +147,23 @@ struct NyRiianCard: View {
                 .stroke(Theme.Colors.glassBorder, lineWidth: 1)
         )
         .shadow(color: Theme.Colors.shadow, radius: 10, x: 0, y: 4)
+    }
+}
+
+struct NyRiianStat: View {
+    let value: String
+    let label: String
+
+    var body: some View {
+        VStack(spacing: 2) {
+            Text(value)
+                .font(.system(size: 14, weight: .bold))
+                .foregroundColor(.white)
+            Text(label)
+                .font(.system(size: 9))
+                .foregroundColor(.white.opacity(0.6))
+        }
+        .frame(maxWidth: .infinity)
     }
 }
 

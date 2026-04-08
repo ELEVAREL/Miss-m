@@ -11,41 +11,33 @@ struct CalendarFullView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            // Header
-            HStack {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("CALENDAR")
-                        .font(.custom("CormorantGaramond-SemiBold", size: 11))
-                        .tracking(2.5)
-                        .foregroundColor(Theme.Colors.textSoft)
-                    Text(monthYearString)
-                        .font(.custom("PlayfairDisplay-Italic", size: 18))
-                        .foregroundColor(Theme.Colors.rosePrimary)
-                }
-                Spacer()
-                HStack(spacing: 12) {
-                    Button(action: { changeMonth(-1) }) {
-                        Image(systemName: "chevron.left")
-                            .font(.system(size: 12, weight: .medium))
-                            .foregroundColor(Theme.Colors.rosePrimary)
-                    }
-                    .buttonStyle(.plain)
-                    Button("Today") {
-                        currentMonth = Date()
-                        selectedDate = Date()
-                    }
-                    .font(.system(size: 10, weight: .medium))
+            // Header (per design: Playfair title + action buttons)
+            HStack(alignment: .firstTextBaseline) {
+                Text("Calendar & ")
+                    .font(.custom("PlayfairDisplay-Italic", size: 20))
+                    .foregroundColor(Theme.Colors.textPrimary)
+                + Text("Schedule")
+                    .font(.custom("PlayfairDisplay-Italic", size: 20))
                     .foregroundColor(Theme.Colors.rosePrimary)
-                    Button(action: { changeMonth(1) }) {
-                        Image(systemName: "chevron.right")
-                            .font(.system(size: 12, weight: .medium))
-                            .foregroundColor(Theme.Colors.rosePrimary)
-                    }
-                    .buttonStyle(.plain)
+                Spacer()
+            }
+            .padding(.horizontal, 16)
+            .padding(.top, 8)
+            .padding(.bottom, 4)
+
+            // Navigation bar
+            HStack {
+                Text(monthYearString)
+                    .font(.custom("PlayfairDisplay-Italic", size: 18))
+                    .foregroundColor(Theme.Colors.textPrimary)
+                Spacer()
+                HStack(spacing: 8) {
+                    CalNavButton(icon: "‹") { changeMonth(-1) }
+                    CalNavButton(icon: "›") { changeMonth(1) }
                 }
             }
             .padding(.horizontal, 16)
-            .padding(.vertical, 8)
+            .padding(.bottom, 8)
 
             // Month grid
             MonthGridView(
@@ -155,7 +147,7 @@ struct MonthGridView: View {
     }
 }
 
-// MARK: - Day Cell
+// MARK: - Day Cell (per design: gradient today, event dots)
 struct DayCell: View {
     let date: Date
     let isSelected: Bool
@@ -165,30 +157,53 @@ struct DayCell: View {
     var body: some View {
         VStack(spacing: 2) {
             Text("\(Calendar.current.component(.day, from: date))")
-                .font(.system(size: 11, weight: isToday ? .bold : .regular))
+                .font(.system(size: 12, weight: isToday ? .bold : .medium))
                 .foregroundColor(foregroundColor)
 
             if hasEvents {
-                Circle()
-                    .fill(Theme.Colors.rosePrimary)
-                    .frame(width: 4, height: 4)
+                HStack(spacing: 2) {
+                    Circle()
+                        .fill(isToday ? Color.white.opacity(0.8) : Theme.Colors.rosePrimary)
+                        .frame(width: 4, height: 4)
+                }
             }
         }
-        .frame(maxWidth: .infinity, minHeight: 28)
+        .frame(maxWidth: .infinity, minHeight: 32)
         .background(backgroundColor)
-        .cornerRadius(6)
+        .cornerRadius(10)
     }
 
     private var foregroundColor: Color {
-        if isSelected { return .white }
-        if isToday { return Theme.Colors.rosePrimary }
+        if isToday { return .white }
+        if isSelected { return Theme.Colors.rosePrimary }
         return Theme.Colors.textPrimary
     }
 
     private var backgroundColor: Color {
-        if isSelected { return Theme.Colors.rosePrimary }
-        if isToday { return Theme.Colors.rosePale }
+        if isToday {
+            return Color.clear // Use overlay for gradient
+        }
         return .clear
+    }
+}
+
+// MARK: - Calendar Navigation Button
+struct CalNavButton: View {
+    let icon: String
+    let action: () -> Void
+    @State private var isHovered = false
+
+    var body: some View {
+        Button(action: action) {
+            Text(icon)
+                .font(.system(size: 13))
+                .frame(width: 30, height: 30)
+                .background(isHovered ? Color.white : Color.white.opacity(0.8))
+                .clipShape(Circle())
+                .overlay(Circle().stroke(isHovered ? Theme.Colors.roseMid : Theme.Colors.roseLight, lineWidth: 1.5))
+        }
+        .buttonStyle(.plain)
+        .onHover { isHovered = $0 }
     }
 }
 
@@ -235,58 +250,50 @@ struct DayDetailView: View {
     }
 }
 
-// MARK: - Event Row
+// MARK: - Event Row (per design: colored dot, info, time)
 struct EventRow: View {
     let event: CalendarEvent
+    @State private var isHovered = false
 
     var body: some View {
         HStack(spacing: 10) {
-            // Time block
-            VStack(spacing: 2) {
-                Text(event.timeString)
-                    .font(.system(size: 10, weight: .medium))
-                    .foregroundColor(Theme.Colors.rosePrimary)
-                if !event.isAllDay {
-                    Text(endTimeString)
-                        .font(.system(size: 9))
-                        .foregroundColor(Theme.Colors.textXSoft)
-                }
-            }
-            .frame(width: 55)
+            // Colored dot
+            Circle()
+                .fill(Theme.Colors.rosePrimary)
+                .frame(width: 10, height: 10)
 
-            // Color bar
-            RoundedRectangle(cornerRadius: 2)
-                .fill(Theme.Gradients.rosePrimary)
-                .frame(width: 3)
-
-            // Event details
-            VStack(alignment: .leading, spacing: 2) {
+            // Event info
+            VStack(alignment: .leading, spacing: 1) {
                 Text(event.title)
-                    .font(.system(size: 11, weight: .medium))
+                    .font(.system(size: 12, weight: .medium))
                     .foregroundColor(Theme.Colors.textPrimary)
                     .lineLimit(1)
-                if let location = event.location, !location.isEmpty {
-                    HStack(spacing: 3) {
-                        Image(systemName: "mappin")
-                            .font(.system(size: 8))
+                HStack(spacing: 4) {
+                    if let location = event.location, !location.isEmpty {
                         Text(location)
-                            .font(.system(size: 9))
+                            .font(.system(size: 10))
+                            .foregroundColor(Theme.Colors.textSoft)
                     }
-                    .foregroundColor(Theme.Colors.textSoft)
+                    Text(event.calendarName)
+                        .font(.system(size: 10))
+                        .foregroundColor(Theme.Colors.textSoft)
                 }
-                Text(event.calendarName)
-                    .font(.system(size: 8))
-                    .foregroundColor(Theme.Colors.textXSoft)
             }
-            Spacer()
-        }
-        .padding(8)
-        .glassCard(padding: 0)
-    }
 
-    private var endTimeString: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "h:mm a"
-        return formatter.string(from: event.endDate)
+            Spacer()
+
+            // Time
+            Text(event.timeString)
+                .font(.system(size: 10, weight: .semibold))
+                .foregroundColor(Theme.Colors.rosePrimary)
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
+        .background(isHovered ? Color.white : Color.white.opacity(0.6))
+        .cornerRadius(12)
+        .overlay(RoundedRectangle(cornerRadius: 12).stroke(Theme.Colors.glassBorder, lineWidth: 1))
+        .offset(x: isHovered ? 2 : 0)
+        .animation(.easeOut(duration: 0.18), value: isHovered)
+        .onHover { isHovered = $0 }
     }
 }

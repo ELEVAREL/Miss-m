@@ -1,7 +1,8 @@
 import SwiftUI
 
 // MARK: - Assignments Kanban View (Phase 2)
-// 3-column board: To Do · In Progress · Done
+// 3-column board: To Do · In Progress · Submitted
+// Matches docs/design/03-assignments-kanban.html
 
 struct AssignmentsView: View {
     let claudeService: ClaudeService
@@ -10,76 +11,86 @@ struct AssignmentsView: View {
     var body: some View {
         VStack(spacing: 0) {
             // Header
-            HStack {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("ASSIGNMENTS")
-                        .font(.custom("CormorantGaramond-SemiBold", size: 11))
-                        .tracking(2.5)
-                        .foregroundColor(Theme.Colors.textSoft)
-                    Text("Kanban Board")
-                        .font(.custom("PlayfairDisplay-Italic", size: 18))
-                        .foregroundColor(Theme.Colors.rosePrimary)
-                }
+            HStack(alignment: .firstTextBaseline) {
+                Text("Assignment ")
+                    .font(.custom("PlayfairDisplay-Italic", size: 22))
+                    .foregroundColor(Theme.Colors.textPrimary)
+                + Text("Tracker")
+                    .font(.custom("PlayfairDisplay-Italic", size: 22))
+                    .foregroundColor(Theme.Colors.rosePrimary)
                 Spacer()
-                Button(action: { viewModel.showAddSheet = true }) {
-                    HStack(spacing: 4) {
-                        Image(systemName: "plus")
-                        Text("Add")
-                    }
-                    .font(.system(size: 11, weight: .medium))
-                }
-                .buttonStyle(RoseButtonStyle())
+                Text("Kanban · AI-prioritised")
+                    .font(.system(size: 10))
+                    .foregroundColor(Theme.Colors.textSoft)
             }
             .padding(.horizontal, 16)
-            .padding(.vertical, 10)
+            .padding(.top, 10)
+            .padding(.bottom, 8)
 
-            // AI Priority Banner
+            // AI Priority Banner (glass style per design)
             if let urgent = viewModel.mostUrgent {
-                HStack(spacing: 8) {
-                    Text("🎯")
-                    Text("Priority: **\(urgent.title)** — \(urgent.daysUntilDue) days left")
-                        .font(.system(size: 11))
-                        .foregroundColor(.white)
-                    Spacer()
-                }
-                .padding(10)
-                .background(Theme.Gradients.heroCard)
-                .cornerRadius(10)
-                .padding(.horizontal, 16)
-                .padding(.bottom, 8)
+                AIBanner(assignment: urgent)
+                    .padding(.horizontal, 16)
+                    .padding(.bottom, 10)
             }
 
-            // Progress bar
-            ProgressSection(assignments: viewModel.assignments)
+            // Toolbar
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    Button(action: { viewModel.showAddSheet = true }) {
+                        HStack(spacing: 4) {
+                            Image(systemName: "plus")
+                            Text("New Assignment")
+                        }
+                        .font(.system(size: 11, weight: .semibold))
+                    }
+                    .buttonStyle(RoseButtonStyle())
+
+                    ToolbarFilterButton(icon: "📊", label: "By Subject")
+                    ToolbarFilterButton(icon: "📅", label: "By Due Date")
+                    ToolbarFilterButton(icon: "✦", label: "AI Prioritise")
+
+                    if viewModel.dueThisWeekCount > 0 {
+                        Text("\(viewModel.dueThisWeekCount) Due This Week")
+                            .font(.system(size: 10, weight: .semibold))
+                            .foregroundColor(Theme.Colors.rosePrimary)
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 4)
+                            .background(Theme.Colors.rosePrimary.opacity(0.11))
+                            .cornerRadius(18)
+                    }
+                }
                 .padding(.horizontal, 16)
-                .padding(.bottom, 8)
+            }
+            .padding(.bottom, 10)
 
             // Kanban columns
             ScrollView(.horizontal, showsIndicators: false) {
-                HStack(alignment: .top, spacing: 10) {
+                HStack(alignment: .top, spacing: 12) {
                     KanbanColumn(
                         title: "To Do",
-                        emoji: "📋",
+                        dotColor: Color.red,
                         assignments: viewModel.todo,
-                        accentColor: Theme.Colors.rosePrimary,
+                        cardStyle: .urgent,
                         onMove: { id in viewModel.moveToInProgress(id) }
                     )
                     KanbanColumn(
                         title: "In Progress",
-                        emoji: "⚡",
+                        dotColor: Color.orange,
                         assignments: viewModel.inProgress,
-                        accentColor: Color.orange,
+                        cardStyle: .progress,
                         onMove: { id in viewModel.moveToDone(id) }
                     )
                     KanbanColumn(
-                        title: "Done",
-                        emoji: "✅",
+                        title: "Submitted",
+                        dotColor: Color.green,
                         assignments: viewModel.done,
-                        accentColor: Color.green,
+                        cardStyle: .done,
                         onMove: nil
                     )
                 }
                 .padding(.horizontal, 16)
+                .padding(.bottom, 16)
             }
 
             Spacer()
@@ -88,6 +99,310 @@ struct AssignmentsView: View {
             AddAssignmentSheet(viewModel: viewModel, claudeService: claudeService)
         }
         .task { await viewModel.loadData() }
+    }
+}
+
+// MARK: - AI Priority Banner (glass card per design)
+struct AIBanner: View {
+    let assignment: Assignment
+
+    var body: some View {
+        HStack(spacing: 14) {
+            // AI avatar
+            Text("✦")
+                .font(.system(size: 18))
+                .foregroundColor(.white)
+                .frame(width: 38, height: 38)
+                .background(
+                    LinearGradient(colors: [Theme.Colors.rosePrimary, Theme.Colors.roseDeep],
+                                   startPoint: .topLeading, endPoint: .bottomTrailing)
+                )
+                .clipShape(Circle())
+                .shadow(color: Theme.Colors.rosePrimary.opacity(0.3), radius: 6)
+
+            // Message
+            VStack(alignment: .leading, spacing: 2) {
+                (Text("✦ ").foregroundColor(Theme.Colors.rosePrimary)
+                 + Text("AI Priority Insight: ").font(.system(size: 12, weight: .bold)).foregroundColor(Theme.Colors.textPrimary)
+                 + Text("\(assignment.title)").font(.system(size: 12, weight: .bold)).foregroundColor(Theme.Colors.textPrimary)
+                 + Text(" — \(assignment.daysUntilDue) days left").font(.system(size: 12)).foregroundColor(Theme.Colors.textMedium))
+                    .lineLimit(3)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+
+            Button("Block Time") {}
+                .buttonStyle(RoseButtonStyle())
+        }
+        .padding(.horizontal, 20)
+        .padding(.vertical, 16)
+        .glassCard(padding: 0)
+    }
+}
+
+// MARK: - Toolbar Filter Button
+struct ToolbarFilterButton: View {
+    let icon: String
+    let label: String
+    @State private var isHovered = false
+
+    var body: some View {
+        Button(action: {}) {
+            HStack(spacing: 4) {
+                Text(icon).font(.system(size: 10))
+                Text(label)
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundColor(isHovered ? Theme.Colors.rosePrimary : Theme.Colors.textMedium)
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .background(isHovered ? Color.white : Color.white.opacity(0.75))
+            .cornerRadius(12)
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(isHovered ? Theme.Colors.roseMid : Theme.Colors.roseLight, lineWidth: 1.5)
+            )
+        }
+        .buttonStyle(.plain)
+        .onHover { isHovered = $0 }
+    }
+}
+
+// MARK: - Kanban Column (per design: colored dot header, glass background)
+enum KanbanCardStyle {
+    case urgent, progress, done
+
+    var stripColor: Color {
+        switch self {
+        case .urgent:   return .red
+        case .progress: return .orange
+        case .done:     return .green
+        }
+    }
+
+    var badgeBg: Color {
+        switch self {
+        case .urgent:   return Color.red.opacity(0.12)
+        case .progress: return Color.orange.opacity(0.12)
+        case .done:     return Color.green.opacity(0.12)
+        }
+    }
+
+    var badgeColor: Color {
+        switch self {
+        case .urgent:   return Color(hex: "#B71C1C")
+        case .progress: return Color(hex: "#C65200")
+        case .done:     return Color(hex: "#2E7D32")
+        }
+    }
+}
+
+struct KanbanColumn: View {
+    let title: String
+    let dotColor: Color
+    let assignments: [Assignment]
+    let cardStyle: KanbanCardStyle
+    let onMove: ((UUID) -> Void)?
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            // Column header with dot
+            HStack(spacing: 8) {
+                Circle()
+                    .fill(dotColor)
+                    .frame(width: 9, height: 9)
+                Text(title)
+                    .font(.system(size: 10, weight: .semibold))
+                    .tracking(1)
+                    .textCase(.uppercase)
+                    .foregroundColor(Theme.Colors.textPrimary)
+                Text("\(assignments.count)")
+                    .font(.system(size: 9, weight: .bold))
+                    .foregroundColor(cardStyle.badgeColor)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 2)
+                    .background(cardStyle.badgeBg)
+                    .cornerRadius(9)
+            }
+            .padding(.horizontal, 2)
+            .padding(.bottom, 14)
+
+            if assignments.isEmpty {
+                Text("No items")
+                    .font(.system(size: 10))
+                    .foregroundColor(Theme.Colors.textXSoft)
+                    .frame(maxWidth: .infinity, minHeight: 60)
+                    .glassCard()
+            } else {
+                ForEach(assignments) { assignment in
+                    AssignmentCard(
+                        assignment: assignment,
+                        style: cardStyle,
+                        onMove: onMove
+                    )
+                    .padding(.bottom, 10)
+                }
+            }
+        }
+        .padding(14)
+        .background(Color.white.opacity(0.4))
+        .overlay(
+            RoundedRectangle(cornerRadius: 20)
+                .stroke(Color.white.opacity(0.7), lineWidth: 1)
+        )
+        .cornerRadius(20)
+        .frame(width: 180)
+    }
+}
+
+// MARK: - Assignment Card (per design: left strip, description, progress, AI button)
+struct AssignmentCard: View {
+    let assignment: Assignment
+    let style: KanbanCardStyle
+    let onMove: ((UUID) -> Void)?
+    @State private var isHovered = false
+
+    var body: some View {
+        HStack(spacing: 0) {
+            // Left color strip (3px)
+            Rectangle()
+                .fill(style.stripColor)
+                .frame(width: 3)
+
+            VStack(alignment: .leading, spacing: 0) {
+                // Title
+                Text(assignment.title)
+                    .font(.system(size: 13, weight: .medium))
+                    .foregroundColor(style == .done ? Theme.Colors.textSoft : Theme.Colors.textPrimary)
+                    .strikethrough(style == .done)
+                    .lineLimit(2)
+                    .padding(.bottom, 5)
+
+                // Description (if available)
+                if let desc = assignment.notes, !desc.isEmpty {
+                    Text(desc)
+                        .font(.system(size: 11))
+                        .foregroundColor(style == .done ? Theme.Colors.textXSoft : Theme.Colors.textSoft)
+                        .lineLimit(2)
+                        .lineSpacing(2)
+                        .padding(.bottom, 8)
+                }
+
+                // Subject badge + due date
+                HStack(spacing: 6) {
+                    Text(assignment.course)
+                        .font(.system(size: 9, weight: .semibold))
+                        .foregroundColor(style == .done ? Theme.Colors.textSoft : Theme.Colors.rosePrimary)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 2)
+                        .background(
+                            style == .done
+                            ? Theme.Colors.rosePrimary.opacity(0.07)
+                            : Theme.Colors.rosePrimary.opacity(0.1)
+                        )
+                        .cornerRadius(7)
+
+                    if style != .done {
+                        HStack(spacing: 3) {
+                            Text("📅")
+                                .font(.system(size: 9))
+                            Text(dueDateLabel)
+                                .font(.system(size: 10))
+                                .foregroundColor(Theme.Colors.textSoft)
+                        }
+                    }
+
+                    if assignment.priority == .high && style == .urgent {
+                        Text("⚠️ Urgent")
+                            .font(.system(size: 9, weight: .semibold))
+                            .foregroundColor(Color(hex: "#B71C1C"))
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 2)
+                            .background(Color.red.opacity(0.1))
+                            .cornerRadius(18)
+                    }
+                }
+                .padding(.bottom, 8)
+
+                // Done state: show submitted text
+                if style == .done {
+                    Text("✓ Completed")
+                        .font(.system(size: 10, weight: .semibold))
+                        .foregroundColor(.green)
+                        .padding(.top, 2)
+                } else {
+                    // Progress bar
+                    VStack(spacing: 0) {
+                        GeometryReader { geo in
+                            ZStack(alignment: .leading) {
+                                RoundedRectangle(cornerRadius: 4)
+                                    .fill(Theme.Colors.rosePrimary.opacity(0.1))
+                                    .frame(height: 4)
+                                RoundedRectangle(cornerRadius: 4)
+                                    .fill(
+                                        LinearGradient(
+                                            colors: [Theme.Colors.rosePrimary, Theme.Colors.roseMid],
+                                            startPoint: .leading, endPoint: .trailing
+                                        )
+                                    )
+                                    .frame(width: geo.size.width * assignment.progressValue, height: 4)
+                            }
+                        }
+                        .frame(height: 4)
+                    }
+                    .padding(.bottom, 8)
+
+                    // Footer: status + AI button
+                    HStack {
+                        Text(assignment.progressLabel)
+                            .font(.system(size: 9))
+                            .foregroundColor(Theme.Colors.textXSoft)
+                        Spacer()
+                        if let onMove {
+                            Button(action: { onMove(assignment.id) }) {
+                                Text("✦ Move →")
+                                    .font(.system(size: 9, weight: .semibold))
+                                    .foregroundColor(Theme.Colors.rosePrimary)
+                                    .padding(.horizontal, 9)
+                                    .padding(.vertical, 4)
+                                    .background(Theme.Colors.rosePrimary.opacity(0.08))
+                                    .cornerRadius(8)
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 8)
+                                            .stroke(Theme.Colors.rosePrimary.opacity(0.18), lineWidth: 1)
+                                    )
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                }
+            }
+            .padding(14)
+        }
+        .background(isHovered ? Color.white : Color.white.opacity(0.82))
+        .cornerRadius(16)
+        .overlay(
+            RoundedRectangle(cornerRadius: 16)
+                .stroke(Theme.Colors.glassBorder, lineWidth: 1)
+        )
+        .shadow(
+            color: isHovered ? Color(hex: "#C2185B").opacity(0.13) : Color(hex: "#C2185B").opacity(0.05),
+            radius: isHovered ? 14 : 4,
+            x: 0, y: isHovered ? 5 : 2
+        )
+        .offset(y: isHovered ? -3 : 0)
+        .animation(.easeOut(duration: 0.2), value: isHovered)
+        .onHover { isHovered = $0 }
+        .clipped()
+    }
+
+    private var dueDateLabel: String {
+        let days = assignment.daysUntilDue
+        if days == 0 { return "Due today" }
+        if days == 1 { return "Due tomorrow" }
+        if days < 0 { return "\(abs(days))d overdue" }
+        let df = DateFormatter()
+        df.dateFormat = "EEE d MMM"
+        return df.string(from: assignment.dueDate)
     }
 }
 
@@ -127,115 +442,13 @@ struct ProgressSection: View {
     }
 }
 
-// MARK: - Kanban Column
-struct KanbanColumn: View {
-    let title: String
-    let emoji: String
-    let assignments: [Assignment]
-    let accentColor: Color
-    let onMove: ((UUID) -> Void)?
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            // Column header
-            HStack(spacing: 6) {
-                Text(emoji).font(.system(size: 12))
-                Text(title)
-                    .font(.system(size: 11, weight: .semibold))
-                    .foregroundColor(Theme.Colors.textPrimary)
-                Text("\(assignments.count)")
-                    .font(.system(size: 9, weight: .bold))
-                    .foregroundColor(.white)
-                    .padding(.horizontal, 6)
-                    .padding(.vertical, 2)
-                    .background(accentColor)
-                    .cornerRadius(8)
-            }
-            .padding(.bottom, 4)
-
-            if assignments.isEmpty {
-                Text("No items")
-                    .font(.system(size: 10))
-                    .foregroundColor(Theme.Colors.textXSoft)
-                    .frame(maxWidth: .infinity, minHeight: 60)
-                    .glassCard()
-            } else {
-                ForEach(assignments) { assignment in
-                    AssignmentCard(assignment: assignment, onMove: onMove)
-                }
-            }
-        }
-        .frame(width: 130)
-    }
-}
-
-// MARK: - Assignment Card
-struct AssignmentCard: View {
-    let assignment: Assignment
-    let onMove: ((UUID) -> Void)?
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            // Priority badge
-            HStack {
-                Text(assignment.priority.rawValue)
-                    .font(.system(size: 8, weight: .bold))
-                    .foregroundColor(.white)
-                    .padding(.horizontal, 6)
-                    .padding(.vertical, 2)
-                    .background(Color(hex: assignment.priority.color))
-                    .cornerRadius(6)
-                Spacer()
-                if assignment.isOverdue {
-                    Text("OVERDUE")
-                        .font(.system(size: 7, weight: .bold))
-                        .foregroundColor(.red)
-                }
-            }
-
-            Text(assignment.title)
-                .font(.system(size: 11, weight: .medium))
-                .foregroundColor(Theme.Colors.textPrimary)
-                .lineLimit(2)
-
-            Text(assignment.course)
-                .font(.system(size: 9))
-                .foregroundColor(Theme.Colors.textSoft)
-
-            HStack {
-                Text(dueDateLabel)
-                    .font(.system(size: 9))
-                    .foregroundColor(assignment.isOverdue ? .red : Theme.Colors.textSoft)
-                Spacer()
-                if let onMove {
-                    Button(action: { onMove(assignment.id) }) {
-                        Image(systemName: "arrow.right.circle.fill")
-                            .font(.system(size: 14))
-                            .foregroundColor(Theme.Colors.rosePrimary)
-                    }
-                    .buttonStyle(.plain)
-                }
-            }
-        }
-        .padding(10)
-        .glassCard(padding: 0)
-    }
-
-    private var dueDateLabel: String {
-        let days = assignment.daysUntilDue
-        if days == 0 { return "Due today" }
-        if days == 1 { return "Due tomorrow" }
-        if days < 0 { return "\(abs(days))d overdue" }
-        return "\(days)d left"
-    }
-}
-
 // MARK: - Add Assignment Sheet
 struct AddAssignmentSheet: View {
     let viewModel: AssignmentsViewModel
     let claudeService: ClaudeService
     @State private var title = ""
     @State private var course = ""
+    @State private var notes = ""
     @State private var dueDate = Date().addingTimeInterval(7 * 86400)
     @State private var priority: Assignment.AssignmentPriority = .medium
     @Environment(\.dismiss) private var dismiss
@@ -254,7 +467,14 @@ struct AddAssignmentSheet: View {
                     .cornerRadius(10)
                     .overlay(RoundedRectangle(cornerRadius: 10).stroke(Theme.Colors.roseLight, lineWidth: 1))
 
-                TextField("Course name", text: $course)
+                TextField("Course name (e.g. MKT302)", text: $course)
+                    .textFieldStyle(.plain)
+                    .padding(10)
+                    .background(Color.white.opacity(0.8))
+                    .cornerRadius(10)
+                    .overlay(RoundedRectangle(cornerRadius: 10).stroke(Theme.Colors.roseLight, lineWidth: 1))
+
+                TextField("Description (optional)", text: $notes)
                     .textFieldStyle(.plain)
                     .padding(10)
                     .background(Color.white.opacity(0.8))
@@ -277,7 +497,13 @@ struct AddAssignmentSheet: View {
                     .font(.system(size: 12))
                     .foregroundColor(Theme.Colors.textSoft)
                 Button("Add Assignment") {
-                    let assignment = Assignment(title: title, course: course, dueDate: dueDate, priority: priority)
+                    let assignment = Assignment(
+                        title: title,
+                        course: course,
+                        dueDate: dueDate,
+                        priority: priority,
+                        notes: notes.isEmpty ? nil : notes
+                    )
                     viewModel.addAssignment(assignment)
                     dismiss()
                 }
@@ -286,7 +512,7 @@ struct AddAssignmentSheet: View {
             }
         }
         .padding(24)
-        .frame(width: 350)
+        .frame(width: 380)
         .background(Theme.Colors.roseUltra)
     }
 }
@@ -306,6 +532,12 @@ class AssignmentsViewModel {
             .filter { $0.status != .done }
             .sorted { $0.dueDate < $1.dueDate }
             .first
+    }
+
+    var dueThisWeekCount: Int {
+        let cal = Calendar.current
+        let endOfWeek = cal.date(byAdding: .day, value: 7, to: Date()) ?? Date()
+        return assignments.filter { $0.status != .done && $0.dueDate <= endOfWeek }.count
     }
 
     func loadData() async {

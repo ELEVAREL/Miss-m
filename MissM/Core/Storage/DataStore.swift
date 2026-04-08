@@ -95,9 +95,10 @@ struct Assignment: Codable, Identifiable {
     var dueDate: Date
     var status: AssignmentStatus
     var priority: AssignmentPriority
-    var notes: String
+    var notes: String?
+    var progress: Double // 0.0 to 1.0
 
-    init(id: UUID = UUID(), title: String, course: String, dueDate: Date, status: AssignmentStatus = .todo, priority: AssignmentPriority = .medium, notes: String = "") {
+    init(id: UUID = UUID(), title: String, course: String, dueDate: Date, status: AssignmentStatus = .todo, priority: AssignmentPriority = .medium, notes: String? = nil, progress: Double = 0.0) {
         self.id = id
         self.title = title
         self.course = course
@@ -105,6 +106,7 @@ struct Assignment: Codable, Identifiable {
         self.status = status
         self.priority = priority
         self.notes = notes
+        self.progress = progress
     }
 
     enum AssignmentStatus: String, Codable, CaseIterable {
@@ -132,6 +134,18 @@ struct Assignment: Codable, Identifiable {
     }
 
     var isOverdue: Bool { dueDate < Date() && status != .done }
+
+    var progressValue: Double {
+        if status == .done { return 1.0 }
+        return progress
+    }
+
+    var progressLabel: String {
+        if status == .done { return "Complete" }
+        let pct = Int(progress * 100)
+        if pct == 0 { return "Not started" }
+        return "\(pct)%"
+    }
 }
 
 struct FlashcardDeck: Codable, Identifiable {
