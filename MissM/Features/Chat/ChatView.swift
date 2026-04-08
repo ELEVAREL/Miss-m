@@ -161,42 +161,68 @@ struct ChatView: View {
                 .padding(.vertical, 8)
             }
 
-            // Input row
-            HStack(spacing: 8) {
-                TextField("Ask me anything, Miss M…", text: $viewModel.inputText)
-                    .textFieldStyle(.plain)
-                    .padding(.horizontal, 13)
-                    .padding(.vertical, 9)
-                    .background(Color.white.opacity(0.8))
-                    .cornerRadius(13)
-                    .overlay(RoundedRectangle(cornerRadius: 13).stroke(Theme.Colors.roseLight, lineWidth: 1.5))
-                    .onSubmit { viewModel.send() }
-
-                Button(action: { viewModel.isListening.toggle() }) {
-                    Text("🎙")
-                        .frame(width: 36, height: 36)
-                        .background(viewModel.isListening ? Theme.Gradients.rosePrimary : LinearGradient(colors: [Color.white.opacity(0.8)], startPoint: .top, endPoint: .bottom))
-                        .cornerRadius(11)
-                        .overlay(RoundedRectangle(cornerRadius: 11).stroke(Theme.Colors.roseLight, lineWidth: 1.5))
+            // Input row or voice waveform
+            if viewModel.isListening {
+                // Voice input mode (State 6)
+                HStack(spacing: 12) {
+                    VoiceWaveform()
+                    Text("Listening…")
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundColor(Theme.Colors.rosePrimary)
+                    Spacer()
+                    Button(action: { viewModel.isListening = false }) {
+                        Text("Done")
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 14)
+                            .padding(.vertical, 7)
+                            .background(Theme.Gradients.rosePrimary)
+                            .cornerRadius(10)
+                    }
+                    .buttonStyle(.plain)
                 }
-                .buttonStyle(.plain)
+                .padding(.horizontal, 14)
+                .padding(.bottom, 12)
+                .padding(.top, 10)
+                .background(Color.white.opacity(0.5))
+                .overlay(Rectangle().frame(height: 1).foregroundColor(Theme.Colors.glassBorder), alignment: .top)
+            } else {
+                HStack(spacing: 8) {
+                    TextField("Ask me anything, Miss M…", text: $viewModel.inputText)
+                        .textFieldStyle(.plain)
+                        .padding(.horizontal, 13)
+                        .padding(.vertical, 9)
+                        .background(Color.white.opacity(0.8))
+                        .cornerRadius(13)
+                        .overlay(RoundedRectangle(cornerRadius: 13).stroke(Theme.Colors.roseLight, lineWidth: 1.5))
+                        .onSubmit { viewModel.send() }
 
-                Button(action: { viewModel.send() }) {
-                    Text("↑")
-                        .foregroundColor(.white)
-                        .frame(width: 36, height: 36)
-                        .background(Theme.Gradients.rosePrimary)
-                        .cornerRadius(11)
-                        .shadow(color: Theme.Colors.rosePrimary.opacity(0.35), radius: 6)
+                    Button(action: { viewModel.isListening = true }) {
+                        Text("🎙")
+                            .frame(width: 36, height: 36)
+                            .background(LinearGradient(colors: [Color.white.opacity(0.8)], startPoint: .top, endPoint: .bottom))
+                            .cornerRadius(11)
+                            .overlay(RoundedRectangle(cornerRadius: 11).stroke(Theme.Colors.roseLight, lineWidth: 1.5))
+                    }
+                    .buttonStyle(.plain)
+
+                    Button(action: { viewModel.send() }) {
+                        Text("↑")
+                            .foregroundColor(.white)
+                            .frame(width: 36, height: 36)
+                            .background(Theme.Gradients.rosePrimary)
+                            .cornerRadius(11)
+                            .shadow(color: Theme.Colors.rosePrimary.opacity(0.35), radius: 6)
+                    }
+                    .buttonStyle(.plain)
+                    .disabled(viewModel.inputText.isEmpty)
                 }
-                .buttonStyle(.plain)
-                .disabled(viewModel.inputText.isEmpty)
+                .padding(.horizontal, 14)
+                .padding(.bottom, 12)
+                .padding(.top, 6)
+                .background(Color.white.opacity(0.5))
+                .overlay(Rectangle().frame(height: 1).foregroundColor(Theme.Colors.glassBorder), alignment: .top)
             }
-            .padding(.horizontal, 14)
-            .padding(.bottom, 12)
-            .padding(.top, 6)
-            .background(Color.white.opacity(0.5))
-            .overlay(Rectangle().frame(height: 1).foregroundColor(Theme.Colors.glassBorder), alignment: .top)
         }
     }
 
@@ -236,7 +262,24 @@ struct MessageBubble: View {
                 switch message.state {
                 case .thinking:
                     ThinkingBubble()
-                case .streaming, .complete:
+                case .streaming:
+                    if !message.content.isEmpty {
+                        HStack(spacing: 0) {
+                            Text(message.content)
+                                .font(.system(size: 12.5))
+                                .foregroundColor(Theme.Colors.textPrimary)
+                            // Blinking rose cursor
+                            StreamingCursor()
+                        }
+                        .padding(.horizontal, 13)
+                        .padding(.vertical, 9)
+                        .background(Color.white.opacity(0.92))
+                        .clipShape(BubbleShape(isUser: false))
+                        .overlay(BubbleShape(isUser: false).stroke(Color.white.opacity(0.9), lineWidth: 1))
+                        .shadow(color: Color(hex: "#C2185B").opacity(0.07), radius: 5, x: 0, y: 2)
+                        .frame(maxWidth: 280, alignment: .leading)
+                    }
+                case .complete:
                     if !message.content.isEmpty {
                         Text(message.content)
                             .font(.system(size: 12.5))
@@ -248,16 +291,16 @@ struct MessageBubble: View {
                                 ? AnyView(Theme.Gradients.rosePrimary)
                                 : AnyView(Color.white.opacity(0.92))
                             )
-                            .cornerRadius(message.role == .user ? 16 : 16)
+                            .clipShape(BubbleShape(isUser: message.role == .user))
                             .overlay(
                                 Group {
                                     if message.role == .assistant {
-                                        RoundedRectangle(cornerRadius: 16)
+                                        BubbleShape(isUser: false)
                                             .stroke(Color.white.opacity(0.9), lineWidth: 1)
                                     }
                                 }
                             )
-                            .shadow(color: Theme.Colors.shadow, radius: 5, x: 0, y: 2)
+                            .shadow(color: Color(hex: "#C2185B").opacity(0.07), radius: 5, x: 0, y: 2)
                             .frame(maxWidth: 280, alignment: message.role == .user ? .trailing : .leading)
                     }
                 default:
@@ -357,6 +400,68 @@ struct ChipButtonStyle: ButtonStyle {
             .cornerRadius(14)
             .overlay(RoundedRectangle(cornerRadius: 14).stroke(Theme.Colors.roseLight, lineWidth: 1))
             .scaleEffect(configuration.isPressed ? 0.96 : 1)
+    }
+}
+
+// MARK: - Streaming Cursor (blinking rose bar)
+struct StreamingCursor: View {
+    @State private var visible = true
+
+    var body: some View {
+        RoundedRectangle(cornerRadius: 1)
+            .fill(Theme.Colors.rosePrimary)
+            .frame(width: 2, height: 14)
+            .opacity(visible ? 1 : 0)
+            .animation(.easeInOut(duration: 0.75).repeatForever(autoreverses: true), value: visible)
+            .onAppear { visible = false }
+    }
+}
+
+// MARK: - Asymmetric Bubble Shape (per design: 16/16/16/4 corners)
+struct BubbleShape: Shape {
+    let isUser: Bool
+
+    func path(in rect: CGRect) -> Path {
+        let tl: CGFloat = 16
+        let tr: CGFloat = 16
+        let bl: CGFloat = isUser ? 16 : 4
+        let br: CGFloat = isUser ? 4 : 16
+
+        var path = Path()
+        path.move(to: CGPoint(x: rect.minX + tl, y: rect.minY))
+        path.addLine(to: CGPoint(x: rect.maxX - tr, y: rect.minY))
+        path.addArc(center: CGPoint(x: rect.maxX - tr, y: rect.minY + tr), radius: tr, startAngle: .degrees(-90), endAngle: .degrees(0), clockwise: false)
+        path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY - br))
+        path.addArc(center: CGPoint(x: rect.maxX - br, y: rect.maxY - br), radius: br, startAngle: .degrees(0), endAngle: .degrees(90), clockwise: false)
+        path.addLine(to: CGPoint(x: rect.minX + bl, y: rect.maxY))
+        path.addArc(center: CGPoint(x: rect.minX + bl, y: rect.maxY - bl), radius: bl, startAngle: .degrees(90), endAngle: .degrees(180), clockwise: false)
+        path.addLine(to: CGPoint(x: rect.minX, y: rect.minY + tl))
+        path.addArc(center: CGPoint(x: rect.minX + tl, y: rect.minY + tl), radius: tl, startAngle: .degrees(180), endAngle: .degrees(270), clockwise: false)
+        path.closeSubpath()
+        return path
+    }
+}
+
+// MARK: - Voice Waveform (7-bar animated, per design)
+struct VoiceWaveform: View {
+    @State private var animating = false
+    let barCount = 7
+
+    var body: some View {
+        HStack(spacing: 3) {
+            ForEach(0..<barCount, id: \.self) { i in
+                RoundedRectangle(cornerRadius: 2)
+                    .fill(Theme.Gradients.rosePrimary)
+                    .frame(width: 3, height: animating ? CGFloat.random(in: 8...24) : 6)
+                    .animation(
+                        .easeInOut(duration: 0.4)
+                        .repeatForever(autoreverses: true)
+                        .delay(Double(i) * 0.1),
+                        value: animating
+                    )
+            }
+        }
+        .onAppear { animating = true }
     }
 }
 

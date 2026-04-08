@@ -166,46 +166,363 @@ struct TabBar: View {
 }
 
 // MARK: - Onboarding View
+// MARK: - 5-Step Onboarding (matches docs/design/14-onboarding.html)
 struct OnboardingView: View {
+    @State private var step = 1
     @State private var apiKey = ""
-    @State private var isLoading = false
+    @State private var phoneNumber = ""
+    @State private var calendarGranted = false
+    @State private var remindersGranted = false
     let onSave: (String) throws -> Void
 
     var body: some View {
-        VStack(spacing: 24) {
-            Spacer()
-            Text("♛")
-                .font(.system(size: 48))
-            Text("Welcome, Miss M")
-                .font(.custom("PlayfairDisplay-Italic", size: 28))
-                .foregroundColor(Theme.Colors.rosePrimary)
-            Text("Enter your Anthropic API key to get started.\nYour key is stored securely in macOS Keychain.")
-                .font(.system(size: 13))
-                .foregroundColor(Theme.Colors.textSoft)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, 24)
-            VStack(spacing: 10) {
-                SecureField("sk-ant-...", text: $apiKey)
-                    .textFieldStyle(.plain)
-                    .padding(12)
-                    .background(Color.white.opacity(0.8))
-                    .cornerRadius(12)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 12)
-                            .stroke(Theme.Colors.roseLight, lineWidth: 1.5)
-                    )
-                    .padding(.horizontal, 24)
-                Button("Get Started →") {
-                    try? onSave(apiKey)
-                }
-                .buttonStyle(RoseButtonStyle())
-                .disabled(apiKey.isEmpty)
+        VStack(spacing: 0) {
+            switch step {
+            case 1: welcomeStep
+            case 2: apiKeyStep
+            case 3: permissionsStep
+            case 4: phoneStep
+            case 5: doneStep
+            default: welcomeStep
             }
-            Text("Get your API key at platform.anthropic.com")
-                .font(.system(size: 11))
-                .foregroundColor(Theme.Colors.textXSoft)
+        }
+        .animation(.easeInOut(duration: 0.3), value: step)
+    }
+
+    // MARK: Step 1 — Welcome
+    private var welcomeStep: some View {
+        VStack(spacing: 0) {
+            // Hero gradient header
+            VStack(spacing: 8) {
+                Text("♛").font(.system(size: 48))
+                Text("Welcome,\nMiss M")
+                    .font(.custom("PlayfairDisplay-Italic", size: 30))
+                    .foregroundColor(.white)
+                    .multilineTextAlignment(.center)
+                Text("Your personal AI assistant is ready.\nLet's set everything up in just 2 minutes.")
+                    .font(.system(size: 12, weight: .light))
+                    .foregroundColor(.white.opacity(0.8))
+                    .multilineTextAlignment(.center)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 28)
+            .background(Theme.Gradients.heroCard)
+
+            // Feature grid
+            VStack(spacing: 14) {
+                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 8) {
+                    OnboardingFeatureItem(icon: "🤖", name: "AI Chat", sub: "Ask anything, anytime")
+                    OnboardingFeatureItem(icon: "💬", name: "iMessage AI", sub: "Text your Mac from iPhone")
+                    OnboardingFeatureItem(icon: "🌅", name: "Morning Brief", sub: "Daily 7:30am update")
+                    OnboardingFeatureItem(icon: "📚", name: "School Tools", sub: "Essays, assignments, study")
+                }
+
+                Button("Get Started →") { step = 2 }
+                    .buttonStyle(RoseButtonStyle())
+                    .frame(maxWidth: .infinity)
+
+                StepDots(current: 1, total: 5)
+            }
+            .padding(24)
+
             Spacer()
         }
+    }
+
+    // MARK: Step 2 — API Key
+    private var apiKeyStep: some View {
+        VStack(spacing: 0) {
+            ScrollView {
+                VStack(spacing: 14) {
+                    Text("🔑").font(.system(size: 36))
+                    Text("Add Your API Key")
+                        .font(.custom("PlayfairDisplay-Italic", size: 22))
+                        .foregroundColor(Theme.Colors.textPrimary)
+                    Text("Your Claude API key powers Miss M's intelligence.\nIt's stored securely in macOS Keychain — never anywhere else.")
+                        .font(.system(size: 12))
+                        .foregroundColor(Theme.Colors.textSoft)
+                        .multilineTextAlignment(.center)
+
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("ANTHROPIC API KEY")
+                            .font(.system(size: 10, weight: .semibold))
+                            .tracking(1.5)
+                            .foregroundColor(Theme.Colors.textSoft)
+                        SecureField("sk-ant-api03-...", text: $apiKey)
+                            .textFieldStyle(.plain)
+                            .padding(11)
+                            .background(Color.white.opacity(0.85))
+                            .cornerRadius(13)
+                            .overlay(RoundedRectangle(cornerRadius: 13).stroke(Theme.Colors.roseLight, lineWidth: 1.5))
+                        Text("Get your key at platform.anthropic.com · ~$24 in credits lasts 4-8 months")
+                            .font(.system(size: 10))
+                            .foregroundColor(Theme.Colors.textXSoft)
+                    }
+                    .padding(.horizontal, 4)
+
+                    Button("Save Key Securely →") {
+                        try? KeychainManager.saveAPIKey(apiKey)
+                        step = 3
+                    }
+                    .buttonStyle(RoseButtonStyle())
+                    .frame(maxWidth: .infinity)
+                    .disabled(apiKey.isEmpty)
+
+                    Button("← Back") { step = 1 }
+                        .font(.system(size: 11))
+                        .foregroundColor(Theme.Colors.textXSoft)
+                        .buttonStyle(.plain)
+
+                    StepDots(current: 2, total: 5)
+                }
+                .padding(28)
+            }
+            Spacer()
+        }
+    }
+
+    // MARK: Step 3 — Permissions
+    private var permissionsStep: some View {
+        VStack(spacing: 0) {
+            ScrollView {
+                VStack(spacing: 14) {
+                    Text("🔐").font(.system(size: 36))
+                    Text("Grant Permissions")
+                        .font(.custom("PlayfairDisplay-Italic", size: 22))
+                        .foregroundColor(Theme.Colors.textPrimary)
+                    Text("Miss M needs access to a few Apple apps to help you best. Tap each to allow.")
+                        .font(.system(size: 12))
+                        .foregroundColor(Theme.Colors.textSoft)
+                        .multilineTextAlignment(.center)
+
+                    // Permission items
+                    PermissionItem(icon: "📅", iconBg: Theme.Colors.rosePrimary.opacity(0.1), name: "Apple Calendar", sub: "Read & add events", isGranted: calendarGranted) {
+                        Task {
+                            calendarGranted = (try? await CalendarService.shared.requestAccess()) ?? false
+                        }
+                    }
+                    PermissionItem(icon: "🔔", iconBg: Color.orange.opacity(0.1), name: "Apple Reminders", sub: "Read & create reminders", isGranted: remindersGranted) {
+                        Task {
+                            remindersGranted = (try? await RemindersService.shared.requestAccess()) ?? false
+                        }
+                    }
+                    PermissionItem(icon: "💬", iconBg: Color.green.opacity(0.1), name: "Messages", sub: "Send iMessages on your behalf", isGranted: false, action: nil)
+                    PermissionItem(icon: "🎙", iconBg: Color.purple.opacity(0.1), name: "Microphone", sub: "Voice input (optional)", isGranted: false, action: nil)
+
+                    Button("Continue →") { step = 4 }
+                        .buttonStyle(RoseButtonStyle())
+                        .frame(maxWidth: .infinity)
+
+                    StepDots(current: 3, total: 5)
+                }
+                .padding(28)
+            }
+            Spacer()
+        }
+    }
+
+    // MARK: Step 4 — Phone Number
+    private var phoneStep: some View {
+        VStack(spacing: 0) {
+            ScrollView {
+                VStack(spacing: 14) {
+                    Text("📱").font(.system(size: 36))
+                    Text("Your iPhone Number")
+                        .font(.custom("PlayfairDisplay-Italic", size: 22))
+                        .foregroundColor(Theme.Colors.textPrimary)
+                    Text("Miss M will send your morning briefing and reply to your iMessages at this number. Stored securely in Keychain.")
+                        .font(.system(size: 12))
+                        .foregroundColor(Theme.Colors.textSoft)
+                        .multilineTextAlignment(.center)
+
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("YOUR PHONE NUMBER")
+                            .font(.system(size: 10, weight: .semibold))
+                            .tracking(1.5)
+                            .foregroundColor(Theme.Colors.textSoft)
+                        TextField("+1 (555) 000-0000", text: $phoneNumber)
+                            .textFieldStyle(.plain)
+                            .padding(11)
+                            .background(Color.white.opacity(0.85))
+                            .cornerRadius(13)
+                            .overlay(RoundedRectangle(cornerRadius: 13).stroke(Theme.Colors.roseLight, lineWidth: 1.5))
+                        Text("This is the number the AI will text — should be your iPhone number")
+                            .font(.system(size: 10))
+                            .foregroundColor(Theme.Colors.textXSoft)
+                    }
+                    .padding(.horizontal, 4)
+
+                    Button("Almost Done →") {
+                        if !phoneNumber.isEmpty {
+                            try? KeychainManager.savePhoneNumber(phoneNumber)
+                        }
+                        step = 5
+                    }
+                    .buttonStyle(RoseButtonStyle())
+                    .frame(maxWidth: .infinity)
+
+                    StepDots(current: 4, total: 5)
+                }
+                .padding(28)
+            }
+            Spacer()
+        }
+    }
+
+    // MARK: Step 5 — Done
+    private var doneStep: some View {
+        VStack(spacing: 16) {
+            Spacer()
+
+            // Green checkmark
+            ZStack {
+                Circle()
+                    .fill(LinearGradient(colors: [Color.green, Color(hex: "#66BB6A")], startPoint: .topLeading, endPoint: .bottomTrailing))
+                    .frame(width: 64, height: 64)
+                    .shadow(color: Color.green.opacity(0.3), radius: 12)
+                Text("✓")
+                    .font(.system(size: 30, weight: .bold))
+                    .foregroundColor(.white)
+            }
+            .scaleEffect(1)
+            .animation(.spring(response: 0.5, dampingFraction: 0.6), value: step)
+
+            VStack(spacing: 4) {
+                Text("You're all set,")
+                    .font(.custom("PlayfairDisplay-Italic", size: 24))
+                    .foregroundColor(Theme.Colors.textPrimary)
+                Text("Miss M!")
+                    .font(.custom("PlayfairDisplay-Italic", size: 24))
+                    .foregroundColor(Theme.Colors.rosePrimary)
+            }
+
+            Text("Your AI assistant is live. You'll receive your first morning briefing tomorrow at 7:30am. You can text your Mac from anywhere and I'll always reply. 💬")
+                .font(.system(size: 12))
+                .foregroundColor(Theme.Colors.textSoft)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 20)
+
+            // Suggested prompts
+            VStack(alignment: .leading, spacing: 6) {
+                Text("READY TO TRY")
+                    .font(.system(size: 10, weight: .semibold))
+                    .tracking(1.5)
+                    .foregroundColor(Theme.Colors.rosePrimary)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("💬 **\"What's on my calendar today?\"**")
+                    Text("📚 **\"Help me write my essay\"**")
+                    Text("🎯 **\"Quiz me on marketing theory\"**")
+                    Text("💙 **\"Text my husband I'm on my way\"**")
+                }
+                .font(.system(size: 12))
+                .foregroundColor(Theme.Colors.textMedium)
+            }
+            .padding(16)
+            .background(Theme.Colors.rosePrimary.opacity(0.06))
+            .overlay(RoundedRectangle(cornerRadius: 16).stroke(Theme.Colors.rosePrimary.opacity(0.14), lineWidth: 1))
+            .cornerRadius(16)
+            .padding(.horizontal, 20)
+
+            Button("Open Miss M →") {
+                try? onSave(apiKey)
+            }
+            .buttonStyle(RoseButtonStyle())
+            .frame(maxWidth: .infinity)
+            .padding(.horizontal, 28)
+
+            StepDots(current: 5, total: 5, allDone: true)
+
+            Spacer()
+        }
+    }
+}
+
+// MARK: - Onboarding Components
+struct OnboardingFeatureItem: View {
+    let icon: String
+    let name: String
+    let sub: String
+
+    var body: some View {
+        VStack(spacing: 5) {
+            Text(icon).font(.system(size: 20))
+            Text(name)
+                .font(.system(size: 11, weight: .medium))
+                .foregroundColor(Theme.Colors.textPrimary)
+            Text(sub)
+                .font(.system(size: 9))
+                .foregroundColor(Theme.Colors.textSoft)
+                .lineLimit(1)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(12)
+        .background(Color.white.opacity(0.7))
+        .overlay(RoundedRectangle(cornerRadius: 14).stroke(Theme.Colors.glassBorder, lineWidth: 1))
+        .cornerRadius(14)
+    }
+}
+
+struct PermissionItem: View {
+    let icon: String
+    let iconBg: Color
+    let name: String
+    let sub: String
+    let isGranted: Bool
+    let action: (() -> Void)?
+
+    var body: some View {
+        Button(action: { action?() }) {
+            HStack(spacing: 12) {
+                Text(icon)
+                    .font(.system(size: 17))
+                    .frame(width: 34, height: 34)
+                    .background(iconBg)
+                    .cornerRadius(10)
+                VStack(alignment: .leading, spacing: 1) {
+                    Text(name)
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundColor(Theme.Colors.textPrimary)
+                    Text(sub)
+                        .font(.system(size: 10))
+                        .foregroundColor(Theme.Colors.textSoft)
+                }
+                Spacer()
+                Text(isGranted ? "✓ Granted" : "Allow →")
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundColor(isGranted ? Color.green : Theme.Colors.rosePrimary)
+            }
+            .padding(12)
+            .background(isGranted ? Color(hex: "#F5FFF8").opacity(0.85) : Color.white.opacity(0.65))
+            .overlay(RoundedRectangle(cornerRadius: 14).stroke(isGranted ? Color.green.opacity(0.3) : Theme.Colors.glassBorder, lineWidth: 1))
+            .cornerRadius(14)
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+struct StepDots: View {
+    let current: Int
+    let total: Int
+    var allDone: Bool = false
+
+    var body: some View {
+        HStack(spacing: 6) {
+            ForEach(1...total, id: \.self) { i in
+                Circle()
+                    .fill(dotColor(for: i))
+                    .frame(width: 8, height: 8)
+                    .scaleEffect(i == current && !allDone ? 1.2 : 1.0)
+                    .animation(.easeOut(duration: 0.3), value: current)
+            }
+        }
+        .padding(.top, 4)
+    }
+
+    private func dotColor(for index: Int) -> Color {
+        if allDone { return Color.green }
+        if index == current { return Theme.Colors.rosePrimary }
+        if index < current { return Color.green }
+        return Theme.Colors.rosePrimary.opacity(0.18)
     }
 }
 
