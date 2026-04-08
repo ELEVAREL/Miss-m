@@ -360,10 +360,5 @@ struct ChipButtonStyle: ButtonStyle {
     }
 }
 
-// MARK: - Placeholder views referenced in ContentView
-struct WellnessView: View {
-    var body: some View {
-        ScrollView { Text("Wellness — Claude Code will build this") .padding() }
-    }
-}
+// WellnessView moved to MissM/Features/Wellness/WellnessView.swift
 // SettingsView moved to MissM/Features/Settings/SettingsView.swift
