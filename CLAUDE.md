@@ -670,3 +670,39 @@ The AI should feel like it knows her life. Examples:
 
 Add more named contacts as user provides them.
 Future: Mum, Dad, friends etc can be added to this section.
+
+---
+
+## 👤 HUSBAND — CONTACT ASSOCIATION
+
+Miss M's husband's name is: NyRiian
+He is saved in her Contacts as: "NyRiian"
+
+When Miss M says ANY of these:
+  "my husband", "text my husband", "call my husband",
+  "tell my husband", "message my husband", "where is my husband",
+  "let my husband know", "NyRiian" directly
+
+→ The AI MUST look up "NyRiian" in CNContactStore
+→ Use that number for MessagesService.send() or FaceTime
+→ Never ask Miss M for his number — always resolve it from Contacts
+→ The AI should feel like it naturally knows who her husband is
+
+Examples:
+  "Text my husband I'm on my way home"
+  → Finds NyRiian in Contacts → sends iMessage: "I'm on my way home 🩷"
+
+  "Tell my husband dinner is at 7"
+  → Finds NyRiian → sends: "Dinner is at 7! 🍽️"
+
+  "Call my husband"
+  → Finds NyRiian's number → opens facetime-audio://[number]
+
+  "What is my husband doing tonight?"
+  → Checks if NyRiian has shared calendar events (if available)
+  → Or just suggests she ask him directly via message
+
+Smart association examples (AI should handle naturally):
+  "Can you check if my husband is free Saturday?" → check shared calendar or message him
+  "Remind my husband to pick up milk" → sends him an iMessage reminder
+  "Draft a message to my husband saying I'll be late" → drafts then sends to NyRiian
