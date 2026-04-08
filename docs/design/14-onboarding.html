@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Miss M — Onboarding</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--r5:#E91E8C;--r6:#C2185B;--r7:#880E4F;--r2:#F8BBD9;--r3:#F48FB1;--text:#1A0A10;--text-m:#5C3049;--text-s:#9A6B80;--text-xs:#C4A0B2;--glass-b:rgba(255,255,255,.82);--shadow:rgba(194,24,91,.13);--green:#34C759}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:linear-gradient(155deg,#FFF0F8,#FCE4EC 40%,#F8BBD9 70%,#FDE8F3);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:28px;gap:24px;flex-wrap:wrap}
+body::before{content:'';position:fixed;top:-200px;right:-200px;width:600px;height:600px;background:radial-gradient(circle,rgba(233,30,140,.12),transparent 70%);border-radius:50%;pointer-events:none}
+body::after{content:'';position:fixed;bottom:-200px;left:-150px;width:500px;height:500px;background:radial-gradient(circle,rgba(212,175,122,.14),transparent 70%);border-radius:50%;pointer-events:none}
+
+.btn-p{background:linear-gradient(135deg,var(--r5),var(--r6));color:white;border:none;border-radius:14px;padding:13px 28px;font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;box-shadow:0 6px 20px rgba(233,30,140,.35);transition:all .2s;width:100%}
+.btn-p:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(233,30,140,.45)}
+.btn-g{background:rgba(255,255,255,.75);border:1.5px solid var(--r2);color:var(--text-m);border-radius:14px;padding:12px 20px;font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;width:100%}
+.btn-g:hover{background:white;color:var(--r5)}
+
+/* ONBOARDING WINDOW */
+.ob-win{width:380px;background:rgba(255,255,255,.68);backdrop-filter:blur(24px) saturate(180%);border:1px solid var(--glass-b);border-radius:28px;overflow:hidden;box-shadow:0 24px 60px var(--shadow),0 4px 16px rgba(0,0,0,.06),inset 0 1px 0 rgba(255,255,255,.92)}
+
+/* STEP PANELS */
+.step{display:none;animation:fadeIn .35s ease}
+.step.on{display:flex;flex-direction:column}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* WELCOME */
+.welcome-hero{background:linear-gradient(145deg,var(--r5),var(--r6) 55%,var(--r7));padding:36px 28px;text-align:center;position:relative;overflow:hidden}
+.welcome-hero::before{content:'';position:absolute;top:-50px;right:-50px;width:200px;height:200px;background:rgba(255,255,255,.1);border-radius:50%}
+.welcome-hero::after{content:'';position:absolute;bottom:-40px;left:40px;width:120px;height:120px;background:rgba(255,255,255,.07);border-radius:50%}
+.crown{font-size:48px;display:block;margin-bottom:10px;position:relative;z-index:1}
+.welcome-title{font-family:'Playfair Display',serif;font-size:32px;font-style:italic;color:white;line-height:1.1;position:relative;z-index:1}
+.welcome-sub{font-size:13px;color:rgba(255,255,255,.8);margin-top:8px;font-weight:300;line-height:1.55;position:relative;z-index:1}
+.welcome-body{padding:28px 28px 24px;text-align:center}
+.feature-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:18px 0}
+.feature-item{background:rgba(255,255,255,.7);border:1px solid var(--glass-b);border-radius:14px;padding:12px;text-align:center}
+.fi-icon{font-size:20px;margin-bottom:5px;display:block}
+.fi-name{font-size:11px;font-weight:500;color:var(--text)}
+.fi-sub{font-size:9px;color:var(--text-s);margin-top:2px;line-height:1.35}
+
+/* STEPS PROGRESS */
+.step-dots{display:flex;gap:6px;justify-content:center;padding:16px 0 0}
+.dot{width:8px;height:8px;border-radius:50%;background:rgba(233,30,140,.18);transition:all .3s}
+.dot.on{background:var(--r5);transform:scale(1.2)}
+.dot.done{background:var(--green)}
+
+/* FORM FIELDS */
+.form-body{padding:28px}
+.step-icon{font-size:36px;text-align:center;display:block;margin-bottom:12px}
+.step-title{font-family:'Playfair Display',serif;font-size:22px;font-style:italic;color:var(--text);text-align:center;margin-bottom:6px}
+.step-sub{font-size:12px;color:var(--text-s);text-align:center;margin-bottom:20px;line-height:1.55}
+.field-label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-s);font-weight:600;margin-bottom:6px}
+.field-input{width:100%;background:rgba(255,255,255,.85);border:1.5px solid var(--r2);border-radius:13px;padding:11px 14px;font-size:13px;font-family:'DM Sans',sans-serif;color:var(--text);outline:none;transition:all .2s;margin-bottom:14px}
+.field-input:focus{border-color:var(--r5);box-shadow:0 0 0 3px rgba(233,30,140,.09)}
+.field-hint{font-size:10px;color:var(--text-xs);margin-top:-10px;margin-bottom:14px;line-height:1.5}
+
+/* PERMISSION ITEMS */
+.perm-item{display:flex;align-items:center;gap:12px;padding:12px 14px;background:rgba(255,255,255,.65);border:1px solid var(--glass-b);border-radius:14px;margin-bottom:8px;cursor:pointer;transition:all .15s}
+.perm-item.granted{border-color:rgba(52,199,89,.3);background:rgba(245,255,248,.85)}
+.perm-ic{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.perm-info{flex:1}
+.perm-name{font-size:12px;font-weight:500;color:var(--text)}
+.perm-sub{font-size:10px;color:var(--text-s);margin-top:1px}
+.perm-status{font-size:11px;font-weight:600}
+.perm-status.granted{color:var(--green)}
+.perm-status.pending{color:var(--r5)}
+
+/* DONE SCREEN */
+.done-body{padding:32px 28px;text-align:center}
+.done-check{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--green),#66BB6A);display:flex;align-items:center;justify-content:center;font-size:30px;margin:0 auto 16px;box-shadow:0 8px 24px rgba(52,199,89,.3);animation:pop .5s cubic-bezier(.34,1.56,.64,1) both}
+@keyframes pop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+</style>
+</head>
+<body>
+
+<!-- STEP 1: WELCOME -->
+<div class="ob-win">
+  <div class="step on" id="s1">
+    <div class="welcome-hero">
+      <span class="crown">♛</span>
+      <div class="welcome-title">Welcome,<br>Miss M</div>
+      <div class="welcome-sub">Your personal AI assistant is ready.<br>Let's set everything up in just 2 minutes.</div>
+    </div>
+    <div class="welcome-body">
+      <div class="feature-grid">
+        <div class="feature-item"><span class="fi-icon">🤖</span><div class="fi-name">AI Chat</div><div class="fi-sub">Ask anything, anytime</div></div>
+        <div class="feature-item"><span class="fi-icon">💬</span><div class="fi-name">iMessage AI</div><div class="fi-sub">Text your Mac from iPhone</div></div>
+        <div class="feature-item"><span class="fi-icon">🌅</span><div class="fi-name">Morning Brief</div><div class="fi-sub">Daily 7:30am update</div></div>
+        <div class="feature-item"><span class="fi-icon">📚</span><div class="fi-name">School Tools</div><div class="fi-sub">Essays, assignments, study</div></div>
+      </div>
+      <button class="btn-p" onclick="goStep(2)">Get Started →</button>
+      <div class="step-dots" style="padding-top:14px">
+        <div class="dot on"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STEP 2: API KEY -->
+<div class="ob-win">
+  <div class="step on" id="s2">
+    <div class="form-body">
+      <span class="step-icon">🔑</span>
+      <div class="step-title">Add Your API Key</div>
+      <div class="step-sub">Your Claude API key powers Miss M's intelligence. It's stored securely in macOS Keychain — never anywhere else.</div>
+      <div class="field-label">Anthropic API Key</div>
+      <input class="field-input" type="password" placeholder="sk-ant-api03-...">
+      <div class="field-hint">Get your free key at platform.anthropic.com · You have ~$24 in credits which lasts 4–8 months</div>
+      <button class="btn-p" onclick="goStep(3)" style="margin-bottom:8px">Save Key Securely →</button>
+      <button class="btn-g" onclick="goStep(1)" style="background:transparent;border-color:transparent;color:var(--text-xs)">← Back</button>
+      <div class="step-dots"><div class="dot done"></div><div class="dot on"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- STEP 3: PERMISSIONS -->
+<div class="ob-win">
+  <div class="step on" id="s3">
+    <div class="form-body">
+      <span class="step-icon">🔐</span>
+      <div class="step-title">Grant Permissions</div>
+      <div class="step-sub">Miss M needs access to a few Apple apps to help you best. Tap each to allow.</div>
+      <div class="perm-item granted" onclick="this.classList.toggle('granted')">
+        <div class="perm-ic" style="background:rgba(233,30,140,.1)">📅</div>
+        <div class="perm-info"><div class="perm-name">Apple Calendar</div><div class="perm-sub">Read & add events</div></div>
+        <div class="perm-status granted">✓ Granted</div>
+      </div>
+      <div class="perm-item granted" onclick="this.classList.toggle('granted')">
+        <div class="perm-ic" style="background:rgba(255,149,0,.1)">🔔</div>
+        <div class="perm-info"><div class="perm-name">Apple Reminders</div><div class="perm-sub">Read & create reminders</div></div>
+        <div class="perm-status granted">✓ Granted</div>
+      </div>
+      <div class="perm-item" onclick="this.classList.toggle('granted');this.querySelector('.perm-status').textContent=this.classList.contains('granted')?'✓ Granted':'Allow →';this.querySelector('.perm-status').className='perm-status '+(this.classList.contains('granted')?'granted':'pending')">
+        <div class="perm-ic" style="background:rgba(52,199,89,.1)">💬</div>
+        <div class="perm-info"><div class="perm-name">Messages</div><div class="perm-sub">Send iMessages on your behalf</div></div>
+        <div class="perm-status pending">Allow →</div>
+      </div>
+      <div class="perm-item" onclick="this.classList.toggle('granted');this.querySelector('.perm-status').textContent=this.classList.contains('granted')?'✓ Granted':'Allow →';this.querySelector('.perm-status').className='perm-status '+(this.classList.contains('granted')?'granted':'pending')">
+        <div class="perm-ic" style="background:rgba(156,39,176,.1)">🎙</div>
+        <div class="perm-info"><div class="perm-name">Microphone</div><div class="perm-sub">Voice input (optional)</div></div>
+        <div class="perm-status pending">Allow →</div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:14px">
+        <button class="btn-p" onclick="goStep(4)" style="flex:1">Continue →</button>
+      </div>
+      <div class="step-dots"><div class="dot done"></div><div class="dot done"></div><div class="dot on"></div><div class="dot"></div><div class="dot"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- STEP 4: PHONE NUMBER -->
+<div class="ob-win">
+  <div class="step on" id="s4">
+    <div class="form-body">
+      <span class="step-icon">📱</span>
+      <div class="step-title">Your iPhone Number</div>
+      <div class="step-sub">Miss M will send your morning briefing and reply to your iMessages at this number. Stored securely in Keychain.</div>
+      <div class="field-label">Your Phone Number</div>
+      <input class="field-input" type="tel" placeholder="+1 (555) 000-0000">
+      <div class="field-hint">This is the number the AI will text — should be your iPhone number</div>
+      <div class="field-label" style="margin-top:4px">Morning Briefing Time</div>
+      <input class="field-input" type="time" value="07:30">
+      <div class="field-hint">AI sends you a daily briefing at this time — weekdays</div>
+      <button class="btn-p" onclick="goStep(5)" style="margin-bottom:8px">Almost Done →</button>
+      <div class="step-dots"><div class="dot done"></div><div class="dot done"></div><div class="dot done"></div><div class="dot on"></div><div class="dot"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- STEP 5: DONE -->
+<div class="ob-win">
+  <div class="step on" id="s5">
+    <div class="done-body">
+      <div class="done-check">✓</div>
+      <div style="font-family:'Playfair Display',serif;font-size:26px;font-style:italic;color:var(--text);margin-bottom:8px">You're all set,<br><em style="color:var(--r5)">Miss M!</em></div>
+      <div style="font-size:13px;color:var(--text-s);line-height:1.65;margin-bottom:24px">Your AI assistant is live. You'll receive your first morning briefing tomorrow at 7:30am. You can text your Mac from anywhere and I'll always reply. 💬</div>
+      <div style="background:rgba(233,30,140,.06);border:1px solid rgba(233,30,140,.14);border-radius:16px;padding:16px;margin-bottom:20px;text-align:left">
+        <div style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--r5);font-weight:600;margin-bottom:8px">Ready to try</div>
+        <div style="font-size:12px;color:var(--text-m);line-height:1.8">
+          💬 <strong>"What's on my calendar today?"</strong><br>
+          📚 <strong>"Help me write my essay"</strong><br>
+          🎯 <strong>"Quiz me on marketing theory"</strong><br>
+          💙 <strong>"Text my husband I'm on my way"</strong>
+        </div>
+      </div>
+      <button class="btn-p" onclick="alert('App would open here!')">Open Miss M →</button>
+      <div class="step-dots" style="padding-top:16px"><div class="dot done"></div><div class="dot done"></div><div class="dot done"></div><div class="dot done"></div><div class="dot done" style="background:var(--green)"></div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+function goStep(n){
+  document.querySelectorAll('.step').forEach(s=>s.classList.remove('on'));
+  document.querySelectorAll('.ob-win').forEach((w,i)=>{ if(i===n-1) w.querySelector('.step').classList.add('on'); });
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Miss M — Flashcards</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=Playfair+Display:ital,wght@0,400;0,700&display=swap" rel="stylesheet">
+<style>
+:root{--r5:#E91E8C;--r6:#C2185B;--r7:#880E4F;--r2:#F8BBD9;--r3:#F48FB1;--text:#1A0A10;--text-m:#5C3049;--text-s:#9A6B80;--text-xs:#C4A0B2;--glass-b:rgba(255,255,255,.82);--shadow:rgba(194,24,91,.13);--green:#34C759;--blue:#007AFF;--red:#FF3B30}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:linear-gradient(155deg,#FFF0F8,#FCE4EC 40%,#F8BBD9 70%,#FDE8F3);min-height:100vh;padding:28px;display:flex;gap:20px;align-items:start;flex-wrap:wrap;color:var(--text)}
+body::before{content:'';position:fixed;top:-150px;right:-150px;width:500px;height:500px;background:radial-gradient(circle,rgba(233,30,140,.11),transparent 70%);border-radius:50%;pointer-events:none}
+.gc{background:rgba(255,255,255,.65);border:1px solid var(--glass-b);border-radius:18px;padding:16px;box-shadow:0 2px 10px var(--shadow);margin-bottom:14px}
+.plbl{font-family:'Cormorant Garamond',serif;font-size:10px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:var(--r5);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.plbl::after{content:'';flex:1;height:1px;background:rgba(233,30,140,.14)}
+.btn-p{background:linear-gradient(135deg,var(--r5),var(--r6));color:white;border:none;border-radius:11px;padding:10px 18px;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;box-shadow:0 4px 12px rgba(233,30,140,.3);transition:all .2s}
+.btn-p:hover{transform:translateY(-1px)}
+.btn-g{background:rgba(255,255,255,.75);border:1.5px solid var(--r2);color:var(--text-m);border-radius:11px;padding:9px 16px;font-size:11px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+.btn-g:hover{background:white;color:var(--r5)}
+
+/* CARD */
+.card-scene{width:360px;height:220px;perspective:1000px;cursor:pointer;margin-bottom:14px}
+.card-inner{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform .6s cubic-bezier(.4,0,.2,1)}
+.card-scene.flipped .card-inner{transform:rotateY(180deg)}
+.card-face{position:absolute;width:100%;height:100%;backface-visibility:hidden;border-radius:22px;display:flex;flex-direction:column;justify-content:center;padding:28px}
+.card-front{background:linear-gradient(145deg,var(--r5),var(--r6) 55%,var(--r7));box-shadow:0 16px 40px rgba(194,24,91,.25)}
+.card-back{background:white;border:1px solid var(--glass-b);transform:rotateY(180deg);box-shadow:0 16px 40px rgba(194,24,91,.12)}
+.card-tag{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.65);font-weight:600;margin-bottom:10px}
+.card-q{font-family:'Playfair Display',serif;font-size:19px;color:white;font-style:italic;line-height:1.35}
+.card-hint{font-size:10px;color:rgba(255,255,255,.5);margin-top:14px;letter-spacing:.5px}
+.card-a-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--text-s);font-weight:600;margin-bottom:8px}
+.card-a{font-size:13px;color:var(--text-m);line-height:1.65}
+.card-a strong{color:var(--r6)}
+
+/* PROGRESS BAR */
+.card-progress{display:flex;gap:4px;margin-bottom:14px;width:360px}
+.cp-dot{flex:1;height:4px;border-radius:3px;background:rgba(233,30,140,.12)}
+.cp-dot.done{background:var(--green)}
+.cp-dot.wrong{background:var(--red)}
+.cp-dot.now{background:var(--r4)}
+
+/* CONTROLS */
+.card-controls{display:flex;gap:10px;width:360px}
+.ctrl-wrong{flex:1;background:rgba(255,59,48,.08);border:1.5px solid rgba(255,59,48,.25);color:#B71C1C;border-radius:14px;padding:11px;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;text-align:center}
+.ctrl-almost{flex:1;background:rgba(255,149,0,.08);border:1.5px solid rgba(255,149,0,.25);color:#C65200;border-radius:14px;padding:11px;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;text-align:center}
+.ctrl-got{flex:1;background:rgba(52,199,89,.1);border:1.5px solid rgba(52,199,89,.25);color:#2E7D32;border-radius:14px;padding:11px;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;text-align:center}
+.ctrl-wrong:hover{background:rgba(255,59,48,.15)}
+.ctrl-almost:hover{background:rgba(255,149,0,.15)}
+.ctrl-got:hover{background:rgba(52,199,89,.18)}
+
+/* STATS */
+.stats-row{display:flex;gap:10px;width:360px;margin-bottom:14px}
+.stat-c{flex:1;background:rgba(255,255,255,.65);border:1px solid var(--glass-b);border-radius:14px;padding:12px 8px;text-align:center}
+.stat-n{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:600}
+.stat-l{font-size:9px;color:var(--text-s);font-weight:500;letter-spacing:.5px;text-transform:uppercase;margin-top:2px}
+
+/* DECKS */
+.deck-item{display:flex;align-items:center;gap:10px;padding:11px 13px;background:rgba(255,255,255,.65);border:1px solid var(--glass-b);border-radius:13px;margin-bottom:7px;cursor:pointer;transition:all .18s}
+.deck-item:hover{background:white;transform:translateX(2px)}
+.deck-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.deck-info{flex:1}
+.deck-name{font-size:12px;font-weight:500;color:var(--text)}
+.deck-sub{font-size:10px;color:var(--text-s);margin-top:1px}
+.deck-badge{font-size:9px;border-radius:8px;padding:2px 8px;font-weight:600}
+</style>
+</head>
+<body>
+
+<!-- CARD + CONTROLS -->
+<div>
+  <div style="margin-bottom:18px">
+    <h1 style="font-family:'Playfair Display',serif;font-size:26px;font-style:italic;color:var(--text)">Flashcard <span style="color:var(--r5)">Quiz</span></h1>
+    <p style="font-size:12px;color:var(--text-s);margin-top:4px">AI-generated from notes · spaced repetition · quiz via iMessage</p>
+  </div>
+
+  <!-- Deck: Consumer Behaviour -->
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+    <span style="background:rgba(233,30,140,.1);color:var(--r5);border-radius:18px;padding:5px 12px;font-size:11px;font-weight:600">Consumer Behaviour ×</span>
+    <span style="font-size:11px;color:var(--text-s)">Card 4 of 24</span>
+    <span style="margin-left:auto;font-size:11px;color:var(--text-s)">Session: 18 min</span>
+  </div>
+
+  <!-- Progress dots -->
+  <div class="card-progress">
+    <div class="cp-dot done"></div><div class="cp-dot done"></div><div class="cp-dot done"></div>
+    <div class="cp-dot now"></div>
+    <div class="cp-dot"></div><div class="cp-dot"></div><div class="cp-dot"></div><div class="cp-dot"></div>
+    <div class="cp-dot wrong"></div><div class="cp-dot"></div>
+    <div class="cp-dot done"></div><div class="cp-dot done"></div>
+    <div class="cp-dot"></div><div class="cp-dot"></div><div class="cp-dot"></div>
+    <div class="cp-dot"></div><div class="cp-dot"></div><div class="cp-dot"></div>
+    <div class="cp-dot"></div><div class="cp-dot"></div><div class="cp-dot"></div>
+    <div class="cp-dot"></div><div class="cp-dot"></div><div class="cp-dot"></div>
+  </div>
+
+  <!-- Flashcard -->
+  <div class="card-scene" id="card" onclick="flipCard()">
+    <div class="card-inner" id="cardInner">
+      <div class="card-face card-front">
+        <div class="card-tag">MKT302 · Consumer Behaviour</div>
+        <div class="card-q">"Explain the STP model and its three core stages."</div>
+        <div class="card-hint">Tap to reveal answer →</div>
+      </div>
+      <div class="card-face card-back">
+        <div class="card-a-label">Answer</div>
+        <div class="card-a"><strong>Segmentation</strong> — dividing the market into distinct groups. <strong>Targeting</strong> — selecting the most viable segment(s) to focus on. <strong>Positioning</strong> — crafting a distinct place in consumers' minds through brand messaging and value proposition.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-c"><div class="stat-n" style="color:var(--green)">5</div><div class="stat-l">Got It ✓</div></div>
+    <div class="stat-c"><div class="stat-n" style="color:var(--red)">1</div><div class="stat-l">Wrong ✕</div></div>
+    <div class="stat-c"><div class="stat-n" style="color:var(--text-s)">18</div><div class="stat-l">Remaining</div></div>
+    <div class="stat-c"><div class="stat-n">75%</div><div class="stat-l">Accuracy</div></div>
+  </div>
+
+  <!-- Controls -->
+  <div class="card-controls">
+    <div class="ctrl-wrong">✕ Wrong</div>
+    <div class="ctrl-almost">~ Almost</div>
+    <div class="ctrl-got">✓ Got It</div>
+  </div>
+
+  <div style="display:flex;gap:8px;margin-top:12px;width:360px">
+    <button class="btn-g" style="flex:1;font-size:11px">⏭ Skip</button>
+    <button class="btn-g" style="flex:1;font-size:11px">🔀 Shuffle</button>
+    <button class="btn-p" style="flex:1;font-size:11px">End Session</button>
+  </div>
+</div>
+
+<!-- RIGHT: DECKS + GENERATE -->
+<div style="width:300px">
+  <div class="gc">
+    <div class="plbl">Active Decks</div>
+    <div class="deck-item">
+      <div class="deck-dot" style="background:var(--red)"></div>
+      <div class="deck-info"><div class="deck-name">Consumer Behaviour</div><div class="deck-sub">24 cards · Due for review</div></div>
+      <span class="deck-badge" style="background:rgba(255,59,48,.1);color:#B71C1C">Due</span>
+    </div>
+    <div class="deck-item">
+      <div class="deck-dot" style="background:var(--orange, #FF9500)"></div>
+      <div class="deck-info"><div class="deck-name">Brand Management</div><div class="deck-sub">18 cards · Last studied 3 days ago</div></div>
+      <span class="deck-badge" style="background:rgba(255,149,0,.1);color:#C65200">Soon</span>
+    </div>
+    <div class="deck-item">
+      <div class="deck-dot" style="background:#9C27B0"></div>
+      <div class="deck-info"><div class="deck-name">Digital Marketing</div><div class="deck-sub">31 cards · Never reviewed</div></div>
+      <span class="deck-badge" style="background:rgba(156,39,176,.1);color:#6A1B9A">New</span>
+    </div>
+    <div class="deck-item">
+      <div class="deck-dot" style="background:var(--green)"></div>
+      <div class="deck-info"><div class="deck-name">Market Research</div><div class="deck-sub">16 cards · Up to date</div></div>
+      <span class="deck-badge" style="background:rgba(52,199,89,.1);color:#2E7D32">✓ OK</span>
+    </div>
+    <button class="btn-p" style="width:100%;margin-top:8px;font-size:11px">+ New Deck</button>
+  </div>
+
+  <div class="gc">
+    <div class="plbl">Generate from Notes</div>
+    <textarea placeholder="Paste your lecture notes here… AI will create flashcards automatically" style="width:100%;background:rgba(255,255,255,.75);border:1.5px solid var(--r2);border-radius:12px;padding:11px 13px;font-size:12px;font-family:'DM Sans',sans-serif;color:var(--text);outline:none;resize:none;height:100px;margin-bottom:8px"></textarea>
+    <div style="display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap">
+      <span style="background:rgba(233,30,140,.09);color:var(--r5);border-radius:18px;padding:4px 10px;font-size:10px;font-weight:600">Consumer Behaviour</span>
+      <span style="background:rgba(255,255,255,.75);border:1px solid var(--r2);border-radius:18px;padding:4px 10px;font-size:10px;color:var(--text-s);cursor:pointer">+ Subject</span>
+    </div>
+    <button class="btn-p" style="width:100%;font-size:11px">✦ Generate Flashcards</button>
+  </div>
+
+  <div class="gc">
+    <div class="plbl">Quiz via iMessage</div>
+    <div style="background:rgba(233,30,140,.06);border:1px solid rgba(233,30,140,.14);border-radius:13px;padding:12px;font-size:12px;color:var(--text-m);line-height:1.65">
+      Text your Mac <strong>"quiz me"</strong> from anywhere — AI sends questions to your iPhone one by one, you reply with answers, AI marks them. 💬
+    </div>
+  </div>
+</div>
+
+<script>
+function flipCard(){
+  document.getElementById('card').classList.toggle('flipped');
+}
+</script>
+</body>
+</html>

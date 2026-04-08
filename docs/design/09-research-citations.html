@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Miss M — Research & Citations</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=Playfair+Display:ital,wght@0,400;0,700&display=swap" rel="stylesheet">
+<style>
+:root{--r5:#E91E8C;--r6:#C2185B;--r2:#F8BBD9;--text:#1A0A10;--text-m:#5C3049;--text-s:#9A6B80;--text-xs:#C4A0B2;--glass-b:rgba(255,255,255,.82);--shadow:rgba(194,24,91,.13);--green:#34C759;--blue:#007AFF}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:linear-gradient(155deg,#FFF0F8,#FCE4EC 40%,#F8BBD9 70%,#FDE8F3);min-height:100vh;padding:28px;display:grid;grid-template-columns:1fr 300px;gap:20px;align-items:start;color:var(--text)}
+body::before{content:'';position:fixed;top:-150px;right:-150px;width:500px;height:500px;background:radial-gradient(circle,rgba(233,30,140,.11),transparent 70%);border-radius:50%;pointer-events:none}
+.gc{background:rgba(255,255,255,.65);border:1px solid var(--glass-b);border-radius:18px;padding:16px;box-shadow:0 2px 10px var(--shadow);margin-bottom:14px}
+.plbl{font-family:'Cormorant Garamond',serif;font-size:10px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:var(--r5);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.plbl::after{content:'';flex:1;height:1px;background:rgba(233,30,140,.14)}
+.btn-p{background:linear-gradient(135deg,var(--r5),var(--r6));color:white;border:none;border-radius:11px;padding:9px 16px;font-size:11px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;box-shadow:0 4px 12px rgba(233,30,140,.3);transition:all .2s}
+.btn-p:hover{transform:translateY(-1px)}
+.btn-g{background:rgba(255,255,255,.75);border:1.5px solid var(--r2);color:var(--text-m);border-radius:11px;padding:8px 14px;font-size:11px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+.btn-g:hover{background:white;color:var(--r5)}
+.search-bar{display:flex;gap:8px;margin-bottom:14px}
+.search-input{flex:1;background:rgba(255,255,255,.85);border:1.5px solid var(--r2);border-radius:14px;padding:11px 16px;font-size:13px;font-family:'DM Sans',sans-serif;color:var(--text);outline:none;transition:all .2s}
+.search-input:focus{border-color:var(--r5);box-shadow:0 0 0 3px rgba(233,30,140,.09)}
+.source-card{background:rgba(255,255,255,.72);border:1px solid var(--glass-b);border-radius:15px;padding:14px;margin-bottom:9px;cursor:pointer;transition:all .18s;position:relative}
+.source-card:hover{background:white;transform:translateX(2px);box-shadow:0 4px 16px var(--shadow)}
+.source-card.saved{border-color:rgba(52,199,89,.3);background:rgba(248,255,250,.85)}
+.sc-url{font-size:9px;color:var(--blue);font-weight:600;margin-bottom:3px;display:flex;align-items:center;gap:5px}
+.sc-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:5px;line-height:1.35}
+.sc-snip{font-size:11px;color:var(--text-s);line-height:1.55}
+.sc-footer{display:flex;align-items:center;gap:6px;margin-top:10px;flex-wrap:wrap}
+.sc-tag{font-size:9px;background:rgba(0,122,255,.09);color:var(--blue);border-radius:7px;padding:2px 8px;font-weight:500}
+.sc-save{margin-left:auto;background:linear-gradient(135deg,var(--r5),var(--r6));color:white;border:none;border-radius:8px;padding:5px 12px;font-size:10px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif}
+.sc-saved-badge{position:absolute;top:12px;right:12px;background:rgba(52,199,89,.12);color:#2E7D32;border-radius:8px;padding:3px 8px;font-size:9px;font-weight:600}
+.cite-item{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:rgba(255,255,255,.65);border:1px solid var(--glass-b);border-radius:12px;margin-bottom:7px;cursor:pointer;transition:all .15s}
+.cite-item:hover{background:white;transform:translateX(2px)}
+.cite-num{width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,var(--r5),var(--r6));color:white;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cite-t{font-size:11px;font-weight:500;color:var(--text);margin-bottom:2px}
+.cite-s{font-size:10px;color:var(--text-s)}
+.cite-fmt{font-size:9px;background:rgba(233,30,140,.1);color:var(--r5);border-radius:6px;padding:1px 7px;font-weight:500;margin-top:4px;display:inline-block}
+.ai-summary{background:rgba(233,30,140,.05);border:1px solid rgba(233,30,140,.14);border-radius:14px;padding:14px;font-size:12px;color:var(--text-m);line-height:1.7}
+</style>
+</head>
+<body>
+<div>
+  <div style="margin-bottom:20px">
+    <h1 style="font-family:'Playfair Display',serif;font-size:28px;font-style:italic;color:var(--text);margin-bottom:5px">Research <span style="color:var(--r5)">Assistant</span></h1>
+    <p style="font-size:12px;color:var(--text-s)">Live web search · AI summaries · PDF reading · APA & Harvard citations</p>
+  </div>
+
+  <div class="search-bar">
+    <input class="search-input" value="Nike STP segmentation strategy consumer behaviour">
+    <button class="btn-p">🔍 Search</button>
+    <button class="btn-g">📎 Upload PDF</button>
+    <button class="btn-g">📋 Paste Text</button>
+  </div>
+
+  <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center">
+    <span style="display:inline-flex;align-items:center;gap:4px;border-radius:18px;padding:5px 12px;font-size:10px;font-weight:600;background:rgba(0,122,255,.12);color:var(--blue);cursor:pointer">🌐 Web</span>
+    <span style="display:inline-flex;align-items:center;gap:4px;border-radius:18px;padding:5px 12px;font-size:10px;font-weight:600;background:rgba(233,30,140,.1);color:var(--r5);cursor:pointer">📄 PDFs</span>
+    <span style="display:inline-flex;align-items:center;gap:4px;border-radius:18px;padding:5px 12px;font-size:10px;font-weight:600;background:rgba(212,175,122,.2);color:#6D4C18;cursor:pointer">📚 Academic</span>
+    <span style="display:inline-flex;align-items:center;gap:4px;border-radius:18px;padding:5px 12px;font-size:10px;font-weight:600;background:rgba(52,199,89,.1);color:#2E7D32;cursor:pointer">🏫 University Library</span>
+    <span style="font-size:11px;color:var(--text-xs);margin-left:auto">5 sources · 1.8s</span>
+  </div>
+
+  <!-- AI Summary -->
+  <div class="gc">
+    <div class="plbl">AI Summary</div>
+    <div class="ai-summary">
+      ✦ Nike's success with the STP model centres on <strong>psychographic and behavioural segmentation</strong> rather than purely demographic splits. Their targeting strategy focuses on the <em>aspirational athlete</em> — consumers who identify with athletic achievement regardless of actual performance level. Positioning around "Just Do It" creates an emotional bridge between aspiration and brand identity, allowing Nike to command premium pricing across all segments.
+    </div>
+    <div style="display:flex;gap:8px;margin-top:10px">
+      <button class="btn-p" style="font-size:10px;padding:7px 14px">📋 Copy to Essay</button>
+      <button class="btn-g" style="font-size:10px">🔍 Go Deeper</button>
+      <button class="btn-g" style="font-size:10px">📎 Save Note</button>
+    </div>
+  </div>
+
+  <!-- Sources -->
+  <div class="source-card saved">
+    <div class="sc-saved-badge">✓ Saved</div>
+    <div class="sc-url">🟦 hbr.org · Harvard Business Review</div>
+    <div class="sc-title">How Nike Uses STP to Dominate Global Markets</div>
+    <div class="sc-snip">Nike's segmentation strategy targets athletes across age, geography and sport type. The brand positions itself around aspiration — speaking to the inner athlete in all consumers regardless of fitness level or demographic background.</div>
+    <div class="sc-footer">
+      <span class="sc-tag">STP</span><span class="sc-tag">Segmentation</span><span class="sc-tag">Positioning</span>
+      <button class="btn-g" style="margin-left:auto;font-size:10px;padding:5px 10px">+ Add Citation</button>
+    </div>
+  </div>
+
+  <div class="source-card">
+    <div class="sc-url">🟥 marketingweek.com · Marketing Week</div>
+    <div class="sc-title">Nike's Digital Transformation: Consumer Data as Competitive Advantage</div>
+    <div class="sc-snip">By leveraging first-party data from the Nike App, Nike builds hyper-personalised consumer profiles enabling micro-segmentation at scale across 190+ countries and 30+ product categories.</div>
+    <div class="sc-footer">
+      <span class="sc-tag">Digital</span><span class="sc-tag">Data</span><span class="sc-tag">Segmentation</span>
+      <button class="sc-save">+ Cite</button>
+    </div>
+  </div>
+
+  <div class="source-card">
+    <div class="sc-url">📚 Academic · Kotler & Keller (2016)</div>
+    <div class="sc-title">Segmentation, Targeting and Positioning: Marketing Management 15th Ed.</div>
+    <div class="sc-snip">The STP framework remains the foundational model in modern marketing strategy. Effective segmentation requires clear, measurable criteria including demographic, psychographic and behavioural dimensions to ensure targeting precision.</div>
+    <div class="sc-footer">
+      <span class="sc-tag">Academic</span><span class="sc-tag">STP Theory</span><span class="sc-tag">Textbook</span>
+      <button class="sc-save">+ Cite</button>
+    </div>
+  </div>
+
+  <div class="source-card">
+    <div class="sc-url">🎓 emerald.com · Journal of Marketing</div>
+    <div class="sc-title">Consumer Behaviour and Brand Positioning in the Sportswear Industry</div>
+    <div class="sc-snip">A longitudinal study examining how leading sportswear brands leverage consumer behaviour insights to refine positioning strategies across Gen Z and Millennial segments over a 10-year period.</div>
+    <div class="sc-footer">
+      <span class="sc-tag">Peer Reviewed</span><span class="sc-tag">Behaviour</span>
+      <button class="sc-save">+ Cite</button>
+    </div>
+  </div>
+</div>
+
+<!-- RIGHT PANEL: Citation Manager -->
+<div>
+  <div class="gc">
+    <div class="plbl">Citation Manager</div>
+    <div style="display:flex;gap:6px;margin-bottom:12px">
+      <button class="btn-p" style="font-size:10px;padding:7px 12px">APA ✓</button>
+      <button class="btn-g" style="font-size:10px;padding:7px 12px">Harvard</button>
+      <button class="btn-g" style="font-size:10px;padding:7px 12px">MLA</button>
+    </div>
+    <div class="cite-item">
+      <div class="cite-num">1</div>
+      <div><div class="cite-t">Kotler, P. & Keller, K. L. (2016)</div><div class="cite-s">Marketing Management, 15th ed. Pearson</div><div class="cite-fmt">APA · Used ×3</div></div>
+    </div>
+    <div class="cite-item">
+      <div class="cite-num">2</div>
+      <div><div class="cite-t">HBR Nike Case Study (2023)</div><div class="cite-s">Harvard Business Review Online</div><div class="cite-fmt">APA · Used ×1</div></div>
+    </div>
+    <div class="cite-item" style="opacity:.5">
+      <div class="cite-num" style="background:rgba(233,30,140,.15);color:var(--text-xs)">+</div>
+      <div><div class="cite-t">6 more citations needed</div><div class="cite-s">Target: 8 total for MKT302</div></div>
+    </div>
+    <button class="btn-p" style="width:100%;margin-top:8px;font-size:11px">📋 Generate Reference List</button>
+    <button class="btn-g" style="width:100%;margin-top:7px;font-size:11px">📥 Export to Word</button>
+  </div>
+
+  <div class="gc">
+    <div class="plbl">Saved Research</div>
+    <div style="display:flex;flex-direction:column;gap:7px">
+      <div style="display:flex;align-items:center;gap:9px;padding:9px 12px;background:rgba(255,255,255,.6);border:1px solid var(--glass-b);border-radius:11px;cursor:pointer;transition:all .15s" onmouseover="this.style.background='white'" onmouseout="this.style.background='rgba(255,255,255,.6)'">
+        <div style="font-size:16px">📄</div>
+        <div style="flex:1"><div style="font-size:11px;font-weight:500;color:var(--text)">Nike STP HBR Article</div><div style="font-size:10px;color:var(--text-s)">Saved today</div></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:9px;padding:9px 12px;background:rgba(255,255,255,.6);border:1px solid var(--glass-b);border-radius:11px;cursor:pointer;transition:all .15s" onmouseover="this.style.background='white'" onmouseout="this.style.background='rgba(255,255,255,.6)'">
+        <div style="font-size:16px">📕</div>
+        <div style="flex:1"><div style="font-size:11px;font-weight:500;color:var(--text)">Marketing Management Ch.7 PDF</div><div style="font-size:10px;color:var(--text-s)">Uploaded yesterday</div></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:9px;padding:9px 12px;background:rgba(255,255,255,.6);border:1px solid var(--glass-b);border-radius:11px;cursor:pointer;transition:all .15s" onmouseover="this.style.background='white'" onmouseout="this.style.background='rgba(255,255,255,.6)'">
+        <div style="font-size:16px">🌐</div>
+        <div style="flex:1"><div style="font-size:11px;font-weight:500;color:var(--text)">Consumer Behaviour Journal</div><div style="font-size:10px;color:var(--text-s)">3 days ago</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="gc">
+    <div class="plbl">PDF Reader</div>
+    <div style="background:rgba(255,255,255,.6);border:2px dashed rgba(233,30,140,.22);border-radius:14px;padding:20px;text-align:center;cursor:pointer;transition:all .18s" onmouseover="this.style.background='white'" onmouseout="this.style.background='rgba(255,255,255,.6)'">
+      <div style="font-size:28px;margin-bottom:8px">📄</div>
+      <div style="font-size:12px;font-weight:500;color:var(--text-m);margin-bottom:3px">Drop a PDF here</div>
+      <div style="font-size:10px;color:var(--text-s)">AI reads, summarises + generates citations automatically</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

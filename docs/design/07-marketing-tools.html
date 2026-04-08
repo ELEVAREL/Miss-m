@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Miss M — Marketing Tools</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=Playfair+Display:ital,wght@0,400;0,700&display=swap" rel="stylesheet">
+<style>
+:root{--r5:#E91E8C;--r6:#C2185B;--r7:#880E4F;--r2:#F8BBD9;--r3:#F48FB1;--text:#1A0A10;--text-m:#5C3049;--text-s:#9A6B80;--text-xs:#C4A0B2;--glass-b:rgba(255,255,255,.82);--shadow:rgba(194,24,91,.13);--green:#34C759;--blue:#007AFF;--gold:#D4AF7A}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:linear-gradient(155deg,#FFF0F8,#FCE4EC 40%,#F8BBD9 70%,#FDE8F3);min-height:100vh;padding:28px;color:var(--text)}
+body::before{content:'';position:fixed;top:-150px;right:-150px;width:500px;height:500px;background:radial-gradient(circle,rgba(233,30,140,.11),transparent 70%);border-radius:50%;pointer-events:none}
+h1{font-family:'Playfair Display',serif;font-size:28px;font-style:italic;color:var(--text);margin-bottom:6px}
+h1 span{color:var(--r5)}
+.sub{font-size:12px;color:var(--text-s);margin-bottom:20px}
+.tabs{display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap}
+.tab{padding:8px 16px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;border:1.5px solid var(--r2);background:rgba(255,255,255,.7);color:var(--text-m)}
+.tab.on{background:linear-gradient(135deg,var(--r5),var(--r6));color:white;border-color:var(--r5);box-shadow:0 4px 12px rgba(233,30,140,.3)}
+.panel{display:none}.panel.on{display:block}
+.gc{background:rgba(255,255,255,.65);border:1px solid var(--glass-b);border-radius:18px;padding:16px;box-shadow:0 2px 10px var(--shadow);margin-bottom:14px}
+.plbl{font-family:'Cormorant Garamond',serif;font-size:10px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:var(--r5);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.plbl::after{content:'';flex:1;height:1px;background:rgba(233,30,140,.14)}
+.btn-p{background:linear-gradient(135deg,var(--r5),var(--r6));color:white;border:none;border-radius:11px;padding:9px 16px;font-size:11px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;box-shadow:0 4px 12px rgba(233,30,140,.3);transition:all .2s}
+.btn-p:hover{transform:translateY(-1px)}
+.btn-g{background:rgba(255,255,255,.75);border:1.5px solid var(--r2);color:var(--text-m);border-radius:11px;padding:8px 14px;font-size:11px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+.btn-g:hover{background:white;color:var(--r5)}
+
+/* SWOT */
+.swot{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.sq{border-radius:16px;padding:14px}
+.sql{font-size:9px;letter-spacing:2px;text-transform:uppercase;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.sqi{font-size:11px;color:var(--text-m);padding:5px 0;border-bottom:1px solid rgba(0,0,0,.05);line-height:1.4}
+.sqi:last-child{border-bottom:none}
+.sqi::before{content:"• ";color:var(--r4)}
+.add-item{width:100%;background:rgba(255,255,255,.5);border:1.5px dashed rgba(233,30,140,.25);border-radius:10px;padding:7px;font-size:11px;color:var(--text-xs);cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:6px;transition:all .18s}
+.add-item:hover{background:rgba(255,255,255,.85);border-color:var(--r3);color:var(--r5)}
+
+/* STP */
+.stp-step{background:rgba(255,255,255,.7);border:1px solid var(--glass-b);border-radius:16px;padding:14px;margin-bottom:10px;cursor:pointer;transition:all .2s}
+.stp-step:hover{background:white;transform:translateX(3px)}
+.stp-step.on{border-color:rgba(233,30,140,.3);background:rgba(233,30,140,.04)}
+.stp-hdr{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.stp-num{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--r5),var(--r6));color:white;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.stp-title{font-size:14px;font-weight:600;color:var(--text)}
+.stp-sub{font-size:11px;color:var(--text-s);line-height:1.5}
+.stp-tags{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.stag{background:rgba(233,30,140,.09);color:var(--r5);border-radius:18px;padding:4px 10px;font-size:10px;font-weight:600}
+
+/* PERSONA */
+.persona-card{background:linear-gradient(145deg,rgba(233,30,140,.06),rgba(194,24,91,.03));border:1px solid rgba(233,30,140,.15);border-radius:18px;padding:18px}
+.persona-hdr{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+.persona-av{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--r5),var(--r6));display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:0 6px 20px rgba(233,30,140,.25)}
+.persona-name{font-family:'Playfair Display',serif;font-size:18px;font-style:italic;color:var(--text)}
+.persona-role{font-size:11px;color:var(--text-s)}
+.persona-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.pg-item{background:rgba(255,255,255,.7);border-radius:11px;padding:10px}
+.pg-label{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-xs);font-weight:600;margin-bottom:4px}
+.pg-val{font-size:12px;color:var(--text-m);line-height:1.4}
+.motivation-bar{margin-top:8px}
+.mb-label{font-size:10px;color:var(--text-s);margin-bottom:4px;display:flex;justify-content:space-between}
+.mb-track{height:5px;background:rgba(233,30,140,.1);border-radius:4px}
+.mb-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--r5),var(--r3))}
+
+/* CAMPAIGN */
+.campaign-brief{background:rgba(255,255,255,.7);border:1px solid var(--glass-b);border-radius:14px;padding:14px;margin-bottom:10px}
+.brief-field{margin-bottom:10px}
+.bf-label{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-s);font-weight:600;margin-bottom:4px}
+.bf-input{width:100%;background:rgba(255,255,255,.85);border:1.5px solid var(--r2);border-radius:10px;padding:9px 12px;font-size:12px;font-family:'DM Sans',sans-serif;color:var(--text);outline:none}
+.bf-input:focus{border-color:var(--r5)}
+.idea-card{background:linear-gradient(135deg,rgba(233,30,140,.06),rgba(212,175,122,.06));border:1px solid rgba(233,30,140,.14);border-radius:14px;padding:14px;margin-bottom:8px}
+.idea-num{width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,var(--r5),var(--r6));color:white;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;float:left;margin-right:10px;margin-top:2px}
+.idea-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px}
+.idea-desc{font-size:11px;color:var(--text-s);line-height:1.55}
+.idea-tags{display:flex;gap:5px;margin-top:8px;flex-wrap:wrap;clear:both}
+</style>
+</head>
+<body>
+<h1>Marketing <span>Tools</span></h1>
+<div class="sub">SWOT · STP · Consumer Persona · Campaign Generator · PESTLE</div>
+
+<div class="tabs">
+  <div class="tab on" onclick="switchTab(this,'swot')">📊 SWOT</div>
+  <div class="tab" onclick="switchTab(this,'stp')">🎯 STP Model</div>
+  <div class="tab" onclick="switchTab(this,'persona')">👤 Persona</div>
+  <div class="tab" onclick="switchTab(this,'campaign')">💡 Campaign</div>
+  <div class="tab" onclick="switchTab(this,'pestle')">🌍 PESTLE</div>
+</div>
+
+<!-- SWOT -->
+<div id="panel-swot" class="panel on">
+  <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+    <button class="btn-p">✦ AI Generate SWOT</button>
+    <button class="btn-g">📋 Copy as Text</button>
+    <button class="btn-g">📥 Export PDF</button>
+    <input placeholder="Company or brand name…" style="flex:1;min-width:180px;background:rgba(255,255,255,.8);border:1.5px solid var(--r2);border-radius:11px;padding:9px 13px;font-size:12px;font-family:'DM Sans',sans-serif;outline:none">
+  </div>
+  <div class="swot">
+    <div class="sq" style="background:rgba(52,199,89,.06);border:1px solid rgba(52,199,89,.2)">
+      <div class="sql" style="color:#2E7D32">🟢 Strengths</div>
+      <div class="sqi">Global brand recognition — #1 sportswear</div>
+      <div class="sqi">Strong Nike App ecosystem (200M+ users)</div>
+      <div class="sqi">Athlete endorsement strategy (Jordan, James)</div>
+      <div class="sqi">D2C growth — direct relationship with consumers</div>
+      <button class="add-item">+ Add strength</button>
+    </div>
+    <div class="sq" style="background:rgba(255,59,48,.05);border:1px solid rgba(255,59,48,.18)">
+      <div class="sql" style="color:#B71C1C">🔴 Weaknesses</div>
+      <div class="sqi">Premium pricing excludes lower-income segments</div>
+      <div class="sqi">Over-reliance on US market revenue (43%)</div>
+      <div class="sqi">Manufacturing labour controversy history</div>
+      <button class="add-item">+ Add weakness</button>
+    </div>
+    <div class="sq" style="background:rgba(0,122,255,.05);border:1px solid rgba(0,122,255,.18)">
+      <div class="sql" style="color:#1565C0">🔵 Opportunities</div>
+      <div class="sqi">Growing global fitness culture post-pandemic</div>
+      <div class="sqi">Metaverse & digital collectibles (NFTs)</div>
+      <div class="sqi">Sustainability product lines demand rising</div>
+      <div class="sqi">Emerging South-East Asian markets</div>
+      <button class="add-item">+ Add opportunity</button>
+    </div>
+    <div class="sq" style="background:rgba(255,149,0,.05);border:1px solid rgba(255,149,0,.18)">
+      <div class="sql" style="color:#C65200">🟠 Threats</div>
+      <div class="sqi">Adidas & Under Armour competitive pricing</div>
+      <div class="sqi">Supply chain disruption risk (Asia factories)</div>
+      <div class="sqi">Social media boycotts affecting brand image</div>
+      <button class="add-item">+ Add threat</button>
+    </div>
+  </div>
+</div>
+
+<!-- STP -->
+<div id="panel-stp" class="panel">
+  <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+    <button class="btn-p">✦ AI Build Full STP</button>
+    <button class="btn-g">📖 Theory Guide</button>
+  </div>
+  <div class="stp-step on">
+    <div class="stp-hdr"><div class="stp-num">S</div><div><div class="stp-title">Segmentation</div></div></div>
+    <div class="stp-sub">Divide the total market into distinct groups of buyers with different needs, characteristics or behaviours.</div>
+    <div class="stp-tags"><span class="stag">Demographic</span><span class="stag">Psychographic</span><span class="stag">Behavioural</span><span class="stag">Geographic</span></div>
+    <div style="margin-top:12px;background:rgba(255,255,255,.7);border-radius:12px;padding:11px">
+      <div style="font-size:10px;color:var(--text-s);margin-bottom:6px;font-weight:500">Nike's Segmentation</div>
+      <div style="font-size:11px;color:var(--text-m);line-height:1.6">Age 16–45 · Athletes + aspiring athletes · Urban lifestyle · Performance-focused · All genders · Middle to high income</div>
+    </div>
+  </div>
+  <div class="stp-step">
+    <div class="stp-hdr"><div class="stp-num">T</div><div><div class="stp-title">Targeting</div></div></div>
+    <div class="stp-sub">Evaluate each market segment and select the most attractive one(s) to enter based on size, growth, and fit.</div>
+    <div class="stp-tags"><span class="stag">Undifferentiated</span><span class="stag">Differentiated</span><span class="stag">Concentrated</span><span class="stag">Micromarketing</span></div>
+  </div>
+  <div class="stp-step">
+    <div class="stp-hdr"><div class="stp-num">P</div><div><div class="stp-title">Positioning</div></div></div>
+    <div class="stp-sub">Create a distinct place in the minds of your target consumers. Craft a clear brand promise that differentiates you.</div>
+    <div class="stp-tags"><span class="stag">Perceptual Map</span><span class="stag">USP</span><span class="stag">Value Proposition</span></div>
+  </div>
+</div>
+
+<!-- PERSONA -->
+<div id="panel-persona" class="panel">
+  <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+    <button class="btn-p">✦ Generate New Persona</button>
+    <button class="btn-g">📥 Export</button>
+  </div>
+  <div class="persona-card">
+    <div class="persona-hdr">
+      <div class="persona-av">🧑</div>
+      <div><div class="persona-name">Urban Athleisure Alex</div><div class="persona-role">Primary Target Segment · Nike</div></div>
+    </div>
+    <div class="persona-grid">
+      <div class="pg-item"><div class="pg-label">Age Range</div><div class="pg-val">22–34 years old</div></div>
+      <div class="pg-item"><div class="pg-label">Occupation</div><div class="pg-val">Young professional</div></div>
+      <div class="pg-item"><div class="pg-label">Income</div><div class="pg-val">$60,000–$90,000 HHI</div></div>
+      <div class="pg-item"><div class="pg-label">Location</div><div class="pg-val">Urban city centres</div></div>
+      <div class="pg-item"><div class="pg-label">Buying Behaviour</div><div class="pg-val">Mobile-first, brand loyal, status-driven</div></div>
+      <div class="pg-item"><div class="pg-label">Values</div><div class="pg-val">Fitness, authenticity, self-improvement</div></div>
+    </div>
+    <div style="margin-top:12px">
+      <div class="motivation-bar"><div class="mb-label"><span>Brand Status</span><span>85%</span></div><div class="mb-track"><div class="mb-fill" style="width:85%"></div></div></div>
+      <div class="motivation-bar"><div class="mb-label"><span>Performance</span><span>70%</span></div><div class="mb-track"><div class="mb-fill" style="width:70%"></div></div></div>
+      <div class="motivation-bar"><div class="mb-label"><span>Sustainability</span><span>45%</span></div><div class="mb-track"><div class="mb-fill" style="width:45%;background:linear-gradient(90deg,var(--gold),#FFCC80)"></div></div></div>
+      <div class="motivation-bar"><div class="mb-label"><span>Price Sensitivity</span><span>30%</span></div><div class="mb-track"><div class="mb-fill" style="width:30%;background:linear-gradient(90deg,#007AFF,#64B5F6)"></div></div></div>
+    </div>
+    <div style="margin-top:12px;background:rgba(255,255,255,.65);border-radius:12px;padding:11px">
+      <div style="font-size:9px;color:var(--text-s);font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-bottom:5px">Pain Points</div>
+      <div style="font-size:11px;color:var(--text-m);line-height:1.6">Wants premium quality but resents feeling like just a consumer · Seeks community + belonging · Frustrated by inconsistent sizing across sport categories</div>
+    </div>
+  </div>
+</div>
+
+<!-- CAMPAIGN -->
+<div id="panel-campaign" class="panel">
+  <div class="campaign-brief">
+    <div class="brief-field"><div class="bf-label">Target Audience</div><input class="bf-input" value="Gen Z, 18-24, fitness-focused, social media native"></div>
+    <div class="brief-field"><div class="bf-label">Campaign Goal</div><input class="bf-input" value="Increase brand awareness + drive Nike App downloads"></div>
+    <div class="brief-field"><div class="bf-label">Key Message</div><input class="bf-input" value="Authentic athletic achievement for everyone"></div>
+    <div class="brief-field" style="margin-bottom:0"><div class="bf-label">Channels</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px">
+        <span style="background:rgba(233,30,140,.1);color:var(--r5);border-radius:18px;padding:4px 10px;font-size:10px;font-weight:600;cursor:pointer">Instagram ✓</span>
+        <span style="background:rgba(0,0,0,.07);color:var(--text-m);border-radius:18px;padding:4px 10px;font-size:10px;font-weight:600;cursor:pointer">TikTok ✓</span>
+        <span style="background:rgba(0,122,255,.09);color:var(--blue);border-radius:18px;padding:4px 10px;font-size:10px;font-weight:600;cursor:pointer">YouTube ✓</span>
+        <span style="background:rgba(255,255,255,.7);color:var(--text-s);border-radius:18px;padding:4px 10px;font-size:10px;font-weight:600;cursor:pointer;border:1px solid var(--r2)">+ Add</span>
+      </div>
+    </div>
+  </div>
+  <button class="btn-p" style="margin-bottom:14px;width:100%">✦ Generate Campaign Ideas</button>
+  <div class="idea-card">
+    <div class="idea-num">1</div>
+    <div class="idea-title">"Your First Mile" UGC Challenge</div>
+    <div class="idea-desc">Invite Gen Z users to share their first run, workout or athletic achievement using the Nike App. Community-driven content that celebrates beginners, not just elite athletes. Hashtag: #YourFirstMile</div>
+    <div class="idea-tags"><span style="background:rgba(52,199,89,.1);color:#2E7D32;border-radius:18px;padding:3px 9px;font-size:9px;font-weight:600">UGC</span><span style="background:rgba(0,0,0,.07);color:var(--text-m);border-radius:18px;padding:3px 9px;font-size:9px;font-weight:600">TikTok</span><span style="background:rgba(233,30,140,.1);color:var(--r5);border-radius:18px;padding:3px 9px;font-size:9px;font-weight:600">Instagram</span></div>
+  </div>
+  <div class="idea-card">
+    <div class="idea-num">2</div>
+    <div class="idea-title">AI Training Partner Integration</div>
+    <div class="idea-desc">Position the Nike App as a personalised AI coach. Campaign focuses on how the app learns your workout style. "Nike knows you" — hyper-personalised push to app downloads.</div>
+    <div class="idea-tags"><span style="background:rgba(0,122,255,.09);color:var(--blue);border-radius:18px;padding:3px 9px;font-size:9px;font-weight:600">App</span><span style="background:rgba(212,175,122,.2);color:#6D4C18;border-radius:18px;padding:3px 9px;font-size:9px;font-weight:600">AI</span></div>
+  </div>
+</div>
+
+<!-- PESTLE -->
+<div id="panel-pestle" class="panel">
+  <button class="btn-p" style="margin-bottom:14px">✦ AI Generate PESTLE</button>
+  <div style="display:flex;flex-direction:column;gap:8px">
+    <div class="gc" style="margin-bottom:0"><div style="display:flex;align-items:center;gap:10px"><div style="width:32px;height:32px;border-radius:10px;background:rgba(233,30,140,.1);display:flex;align-items:center;justify-content:center;font-size:16px">🏛</div><div><div style="font-size:13px;font-weight:600;color:var(--text)">Political</div><div style="font-size:11px;color:var(--text-s)">Trade policies, labour regulations, government stability</div></div></div></div>
+    <div class="gc" style="margin-bottom:0"><div style="display:flex;align-items:center;gap:10px"><div style="width:32px;height:32px;border-radius:10px;background:rgba(52,199,89,.1);display:flex;align-items:center;justify-content:center;font-size:16px">💰</div><div><div style="font-size:13px;font-weight:600;color:var(--text)">Economic</div><div style="font-size:11px;color:var(--text-s)">Inflation, consumer spending power, exchange rates</div></div></div></div>
+    <div class="gc" style="margin-bottom:0"><div style="display:flex;align-items:center;gap:10px"><div style="width:32px;height:32px;border-radius:10px;background:rgba(156,39,176,.1);display:flex;align-items:center;justify-content:center;font-size:16px">👥</div><div><div style="font-size:13px;font-weight:600;color:var(--text)">Social</div><div style="font-size:11px;color:var(--text-s)">Demographics, health consciousness, cultural trends</div></div></div></div>
+    <div class="gc" style="margin-bottom:0"><div style="display:flex;align-items:center;gap:10px"><div style="width:32px;height:32px;border-radius:10px;background:rgba(0,122,255,.1);display:flex;align-items:center;justify-content:center;font-size:16px">💻</div><div><div style="font-size:13px;font-weight:600;color:var(--text)">Technological</div><div style="font-size:11px;color:var(--text-s)">AI, wearables, e-commerce, social platforms</div></div></div></div>
+    <div class="gc" style="margin-bottom:0"><div style="display:flex;align-items:center;gap:10px"><div style="width:32px;height:32px;border-radius:10px;background:rgba(76,175,80,.1);display:flex;align-items:center;justify-content:center;font-size:16px">🌱</div><div><div style="font-size:13px;font-weight:600;color:var(--text)">Environmental</div><div style="font-size:11px;color:var(--text-s)">Sustainability pressure, carbon footprint, ESG</div></div></div></div>
+    <div class="gc" style="margin-bottom:0"><div style="display:flex;align-items:center;gap:10px"><div style="width:32px;height:32px;border-radius:10px;background:rgba(255,149,0,.1);display:flex;align-items:center;justify-content:center;font-size:16px">⚖️</div><div><div style="font-size:13px;font-weight:600;color:var(--text)">Legal</div><div style="font-size:11px;color:var(--text-s)">IP protection, consumer rights, employment law</div></div></div></div>
+  </div>
+</div>
+
+<script>
+function switchTab(el, id) {
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+  el.classList.add('on');
+  document.getElementById('panel-'+id).classList.add('on');
+}
+</script>
+</body>
+</html>

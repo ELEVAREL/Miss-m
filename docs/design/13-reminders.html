@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Miss M — Reminders</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=Playfair+Display:ital,wght@0,400;0,700&display=swap" rel="stylesheet">
+<style>
+:root{--r5:#E91E8C;--r6:#C2185B;--r2:#F8BBD9;--r3:#F48FB1;--text:#1A0A10;--text-m:#5C3049;--text-s:#9A6B80;--text-xs:#C4A0B2;--glass-b:rgba(255,255,255,.82);--shadow:rgba(194,24,91,.13);--green:#34C759;--blue:#007AFF;--orange:#FF9500;--red:#FF3B30}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:linear-gradient(155deg,#FFF0F8,#FCE4EC 40%,#F8BBD9 70%,#FDE8F3);min-height:100vh;padding:28px;display:grid;grid-template-columns:240px 1fr;gap:20px;color:var(--text)}
+body::before{content:'';position:fixed;top:-150px;right:-150px;width:500px;height:500px;background:radial-gradient(circle,rgba(233,30,140,.11),transparent 70%);border-radius:50%;pointer-events:none}
+.gc{background:rgba(255,255,255,.65);border:1px solid var(--glass-b);border-radius:18px;padding:14px;box-shadow:0 2px 10px var(--shadow);margin-bottom:12px}
+.plbl{font-family:'Cormorant Garamond',serif;font-size:10px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:var(--r5);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.plbl::after{content:'';flex:1;height:1px;background:rgba(233,30,140,.14)}
+.btn-p{background:linear-gradient(135deg,var(--r5),var(--r6));color:white;border:none;border-radius:11px;padding:9px 16px;font-size:11px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;box-shadow:0 4px 12px rgba(233,30,140,.3);transition:all .2s}
+.btn-g{background:rgba(255,255,255,.75);border:1.5px solid var(--r2);color:var(--text-m);border-radius:11px;padding:8px 14px;font-size:11px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+.btn-g:hover{background:white;color:var(--r5)}
+
+/* LISTS */
+.list-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:13px;cursor:pointer;transition:all .15s;margin-bottom:4px}
+.list-item:hover{background:rgba(255,255,255,.8)}
+.list-item.active{background:rgba(233,30,140,.08);border:1px solid rgba(233,30,140,.16)}
+.li-ic{width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.li-name{flex:1;font-size:12px;font-weight:500;color:var(--text)}
+.li-count{font-size:10px;font-weight:700;background:rgba(233,30,140,.12);color:var(--r5);border-radius:10px;padding:1px 8px}
+
+/* REMINDERS */
+.reminder-item{display:flex;align-items:flex-start;gap:11px;padding:12px 14px;background:rgba(255,255,255,.65);border:1px solid var(--glass-b);border-radius:14px;margin-bottom:7px;cursor:pointer;transition:all .18s;position:relative}
+.reminder-item:hover{background:white;transform:translateX(2px)}
+.reminder-item.done{opacity:.6}
+.ri-chk{width:22px;height:22px;border-radius:50%;border:2px solid var(--r3);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;font-size:11px;transition:all .14s}
+.reminder-item.done .ri-chk{background:var(--green);border-color:var(--green);color:white}
+.reminder-item.done .ri-title{text-decoration:line-through;color:var(--text-xs)}
+.ri-body{flex:1}
+.ri-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px}
+.ri-sub{font-size:10px;color:var(--text-s)}
+.ri-due{font-size:10px;font-weight:600;border-radius:8px;padding:3px 9px;white-space:nowrap;align-self:flex-start}
+.ri-flag{position:absolute;right:12px;top:12px;font-size:14px}
+.section-header{font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--text-xs);padding:12px 14px 6px;display:flex;align-items:center;gap:8px}
+.section-header::after{content:'';flex:1;height:1px;background:rgba(233,30,140,.1)}
+
+/* ADD REMINDER */
+.add-panel{background:white;border:1px solid rgba(233,30,140,.12);border-radius:18px;padding:16px;box-shadow:0 4px 18px var(--shadow)}
+.add-field{margin-bottom:12px}
+.af-label{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-s);font-weight:600;margin-bottom:5px}
+.af-input{width:100%;background:rgba(255,255,255,.85);border:1.5px solid var(--r2);border-radius:11px;padding:9px 13px;font-size:12px;font-family:'DM Sans',sans-serif;color:var(--text);outline:none;transition:all .2s}
+.af-input:focus{border-color:var(--r5);box-shadow:0 0 0 3px rgba(233,30,140,.08)}
+.priority-row{display:flex;gap:7px}
+.prio-btn{flex:1;border-radius:10px;padding:7px;font-size:10px;font-weight:600;cursor:pointer;border:1.5px solid;text-align:center;transition:all .15s;font-family:'DM Sans',sans-serif}
+</style>
+</head>
+<body>
+
+<!-- LEFT: SMART LISTS -->
+<div>
+  <div style="margin-bottom:16px">
+    <h1 style="font-family:'Playfair Display',serif;font-size:22px;font-style:italic;color:var(--text)">Remind<span style="color:var(--r5)">ers</span></h1>
+  </div>
+
+  <div style="margin-bottom:14px">
+    <div class="list-item active"><div class="li-ic" style="background:rgba(233,30,140,.1)">📋</div><div class="li-name">All</div><div class="li-count">8</div></div>
+    <div class="list-item"><div class="li-ic" style="background:rgba(255,59,48,.1)">🔴</div><div class="li-name">Today</div><div class="li-count">3</div></div>
+    <div class="list-item"><div class="li-ic" style="background:rgba(255,149,0,.1)">📅</div><div class="li-name">Scheduled</div><div class="li-count">5</div></div>
+    <div class="list-item"><div class="li-ic" style="background:rgba(255,220,0,.2)">⭐️</div><div class="li-name">Flagged</div><div class="li-count">2</div></div>
+  </div>
+
+  <div class="plbl" style="padding:0 4px">My Lists</div>
+  <div class="list-item"><div class="li-ic" style="background:rgba(233,30,140,.1)">🎓</div><div class="li-name">School</div><div class="li-count">4</div></div>
+  <div class="list-item"><div class="li-ic" style="background:rgba(52,199,89,.1)">🏠</div><div class="li-name">Home</div><div class="li-count">3</div></div>
+  <div class="list-item"><div class="li-ic" style="background:rgba(0,122,255,.1)">💧</div><div class="li-name">Health</div><div class="li-count">1</div></div>
+  <div class="list-item"><div class="li-ic" style="background:rgba(212,175,122,.2)">💰</div><div class="li-name">Finance</div><div class="li-count">2</div></div>
+  <div style="padding:10px 4px 0"><button class="btn-g" style="width:100%;font-size:11px">+ Add List</button></div>
+</div>
+
+<!-- RIGHT: REMINDERS -->
+<div>
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px;flex-wrap:wrap">
+    <div style="flex:1">
+      <h1 style="font-family:'Playfair Display',serif;font-size:26px;font-style:italic;color:var(--text)">All <span style="color:var(--r5)">Reminders</span></h1>
+    </div>
+    <button class="btn-p">+ New Reminder</button>
+    <button class="btn-g">✦ AI Prioritise</button>
+    <button class="btn-g">📅 Sort by Date</button>
+  </div>
+
+  <!-- TODAY -->
+  <div class="section-header">Today</div>
+  <div class="reminder-item" onclick="this.classList.toggle('done')">
+    <div class="ri-chk"></div>
+    <div class="ri-body">
+      <div class="ri-title">Finish essay introduction</div>
+      <div class="ri-sub">Consumer Behaviour · MKT302</div>
+    </div>
+    <div class="ri-due" style="background:rgba(255,59,48,.1);color:#B71C1C">Now</div>
+    <div class="ri-flag">🚩</div>
+  </div>
+  <div class="reminder-item" onclick="this.classList.toggle('done')">
+    <div class="ri-chk"></div>
+    <div class="ri-body">
+      <div class="ri-title">Call mum back</div>
+      <div class="ri-sub">Personal · missed call</div>
+    </div>
+    <div class="ri-due" style="background:rgba(255,149,0,.1);color:#C65200">6:00 PM</div>
+  </div>
+  <div class="reminder-item done" onclick="this.classList.toggle('done')">
+    <div class="ri-chk">✓</div>
+    <div class="ri-body">
+      <div class="ri-title">Attend Marketing lecture</div>
+      <div class="ri-sub">MKT302 · Room 204</div>
+    </div>
+    <div class="ri-due" style="background:rgba(52,199,89,.1);color:#2E7D32">Done</div>
+  </div>
+
+  <!-- THIS WEEK -->
+  <div class="section-header">This Week</div>
+  <div class="reminder-item" onclick="this.classList.toggle('done')">
+    <div class="ri-chk"></div>
+    <div class="ri-body">
+      <div class="ri-title">Submit Consumer Behaviour essay</div>
+      <div class="ri-sub">MKT302 · Turnitin upload</div>
+    </div>
+    <div class="ri-due" style="background:rgba(255,59,48,.1);color:#B71C1C">Fri 5pm</div>
+    <div class="ri-flag">🚩</div>
+  </div>
+  <div class="reminder-item" onclick="this.classList.toggle('done')">
+    <div class="ri-chk"></div>
+    <div class="ri-body">
+      <div class="ri-title">Grocery shopping</div>
+      <div class="ri-sub">Home · See grocery list</div>
+    </div>
+    <div class="ri-due" style="background:rgba(233,30,140,.1);color:var(--r5)">Thu</div>
+  </div>
+  <div class="reminder-item" onclick="this.classList.toggle('done')">
+    <div class="ri-chk"></div>
+    <div class="ri-body">
+      <div class="ri-title">Pay phone bill</div>
+      <div class="ri-sub">Finance · Auto-debit check</div>
+    </div>
+    <div class="ri-due" style="background:rgba(233,30,140,.1);color:var(--r5)">Apr 15</div>
+  </div>
+
+  <!-- UPCOMING -->
+  <div class="section-header">Upcoming</div>
+  <div class="reminder-item" onclick="this.classList.toggle('done')">
+    <div class="ri-chk"></div>
+    <div class="ri-body">
+      <div class="ri-title">Brand Strategy Presentation</div>
+      <div class="ri-sub">MKT210 · 15 slides due</div>
+    </div>
+    <div class="ri-due" style="background:rgba(156,39,176,.1);color:#6A1B9A">Mon Apr 10</div>
+  </div>
+  <div class="reminder-item" onclick="this.classList.toggle('done')">
+    <div class="ri-chk"></div>
+    <div class="ri-body">
+      <div class="ri-title">Book dentist appointment</div>
+      <div class="ri-sub">Health · overdue 2 months</div>
+    </div>
+    <div class="ri-due" style="background:rgba(255,149,0,.1);color:#C65200">This week</div>
+  </div>
+
+  <!-- ADD PANEL -->
+  <div class="add-panel" style="margin-top:16px">
+    <div class="plbl">Quick Add</div>
+    <div class="add-field">
+      <div class="af-label">Reminder</div>
+      <input class="af-input" placeholder="e.g. Submit essay Friday 5pm, Call mum tonight…">
+    </div>
+    <div style="display:flex;gap:10px;margin-bottom:12px">
+      <div class="add-field" style="flex:1;margin-bottom:0">
+        <div class="af-label">Date & Time</div>
+        <input class="af-input" type="datetime-local">
+      </div>
+      <div class="add-field" style="flex:1;margin-bottom:0">
+        <div class="af-label">List</div>
+        <select class="af-input"><option>School</option><option>Home</option><option>Health</option><option>Finance</option></select>
+      </div>
+    </div>
+    <div class="add-field" style="margin-bottom:12px">
+      <div class="af-label">Priority</div>
+      <div class="priority-row">
+        <div class="prio-btn" style="border-color:rgba(255,59,48,.3);color:#B71C1C;background:rgba(255,59,48,.06)">🔴 High</div>
+        <div class="prio-btn" style="border-color:rgba(255,149,0,.3);color:#C65200;background:rgba(255,149,0,.06)">🟡 Medium</div>
+        <div class="prio-btn on" style="border-color:rgba(52,199,89,.3);color:#2E7D32;background:rgba(52,199,89,.08)">🟢 Low ✓</div>
+        <div class="prio-btn" style="border-color:var(--r2);color:var(--text-s);background:rgba(255,255,255,.7)">None</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn-p" style="flex:1">+ Add Reminder</button>
+      <button class="btn-g">✦ AI Parse</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
