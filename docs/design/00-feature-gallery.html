@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Miss M — Complete Feature Gallery</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --r5:#E91E8C;--r6:#C2185B;--r7:#880E4F;--r2:#F8BBD9;--r3:#F48FB1;
+  --text:#1A0A10;--text-m:#5C3049;--text-s:#9A6B80;--text-xs:#C4A0B2;
+  --glass-b:rgba(255,255,255,.82);--shadow:rgba(194,24,91,.13);
+  --green:#34C759;--blue:#007AFF;--gold:#D4AF7A;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:linear-gradient(155deg,#FFF0F8,#FCE4EC 40%,#F8BBD9 70%,#FDE8F3);min-height:100vh;color:var(--text)}
+body::before{content:'';position:fixed;top:-200px;right:-200px;width:700px;height:700px;background:radial-gradient(circle,rgba(233,30,140,.1),transparent 70%);border-radius:50%;pointer-events:none}
+
+/* HERO */
+.hero{background:linear-gradient(145deg,var(--r5),var(--r6) 55%,var(--r7));padding:52px 40px 44px;position:relative;overflow:hidden;text-align:center}
+.hero::before{content:'';position:absolute;top:-80px;right:-80px;width:320px;height:320px;background:rgba(255,255,255,.08);border-radius:50%}
+.hero::after{content:'';position:absolute;bottom:-60px;left:80px;width:200px;height:200px;background:rgba(255,255,255,.06);border-radius:50%}
+.hero-crown{font-size:52px;display:block;margin-bottom:12px;position:relative;z-index:1}
+.hero-title{font-family:'Playfair Display',serif;font-size:44px;color:white;font-style:italic;line-height:1;margin-bottom:10px;position:relative;z-index:1}
+.hero-sub{font-size:14px;color:rgba(255,255,255,.8);font-weight:300;line-height:1.6;max-width:600px;margin:0 auto;position:relative;z-index:1}
+.hero-stats{display:flex;gap:32px;justify-content:center;margin-top:28px;flex-wrap:wrap;position:relative;z-index:1}
+.hs{text-align:center}
+.hs-n{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:600;color:white}
+.hs-l{font-size:10px;color:rgba(255,255,255,.65);letter-spacing:2px;text-transform:uppercase;margin-top:2px}
+.hero-tags{display:flex;gap:8px;justify-content:center;margin-top:20px;flex-wrap:wrap;position:relative;z-index:1}
+.htag{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.28);border-radius:20px;padding:6px 14px;font-size:11px;font-weight:600;color:white}
+
+/* CONTENT */
+.content{padding:36px 40px 80px;max-width:1400px;margin:0 auto}
+
+/* CATEGORY HEADER */
+.cat-header{display:flex;align-items:center;gap:14px;margin:40px 0 20px}
+.cat-header:first-child{margin-top:0}
+.cat-icon{font-size:22px}
+.cat-title{font-family:'Cormorant Garamond',serif;font-size:13px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--r5)}
+.cat-line{flex:1;height:1px;background:linear-gradient(90deg,rgba(233,30,140,.2),transparent)}
+.cat-count{font-size:11px;color:var(--text-xs);font-weight:500}
+
+/* FEATURE GRID */
+.feature-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-bottom:8px}
+
+/* FEATURE CARD */
+.fcard{background:rgba(255,255,255,.65);border:1px solid var(--glass-b);border-radius:20px;overflow:hidden;box-shadow:0 4px 14px var(--shadow);transition:all .22s;cursor:pointer;text-decoration:none;display:block}
+.fcard:hover{transform:translateY(-4px);box-shadow:0 14px 36px rgba(194,24,91,.18)}
+.fcard-preview{height:180px;position:relative;overflow:hidden;background:#f5f5f5}
+.fcard-preview iframe{width:200%;height:200%;transform:scale(.5);transform-origin:top left;pointer-events:none;border:none}
+.fcard-preview .preview-overlay{position:absolute;inset:0;background:transparent}
+.fcard-num{position:absolute;top:10px;left:10px;background:linear-gradient(135deg,var(--r5),var(--r6));color:white;border-radius:9px;padding:3px 9px;font-size:10px;font-weight:700;letter-spacing:.5px;z-index:2;box-shadow:0 2px 8px rgba(233,30,140,.4)}
+.fcard-phase{position:absolute;top:10px;right:10px;border-radius:9px;padding:3px 9px;font-size:9px;font-weight:700;letter-spacing:.5px;z-index:2}
+.ph1{background:rgba(52,199,89,.15);color:#2E7D32;border:1px solid rgba(52,199,89,.3)}
+.ph2{background:rgba(0,122,255,.12);color:#1565C0;border:1px solid rgba(0,122,255,.25)}
+.ph3{background:rgba(255,149,0,.12);color:#C65200;border:1px solid rgba(255,149,0,.25)}
+.ph4{background:rgba(156,39,176,.1);color:#6A1B9A;border:1px solid rgba(156,39,176,.2)}
+.ph5{background:rgba(233,30,140,.1);color:var(--r5);border:1px solid rgba(233,30,140,.25)}
+.fcard-body{padding:14px 16px}
+.fcard-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px}
+.fcard-desc{font-size:11px;color:var(--text-s);line-height:1.55;margin-bottom:10px}
+.fcard-tags{display:flex;gap:5px;flex-wrap:wrap}
+.ftag{background:rgba(233,30,140,.08);color:var(--r5);border-radius:10px;padding:3px 9px;font-size:9px;font-weight:600}
+.ftag-b{background:rgba(0,122,255,.08);color:var(--blue);border-radius:10px;padding:3px 9px;font-size:9px;font-weight:600}
+.ftag-g{background:rgba(52,199,89,.08);color:#2E7D32;border-radius:10px;padding:3px 9px;font-size:9px;font-weight:600}
+.ftag-o{background:rgba(255,149,0,.1);color:#C65200;border-radius:10px;padding:3px 9px;font-size:9px;font-weight:600}
+.ftag-p{background:rgba(156,39,176,.08);color:#6A1B9A;border-radius:10px;padding:3px 9px;font-size:9px;font-weight:600}
+.open-btn{display:inline-flex;align-items:center;gap:5px;margin-top:8px;font-size:10px;font-weight:600;color:var(--r5);letter-spacing:.5px;text-transform:uppercase}
+
+/* MODAL */
+.modal{display:none;position:fixed;inset:0;z-index:1000;background:rgba(10,2,6,.7);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:20px}
+.modal.show{display:flex}
+.modal-inner{width:min(95vw,1200px);height:min(90vh,800px);background:white;border-radius:24px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 40px 100px rgba(0,0,0,.4)}
+.modal-header{background:linear-gradient(135deg,var(--r5),var(--r6));padding:14px 20px;display:flex;align-items:center;gap:12px;flex-shrink:0}
+.modal-title{font-family:'Playfair Display',serif;font-size:16px;font-style:italic;color:white;flex:1}
+.modal-close{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);border-radius:9px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:16px;color:white;cursor:pointer;transition:all .15s}
+.modal-close:hover{background:rgba(255,255,255,.35)}
+.modal-body{flex:1;overflow:hidden}
+.modal-body iframe{width:100%;height:100%;border:none}
+
+/* FOOTER */
+.footer{background:linear-gradient(145deg,var(--r5),var(--r6));padding:32px 40px;text-align:center}
+.footer-title{font-family:'Playfair Display',serif;font-size:22px;font-style:italic;color:white;margin-bottom:8px}
+.footer-sub{font-size:12px;color:rgba(255,255,255,.75);line-height:1.6}
+.footer-tags{display:flex;gap:8px;justify-content:center;margin-top:14px;flex-wrap:wrap}
+.ftag2{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.28);border-radius:18px;padding:5px 14px;font-size:11px;font-weight:500;color:white}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <span class="hero-crown">♛</span>
+  <div class="hero-title">Miss M — Feature Gallery</div>
+  <div class="hero-sub">Every screen designed for your wife's personal AI assistant. Click any card to preview it full screen.</div>
+  <div class="hero-stats">
+    <div class="hs"><div class="hs-n">21</div><div class="hs-l">Design Screens</div></div>
+    <div class="hs"><div class="hs-n">7</div><div class="hs-l">Build Phases</div></div>
+    <div class="hs"><div class="hs-n">40+</div><div class="hs-l">Features</div></div>
+    <div class="hs"><div class="hs-n">$24</div><div class="hs-l">API Budget</div></div>
+  </div>
+  <div class="hero-tags">
+    <span class="htag">SwiftUI · macOS 14</span>
+    <span class="htag">Claude Sonnet 4.6</span>
+    <span class="htag">Two-Way iMessage AI</span>
+    <span class="htag">Pink · Liquid Glass</span>
+    <span class="htag">Always-on Menu Bar</span>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- ═══ CORE ═══ -->
+  <div class="cat-header">
+    <span class="cat-icon">⚡</span>
+    <div class="cat-title">Core — Phase 1</div>
+    <div class="cat-line"></div>
+    <div class="cat-count">3 screens · Build first</div>
+  </div>
+  <div class="feature-grid">
+
+    <a class="fcard" onclick="open('01-chat-advanced.html','AI Chat')">
+      <div class="fcard-preview" style="background:linear-gradient(145deg,#FFF0F8,#FCE4EC)">
+        <iframe src="01-chat-advanced.html" scrolling="no" tabindex="-1"></iframe>
+        <div class="preview-overlay"></div>
+        <div class="fcard-num">01</div>
+        <div class="fcard-phase ph1">Phase 1</div>
+      </div>
+      <div class="fcard-body">
+        <div class="fcard-title">AI Chat — 7 Live States</div>
+        <div class="fcard-desc">The core brain of the app. Shows all 7 real-time states: thinking, tool use with spinners, tool done with rich cards, streaming text word-by-word, write-back actions, and voice waveform.</div>
+        <div class="fcard-tags"><span class="ftag">Streaming</span><span class="ftag-b">Tool Use</span><span class="ftag-g">Voice</span><span class="ftag">Rich Cards</span></div>
+      </div>
+    </a>
+
+    <a class="fcard" onclick="open('02-morning-briefing.html','Morning Briefing')">
+      <div class="fcard-preview" style="background:linear-gradient(145deg,#FFF0F8,#FCE4EC)">
+        <iframe src="02-morning-briefing.html" scrolling="no" tabindex="-1"></iframe>
+        <div class="preview-overlay"></div>
+        <div class="fcard-num">02</div>
+        <div class="fcard-phase ph1">Phase 1</div>
+      </div>
+      <div class="fcard-body">
+        <div class="fcard-title">Morning Briefing</div>
+        <div class="fcard-desc">Auto-sends Miss M an iMessage at 7:30am every weekday — schedule, weather, deadlines, tasks. Fully configurable. Shows the phone card UI and iMessage preview exactly as she'd receive it.</div>
+        <div class="fcard-tags"><span class="ftag">iMessage Auto-Send</span><span class="ftag-b">7:30 AM Daily</span><span class="ftag-g">Settings Toggles</span></div>
+      </div>
+    </a>
+
+    <a class="fcard" onclick="open('14-onboarding.html','Onboarding')">
+      <div class="fcard-preview" style="background:linear-gradient(145deg,#FFF0F8,#FCE4EC)">
+        <iframe src="14-onboarding.html" scrolling="no" tabindex="-1"></iframe>
+        <div class="preview-overlay"></div>
+        <div class="fcard-num">14</div>
+        <div class="fcard-phase ph1">Phase 1</div>
+      </div>
+      <div class="fcard-body">
+        <div class="fcard-title">Onboarding Flow</div>
+        <div class="fcard-desc">5-step first-launch flow: welcome hero → API key entry (saved to Keychain) → permissions grant (Calendar/Reminders/Messages/Mic) → phone number → done screen. Each step is its own window card.</div>
+        <div class="fcard-tags"><span class="ftag">First Launch</span><span class="ftag-b">5 Steps</span><span class="ftag-g">Permissions</span></div>
+      </div>
+    </a>
+
+  </div>
+
+  <!-- ═══ SCHOOL ═══ -->
+  <div class="cat-header">
+    <span class="cat-icon">🎓</span>
+    <div class="cat-title">School — Phase 2</div>
+    <div class="cat-line"></div>
+    <div class="cat-count">6 screens · Marketing student tools</div>
+  </div>
+  <div class="feature-grid">
+
+    <a class="fcard" onclick="open('03-assignments-kanban.html','Assignments')">
+      <div class="fcard-preview" style="background:linear-gradient(145deg,#FFF0F8,#FCE4EC)">
+        <iframe src="03-assignments-kanban.html" scrolling="no" tabindex="-1"></iframe>
+        <div class="preview-overlay"></div>
+        <div class="fcard-num">03</div>
+        <div class="fcard-phase ph2">Phase 2</div>
+      </div>
+      <div class="fcard-body">
+        <div class="fcard-title">Assignment Tracker</div>
+        <div class="fcard-desc">3-column Kanban board: To Do / In Progress / Done. Each card has subject tag, progress bar, deadline, word count, and an AI action button. AI insight banner at top prioritises automatically.</div>
+        <div class="fcard-tags"><span class="ftag">Kanban</span><span class="ftag-b">AI Priority</span><span class="ftag-o">Deadlines</span></div>
+      </div>
+    </a>
+
+    <a class="fcard" onclick="open('04-essay-writer.html','Essay Writer')">
+      <div class="fcard-preview" style="background:linear-gradient(145deg,#FFF0F8,#FCE4EC)">
+        <iframe src="04-essay-writer.html" scrolling="no" tabindex="-1"></iframe>
+        <div class="preview-overlay"></div>
+        <div class="fcard-num">04</div>
+        <div class="fcard-phase ph2">Phase 2</div>
+      </div>
+      <div class="fcard-body">
+        <div class="fcard-title">Essay Writer</div>
+        <div class="fcard-desc">3-panel layout: outline sidebar with numbered sections, live editor with AI highlighting and streaming cursor, and tools panel with writing tools + citation manager. APA/Harvard citations.</div>
+        <div class="fcard-tags"><span class="ftag">AI Drafting</span><span class="ftag-b">Citations</span><span class="ftag-g">3 Panels</span></div>
+      </div>
+    </a>
+
+    <a class="fcard" onclick="open('05-study-meals-budget.html','Study Planner')">
+      <div class="fcard-preview" style="background:linear-gradient(145deg,#FFF0F8,#FCE4EC)">
+        <iframe src="05-study-meals-budget.html" scrolling="no" tabindex="-1"></iframe>
+        <div class="preview-overlay"></div>
+        <div class="fcard-num">05</div>
+        <div class="fcard-phase ph2">Phase 2</div>
+      </div>
+      <div class="fcard-body">
+        <div class="fcard-title">Study Planner + Pomodoro</div>
+        <div class="fcard-desc">Animated Pomodoro ring timer with session dots, AI-generated daily study schedule, weekly progress calendar, and study coach insight. Also includes meal grid, budget donut and grocery list.</div>
+        <div class="fcard-tags"><span class="ftag">Pomodoro</span><span class="ftag-b">AI Schedule</span><span class="ftag-g">Progress</span></div>
+      </div>
+    </a>
+
+    <a class="fcard" onclick="open('11-flashcards-quiz.html','Flashcards')">
+      <div class="fcard-preview" style="background:linear-gradient(145deg,#FFF0F8,#FCE4EC)">
+        <iframe src="11-flashcards-quiz.html" scrolling="no" tabindex="-1"></iframe>
+        <div class="preview-overlay"></div>
+        <div class="fcard-num">11</div>
+        <div class="fcard-phase ph2">Phase 2</div>
+      </div>
+      <div class="fcard-body">
+        <div class="fcard-title">Flashcards + Quiz</div>
+        <div class="fcard-desc">3D flip card animation (click it!), colour-coded progress dots, Got It / Almost / Wrong controls, active deck manager with spaced repetition badges, and paste-notes-to-generate. Quiz via iMessage too.</div>
+        <div class="fcard-tags"><span class="ftag">3D Flip</span><span class="ftag-b">Spaced Repetition</span><span class="ftag-g">Quiz via iMessage</span></div>
+      </div>
+    </a>
+
+    <a class="fcard" onclick="open('07-marketing-tools.html','Marketing Tools')">
+      <div class="fcard-preview" style="background:linear-gradient(145deg,#FFF0F8,#FCE4EC)">
+        <iframe src="07-marketing-tools.html" scrolling="no" tabindex="-1"></iframe>
+        <div class="preview-overlay"></div>
+        <div class="fcard-num">07</div>
+        <div class="fcard-phase ph2">Phase 2</div>
+      </div>
+      <div class="fcard-body">
+        <div class="fcard-title">Marketing Tools</div>
+        <div class="fcard-desc">5 tabbed tools built for her Marketing degree: SWOT analysis (4 editable quadrants), STP model walkthrough, Consumer Persona builder with motivation bars, Campaign idea generator, and PESTLE framework.</div>
+        <div class="fcard-tags"><span class="ftag">SWOT</span><span class="ftag-b">STP</span><span class="ftag-p">Persona</span><span class="ftag-o">Campaign</span></div>
+      </div>
+    </a>
+
+    <a class="fcard" onclick="open('09-research-citations.html','Research')">
+      <div class="fcard-preview" style="background:linear-gradient(145deg,#FFF0F8,#FCE4EC)">
+        <iframe src="09-research-citations.html" scrolling="no" tabindex="-1"></iframe>
+        <div class="preview-overlay"></div>
+        <div class="fcard-num">09</div>
+        <div class="fcard-phase ph2">Phase 2</div>
+      </div>
+      <div class="fcard-body">
+        <div class="fcard-title">Research + Citations</div>
+        <div class="fcard-desc">Live web search with AI summary, source cards with save + cite buttons, PDF upload drop zone (reads via PDFKit+Vision OCR), citation manager with APA/Harvard toggle, and reference list export.</div>
+        <div class="fcard-tags"><span class="ftag">Web Search</span><span class="ftag-b">PDF Reader</span><span class="ftag-g">APA/Harvard</span></div>
+      </div>
+    </a>
+
+  </div>
+
+  <!-- ═══ iMESSAGE & COMMUNICATION ═══ -->
+  <div class="cat-header">
+    <span class="cat-icon">💬</span>
+    <div class="cat-title">Communication — Phase 3</div>
+    <div class="cat-line"></div>
+    <div class="cat-count">4 screens · iMessage AI + People Hub</div>
+  </div>
+  <div class="feature-grid">
+
+    <a class="fcard" onclick="open('06-imessage-wellness-settings.html','iMessage AI')">
+      <div class="fcard-preview" style="background:linear-gradient(145deg,#FFF0F8,#FCE4EC)">
+        <iframe src="06-imessage-wellness-settings.html" scrolling="no" tabindex="-1"></iframe>
+        <div class="preview-overlay"></div>
+        <div class="fcard-num">06</div>
+        <div class="fcard-phase ph3">Phase 3</div>
+      </div>
+      <div class="fcard-body">
+        <div class="fcard-title">iMessage AI + Wellness + Settings</div>
+        <div class="fcard-desc">iPhone mockup showing two-way AI conversation, step-by-step how it works, wellness dashboard with mood selector, hydration/sleep/focus tracking, and full settings with toggles. All interactive.</div>
+        <div class="fcard-tags"><span class="ftag">Two-Way iMessage</span><span class="ftag-b">Wellness</span><span class="ftag-g">Settings</span></div>
+      </div>
+    </a>
+
+    <a class="fcard" onclick="open('15-people-hub.html','People Hub')">
+      <div class="fcard-preview" style="background:linear-gradient(145deg,#FFF0F8,#FCE4EC)">
+        <iframe src="15-people-hub.html" scrolling="no" tabindex="-1"></iframe>
+        <div class="preview-overlay"></div>
+        <div class="fcard-num">15</div>
+        <div class="fcard-phase ph3">Phase 3</div>
+      </div>
+      <div class="fcard-body">
+        <div class="fcard-title">People Hub — Dynamic Contacts</div>
+        <div class="fcard-desc">Reads her real Messages history. Ranks contacts by frequency. Looks up names in Contacts. Claude infers relationship from message tone. NyRiian always pinned #1. Smart reply chips per relationship.</div>
+        <div class="fcard-tags"><span class="ftag">Dynamic · Real Data</span><span class="ftag-b">AI Relationship</span><span class="ftag-o">NyRiian Pinned</span></div>
+      </div>
+    </a>
+
+    <a class="fcard" onclick="open('12-nyriian-message.html','NyRiian')">
+      <div class="fcard-preview" style="background:linear-gradient(145deg,#FFF0F8,#FCE4EC)">
+        <iframe src="12-nyriian-message.html" scrolling="no" tabindex="-1"></iframe>
+        <div class="preview-overlay"></div>
+        <div class="fcard-num">12</div>
+        <div class="fcard-phase ph3">Phase 3</div>
+      </div>
+      <div class="fcard-body">
+        <div class="fcard-title">NyRiian — Husband Quick Panel</div>
+        <div class="fcard-desc">Dedicated panel for messaging NyRiian. Profile hero card, 6 quick message chips, AI chat history showing auto-sent messages, shared calendar events, compose + FaceTime. Tap chip → auto-fills compose.</div>
+        <div class="fcard-tags"><span class="ftag">Husband · NyRiian</span><span class="ftag-b">Quick Send</span><span class="ftag-g">Shared Calendar</span></div>
+      </div>
+    </a>
+
+    <a class="fcard" onclick="open('10-home-hub-email.html','Email Drafter')">
+      <div class="fcard-preview" style="background:linear-gradient(145deg,#FFF0F8,#FCE4EC)">
+        <iframe src="10-home-hub-email.html" scrolling="no" tabindex="-1"></iframe>
+        <div class="preview-overlay"></div>
+        <div class="fcard-num">10</div>
+        <div class="fcard-phase ph3">Phase 3</div>
+      </div>
+      <div class="fcard-body">
+        <div class="fcard-title">Home Hub + Email Drafter</div>
+        <div class="fcard-desc">6-card home overview (meals, grocery, budget, chores, messages, bills), tappable chore checklist, bill tracker, quick message panel, and full email composer with 5 tone buttons and professor templates.</div>
+        <div class="fcard-tags"><span class="ftag">Home Hub</span><span class="ftag-b">Email Tone</span><span class="ftag-g">Chores + Bills</span></div>
+      </div>
+    </a>
+
+  </div>
+
+  <!-- ═══ HOME & LIFE ═══ -->
+  <div class="cat-header">
+    <span class="cat-icon">🏠</span>
+    <div class="cat-title">Home & Life — Phase 4</div>
+    <div class="cat-line"></div>
+    <div class="cat-count">3 screens · Meals, budget, schedule</div>
+  </div>
+  <div class="feature-grid">
+
+    <a class="fcard" onclick="open('05-study-meals-budget.html','Meals + Budget')">
+      <div class="fcard-preview" style="background:linear-gradient(145deg,#FFF0F8,#FCE4EC)">
+        <iframe src="05-study-meals-budget.html" scrolling="no" tabindex="-1"></iframe>
+        <div class="preview-overlay"></div>
+        <div class="fcard-num">05</div>
+        <div class="fcard-phase ph4">Phase 4</div>
+      </div>
+      <div class="fcard-body">
+        <div class="fcard-title">Meal Planner + Budget + Grocery</div>
+        <div class="fcard-desc">7-day meal grid (tap cells to add), AI meal plan generator, donut budget chart with category bars and savings goal progress, and grocery checklist sorted by store section — tap items to check off.</div>
+        <div class="fcard-tags"><span class="ftag">7-Day Meals</span><span class="ftag-b">Donut Budget</span><span class="ftag-g">Grocery Checklist</span></div>
+      </div>
+    </a>
+
+    <a class="fcard" onclick="open('08-calendar-view.html','Calendar')">
+      <div class="fcard-preview" style="background:linear-gradient(145deg,#FFF0F8,#FCE4EC)">
+        <iframe src="08-calendar-view.html" scrolling="no" tabindex="-1"></iframe>
+        <div class="preview-overlay"></div>
+        <div class="fcard-num">08</div>
+        <div class="fcard-phase ph4">Phase 4</div>
+      </div>
+      <div class="fcard-body">
+        <div class="fcard-title">Calendar — Full View</div>
+        <div class="fcard-desc">Full month grid with event dots, day view with colour-coded time blocks, AI-suggested study slots highlighted in green, upcoming events panel, deadline tracker, and natural language event quick-add.</div>
+        <div class="fcard-tags"><span class="ftag">Month Grid</span><span class="ftag-b">Day Blocks</span><span class="ftag-g">AI Scheduling</span></div>
+      </div>
+    </a>
+
+    <a class="fcard" onclick="open('13-reminders.html','Reminders')">
+      <div class="fcard-preview" style="background:linear-gradient(145deg,#FFF0F8,#FCE4EC)">
+        <iframe src="13-reminders.html" scrolling="no" tabindex="-1"></iframe>
+        <div class="preview-overlay"></div>
+        <div class="fcard-num">13</div>
+        <div class="fcard-phase ph4">Phase 4</div>
+      </div>
+      <div class="fcard-body">
+        <div class="fcard-title">Reminders — Full Screen</div>
+        <div class="fcard-desc">Smart list sidebar (All/Today/Scheduled/Flagged + custom lists), reminder rows with Today/This Week/Upcoming sections, tap to complete, flag support, and full add panel with date picker and priority selector.</div>
+        <div class="fcard-tags"><span class="ftag">Smart Lists</span><span class="ftag-b">Priority Flags</span><span class="ftag-g">Apple Reminders Sync</span></div>
+      </div>
+    </a>
+
+  </div>
+
+  <!-- ═══ MAC POWER TOOLS ═══ -->
+  <div class="cat-header">
+    <span class="cat-icon">🖥️</span>
+    <div class="cat-title">Mac Power Tools — Phase 5+</div>
+    <div class="cat-line"></div>
+    <div class="cat-count">6 screens · Only possible on Mac</div>
+  </div>
+  <div class="feature-grid">
+
+    <a class="fcard" onclick="open('16-pdf-dropzone.html','PDF Reader')">
+      <div class="fcard-preview" style="background:linear-gradient(145deg,#FFF0F8,#FCE4EC)">
+        <iframe src="16-pdf-dropzone.html" scrolling="no" tabindex="-1"></iframe>
+        <div class="preview-overlay"></div>
+        <div class="fcard-num">16</div>
+        <div class="fcard-phase ph5">Phase 5</div>
+      </div>
+      <div class="fcard-body">
+        <div class="fcard-title">PDF Drop Zone</div>
+        <div class="fcard-desc">Drag a lecture PDF in — AI reads it via PDFKit + Vision OCR, summarises instantly, generates flashcards, extracts key concepts, and adds citations. Works on scanned PDFs too.</div>
+        <div class="fcard-tags"><span class="ftag">PDFKit</span><span class="ftag-b">Vision OCR</span><span class="ftag-g">Auto Flashcards</span></div>
+      </div>
+    </a>
+
+    <a class="fcard" onclick="open('17-screenshot-ocr.html','Screenshot OCR')">
+      <div class="fcard-preview" style="background:linear-gradient(145deg,#FFF0F8,#FCE4EC)">
+        <iframe src="17-screenshot-ocr.html" scrolling="no" tabindex="-1"></iframe>
+        <div class="preview-overlay"></div>
+        <div class="fcard-num">17</div>
+        <div class="fcard-phase ph5">Phase 5</div>
+      </div>
+      <div class="fcard-body">
+        <div class="fcard-title">Screenshot + OCR</div>
+        <div class="fcard-desc">Capture any region of screen — AI reads the text via Vision framework and explains, summarises, or translates it. Point at anything: a deadline, a slide, an assignment brief in any app.</div>
+        <div class="fcard-tags"><span class="ftag">Screen Capture</span><span class="ftag-b">Vision OCR</span><span class="ftag-g">Any App</span></div>
+      </div>
+    </a>
+
+    <a class="fcard" onclick="open('18-menubar-mini.html','Menu Bar Mini')">
+      <div class="fcard-preview" style="background:linear-gradient(145deg,#FFF0F8,#FCE4EC)">
+        <iframe src="18-menubar-mini.html" scrolling="no" tabindex="-1"></iframe>
+        <div class="preview-overlay"></div>
+        <div class="fcard-num">18</div>
+        <div class="fcard-phase ph5">Phase 5</div>
+      </div>
+      <div class="fcard-body">
+        <div class="fcard-title">Menu Bar Mini View</div>
+        <div class="fcard-desc">The compact popover that appears when Miss M clicks ♛ in the menu bar. Quick stats, next event, top task, fast chat input — everything at a glance without opening the full app.</div>
+        <div class="fcard-tags"><span class="ftag">Menu Bar</span><span class="ftag-b">Always Visible</span><span class="ftag-g">Quick Access</span></div>
+      </div>
+    </a>
+
+    <a class="fcard" onclick="open('19-safari-companion.html','Safari')">
+      <div class="fcard-preview" style="background:linear-gradient(145deg,#FFF0F8,#FCE4EC)">
+        <iframe src="19-safari-companion.html" scrolling="no" tabindex="-1"></iframe>
+        <div class="preview-overlay"></div>
+        <div class="fcard-num">19</div>
+        <div class="fcard-phase ph5">Phase 5</div>
+      </div>
+      <div class="fcard-body">
+        <div class="fcard-title">Safari Companion</div>
+        <div class="fcard-desc">AI reads whatever she's browsing. Detects assignment-relevant pages and offers to save to research. Summarises long articles, saves citations, finds deadlines on uni pages — triggered by hotkey.</div>
+        <div class="fcard-tags"><span class="ftag">Safari AppleScript</span><span class="ftag-b">Page Summary</span><span class="ftag-g">Auto Citation</span></div>
+      </div>
+    </a>
+
+    <a class="fcard" onclick="open('20-file-command-centre.html','File Centre')">
+      <div class="fcard-preview" style="background:linear-gradient(145deg,#FFF0F8,#FCE4EC)">
+        <iframe src="20-file-command-centre.html" scrolling="no" tabindex="-1"></iframe>
+        <div class="preview-overlay"></div>
+        <div class="fcard-num">20</div>
+        <div class="fcard-phase ph5">Phase 5</div>
+      </div>
+      <div class="fcard-body">
+        <div class="fcard-title">File Command Centre</div>
+        <div class="fcard-desc">Drag any file from her Mac — Word docs, PDFs, images, notes. AI reads it, explains it, translates it, generates study content from it, or adds it to her research. NSOpenPanel integration.</div>
+        <div class="fcard-tags"><span class="ftag">Any File Type</span><span class="ftag-b">NSOpenPanel</span><span class="ftag-g">Drag + Drop</span></div>
+      </div>
+    </a>
+
+    <a class="fcard" onclick="open('21-pomodoro-menubar.html','Pomodoro')">
+      <div class="fcard-preview" style="background:linear-gradient(145deg,#FFF0F8,#FCE4EC)">
+        <iframe src="21-pomodoro-menubar.html" scrolling="no" tabindex="-1"></iframe>
+        <div class="preview-overlay"></div>
+        <div class="fcard-num">21</div>
+        <div class="fcard-phase ph5">Phase 5</div>
+      </div>
+      <div class="fcard-body">
+        <div class="fcard-title">Pomodoro in Menu Bar</div>
+        <div class="fcard-desc">Pomodoro timer lives right in the menu bar — she can see it ticking without opening the app. Auto-enables Do Not Disturb, plays focus playlist, sends break reminders, tracks session history.</div>
+        <div class="fcard-tags"><span class="ftag">Menu Bar Timer</span><span class="ftag-b">Focus Mode</span><span class="ftag-g">DND Auto</span></div>
+      </div>
+    </a>
+
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <div class="footer-title">Built for Miss M · With love from NyRiian ♛</div>
+  <div class="footer-sub">All designs reference real Apple frameworks. Ready to build with Claude Code.<br>Clone the repo, open terminal, run <strong>claude</strong> and say "Read CLAUDE.md and start Phase 1"</div>
+  <div class="footer-tags">
+    <span class="ftag2">SwiftUI</span>
+    <span class="ftag2">EventKit</span>
+    <span class="ftag2">AppleScript iMessage</span>
+    <span class="ftag2">PDFKit + Vision</span>
+    <span class="ftag2">Claude Sonnet 4.6</span>
+    <span class="ftag2">Keychain</span>
+    <span class="ftag2">CNContactStore</span>
+    <span class="ftag2">AVFoundation</span>
+    <span class="ftag2">CoreLocation</span>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal-inner">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle">Loading…</div>
+      <div class="modal-close" onclick="closeModal()">✕</div>
+    </div>
+    <div class="modal-body">
+      <iframe id="modalFrame" src="" allow="same-origin"></iframe>
+    </div>
+  </div>
+</div>
+
+<script>
+function open(file, title) {
+  document.getElementById('modalTitle').textContent = title;
+  document.getElementById('modalFrame').src = file;
+  document.getElementById('modal').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal() {
+  document.getElementById('modal').classList.remove('show');
+  document.getElementById('modalFrame').src = '';
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
+</script>
+</body>
+</html>
