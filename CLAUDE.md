@@ -24,22 +24,23 @@ App name:         Miss M
 Type:             Native macOS menu bar app (NOT iOS, NOT web)
 User:             Miss M — female Marketing university student + home manager
 Platform:         macOS 14.0+ only
-Distribution:     NOT App Store — runs locally on her Mac only
+Distribution:     Direct download via one-line installer — github.com/elevarel/miss-m (NOT Mac App Store)
 AI model:         Claude Sonnet 4.6 — claude-sonnet-4-20250514
 Bundle ID:        com.missm.assistant
 Popover size:     420 × 620pt — NEVER change this
 
 ---
 
-## 👤 KEY PEOPLE
+## 👤 KEY PEOPLE (v2.1 — no longer hardcoded)
 
-Husband name:     NyRiian
-Saved in her Contacts as: "NyRiian"
-When Miss M says "my husband", "text my husband", "call my husband" — ALWAYS resolve to NyRiian via CNContactStore
-NyRiian is always pinned #1 in People Hub regardless of message frequency
+Onboarding captures:
+  - User's preferred name (default "Miss M" for the original deployment, user-editable)
+  - Optional partner / husband / wife name and relationship label
+  - Partner is pinned #1 in People Hub. If no partner is configured, position 1 is left empty.
 
-App owner/builder: NyRiian (husband) — he manages the repo and runs Claude Code
-Miss M:           The user of the app — always address her as "Miss M"
+When the user says "my husband" / "my partner" / "my wife" → resolve via CNContactStore using the name stored in onboarding. If nothing is configured, ask once and save the answer.
+
+Maintainer (private deployment): NyRiian runs Claude Code on this repo. When building the single-user fork, treat "Miss M" as the user and NyRiian as her partner. When building the commercial distribution, do NOT hardcode either name.
 
 ---
 
@@ -72,8 +73,16 @@ Menu bar app · Onboarding · Claude streaming chat (all 7 states) · Calendar �
 ### Phase 2 — School
 Assignment Kanban · Essay Writer (3-panel) · Study Planner + Pomodoro · Flashcards · Marketing Tools (SWOT/STP/Persona/Campaign/PESTLE) · Research + Citations · Calendar full view · Smart Writing (NSSpellChecker + NaturalLanguage + Claude)
 
-### Phase 3 — iMessage AI
-Two-way iMessage monitor (AppleScript, 10s poll) · Auto-reply via Claude · Morning briefing 7:30am · Evening wind-down 9pm · Sunday weekly plan 7pm · Deadline warnings 3d/1d/morning
+### Phase 3 — Local Briefings & Notifications
+⚠️ iMessage integration has been REMOVED from Miss M as of v2.1 (commercial build). Apple has progressively restricted AppleScript access to Messages and it is incompatible with paid distribution. All iMessage features are replaced with native macOS features:
+
+- Morning briefing 7:30am → UNUserNotificationCenter rich local notification + in-app briefing card
+- Evening wind-down 9pm → local notification
+- Sunday weekly plan 7pm → local notification
+- Deadline warnings 3d / 1d / morning → local notifications
+- "Text my husband" / auto-reply / People Hub dynamic Messages history → REMOVED
+
+MessagesService.swift remains in the repo (rule #9: never delete files) but is marked @deprecated and must not be wired into any new feature. Do not add new call sites for it.
 
 ### Phase 4 — Home & Life
 Meal planner (7-day grid) · Grocery list (sections, tap to check) · Budget tracker (donut chart, savings goals) · Email drafter (tone selector, professor templates) · Home hub overview
@@ -102,7 +111,7 @@ MissM/Core/Claude/
 MissM/Core/Apple/
   CalendarService.swift   CREATE Phase 1: EKEventStore, requestFullAccessToEvents, get/add events
   RemindersService.swift  CREATE Phase 1: EKEventStore, requestFullAccessToReminders, get/add reminders
-  MessagesService.swift   NSAppleScript send + receive — already written
+  MessagesService.swift   @deprecated in v2.1 — DO NOT wire into new features. File stays per rule #9.
   HealthService.swift     CREATE Phase 6: HKHealthStore, read steps/sleep/heart rate/cycle
 
 MissM/Core/Storage/
@@ -111,7 +120,7 @@ MissM/Core/Storage/
 
 MissM/Features/
   Chat/ChatView.swift              All 7 chat states — already written
-  Briefing/BriefingScheduler.swift Morning/evening auto-iMessage — already written (Phase 3: connect CalendarService)
+  Briefing/BriefingScheduler.swift Morning/evening/weekly briefings via UNUserNotificationCenter + in-app card (Phase 3)
   Assignments/                     CREATE Phase 2
   Essay/                           CREATE Phase 2
   Study/                           CREATE Phase 2
@@ -216,8 +225,8 @@ Be concise — she does not have time for long responses.
 Use emojis naturally but not excessively (1-2 per message max).
 When you use a tool, briefly mention what you are doing.
 Always end with a helpful follow-up offer when appropriate.
-You have access to her Apple Calendar, Reminders, and can send iMessages.
-Her husband's name is NyRiian — when she says "my husband" always resolve to NyRiian in Contacts.
+You have access to her Apple Calendar and Reminders.
+If the user has configured a partner's name in Settings, resolve "my husband" / "my partner" to that contact via CNContactStore. If no partner is configured, ask.
 """
 
 ---
@@ -238,7 +247,7 @@ Tool names Claude uses → Swift handler:
   read_calendar    → CalendarService.getEventsToday()
   add_reminder     → RemindersService.addReminder(title:due:)
   read_reminders   → RemindersService.getIncompleteReminders()
-  send_imessage    → MessagesService.send(_:to:)
+  (send_imessage removed in v2.1 — DO NOT re-register this tool with Claude)
   get_weather      → WeatherKit or URLSession
   web_search       → URLSession research queries
 
@@ -264,8 +273,8 @@ NSHealthUpdateUsageDescription:
 ## 🍎 APPLE INTEGRATIONS — ALL NATIVE, NO THIRD-PARTY
 
 EventKit (Calendar):    EKEventStore — read + write events and reminders
-Messages (AppleScript): NSAppleScript — send iMessage, poll incoming
-Contacts:               CNContactStore — look up NyRiian and other contacts by name
+Contacts:               CNContactStore — look up partner and other contacts by name
+(Messages AppleScript integration REMOVED in v2.1)
 HealthKit:              HKHealthStore — steps, sleep, heart rate, HRV, cycle tracking
 Vision:                 VNRecognizeTextRequest — OCR from screenshots + scanned PDFs
 PDFKit:                 PDFDocument — extract text from lecture PDFs
@@ -289,18 +298,19 @@ Apple Music (AppleScript): Play focus playlists during Pomodoro
 
 ---
 
-## 💬 PEOPLE HUB — DYNAMIC FROM REAL MESSAGES
+## 💬 PEOPLE HUB — CONTACT-BASED (v2.1)
 
-NO hardcoded contacts. Flow:
-1. AppleScript reads real Messages history
-2. Ranks contacts by frequency (most messaged = top card)
-3. CNContactStore matches number to saved name
-4. Claude infers relationship from last 20 messages
-5. Claude generates 4 smart reply chips per relationship type
+AppleScript Messages-history ingestion has been removed. People Hub now sources contacts from CNContactStore only.
 
-NyRiian is ALWAYS pinned at position 1 — never moved by frequency ranking
+Flow:
+1. User taps "Add favourite" and picks from CNContactStore, OR pins a contact from a quick-compose action
+2. Partner configured in Settings is auto-pinned at position 1 (no hardcoded name)
+3. Relationship label ("Partner", "Family", "Friend", "Classmate", "Lecturer", "Group chat") is user-selected per contact
+4. Claude generates 4 smart reply chips per relationship type
+5. Tapping a chip drafts an iMessage in the system Messages app via `NSWorkspace.open(url:)` with `sms:` / `imessage:` URL scheme — Miss M does NOT send it herself, the user reviews and hits send
+
 Gradient colours by relationship:
-  Husband:     rose (#E91E8C → #C2185B → #880E4F)
+  Partner:     rose (#E91E8C → #C2185B → #880E4F)
   Family:      warm pink (#FF6B9D → #E91E8C)
   Friend:      orange (#FF9800 → #F57C00)
   Classmate:   teal (#26A69A → #00796B)
@@ -311,8 +321,10 @@ Gradient colours by relationship:
 
 ## 🌅 MORNING BRIEFING — EXACT FORMAT (Phase 3)
 
-Sent weekdays 7:30am via iMessage to her phone number (from Keychain):
-Good morning Miss M! ☀️
+Delivered weekdays 7:30am as a UNUserNotificationCenter rich notification AND rendered in the in-app Briefing card (open the popover to see the full card). No iMessage is sent.
+
+Notification title: "Good morning Miss M ☀️"
+Notification body:
 
 [Day], [Date]
 
@@ -322,7 +334,7 @@ Good morning Miss M! ☀️
 ✅ [X] tasks today
 
 [1 line encouragement]
-Reply to ask me anything 💬
+Tap to open Miss M 💬
 
 Data sources: CalendarService.getEventsToday() + RemindersService.getIncompleteReminders() + WeatherKit
 
@@ -331,8 +343,8 @@ Data sources: CalendarService.getEventsToday() + RemindersService.getIncompleteR
 ## 🔐 SECURITY — NON-NEGOTIABLE
 
 Store API key:     KeychainManager.saveAPIKey(_:)    — service: "com.missm.assistant", account: "anthropic-api-key"
-Store phone:       KeychainManager.savePhoneNumber(_:)
-Store husband:     KeychainManager — save "NyRiian" as husband name
+Store partner:     KeychainManager — save user-entered partner name (captured in onboarding)
+Store licence key: KeychainManager — Miss M Plus subscribers only, account: "missm-licence"
 NEVER store in:    UserDefaults, hardcoded strings, .plist, print/log statements
 NEVER print:       API key in any log, debug or error output
 
@@ -367,7 +379,7 @@ Everything must use Apple-native frameworks ONLY.
 
 API errors:          Show friendly message in chat — never raw error strings
 Permission denied:   Show permission request view with clear reason WHY before asking
-iMessage fails:      "Couldn't send — is Messages signed in on this Mac?"
+Notification fails:  "Couldn't schedule briefing — grant notifications in System Settings → Notifications"
 Calendar fails:      "Couldn't read calendar — permission may have been revoked in System Settings"
 Keychain errors:     Show "API key error — please re-enter in Settings"
 HealthKit errors:    "Health data unavailable — grant access in System Settings → Privacy → Health"
@@ -393,7 +405,7 @@ HealthKit errors:    "Health data unavailable — grant access in System Setting
 
 Phase 1 — Foundation:     1 evening (2-3 hrs) — working app same night
 Phase 2 — School:         3-4 evenings across 1-2 weeks
-Phase 3 — iMessage AI:    1-2 evenings
+Phase 3 — Local briefings & notifications: 1 evening
 Phase 4 — Home & Life:    2-3 evenings
 Phase 5 — Mac Tools:      2-3 evenings
 Phase 6 — Health:         1-2 evenings
@@ -455,5 +467,28 @@ MissM/Features/Planner/SmartPlannerView.swift — Smart Life Planner tab
 
 ---
 
-Last updated: April 2026 — Miss M v2.0
+## v2.1 — COMMERCIAL BUILD (April 2026)
+
+Miss M is now distributed publicly. See `COMMERCIAL.md` for the business
+plan, `PRIVACY.md` / `TERMS.md` for legal, and `site/` for the
+GitHub Pages marketing site.
+
+Key changes from v2.0:
+
+1. **iMessage features REMOVED.** MessagesService.swift stays on disk
+   (rule #9) but is @deprecated — do not wire new features into it.
+   Briefings are now local notifications. "Send a message" uses the
+   system Messages compose sheet via URL scheme; Miss M never sends.
+2. **No more hardcoded "Miss M" / "NyRiian".** Onboarding captures user
+   name and optional partner name. Everything that used to reference
+   NyRiian by name now reads from config.
+3. **Two pricing tiers:** Free BYOK (current flow) and Miss M Plus
+   (managed proxy — not yet built; see COMMERCIAL.md §proxy).
+4. **Distribution:** one-line `install.sh` installer served from GitHub
+   Pages. NOT Mac App Store. Site deploys automatically via
+   `.github/workflows/pages.yml`.
+5. **Privacy & Terms** live at `PRIVACY.md` + `TERMS.md` and their
+   HTML twins at `site/privacy.html` + `site/terms.html`.
+
+Last updated: April 2026 — Miss M v2.1 (commercial)
 If anything in this file is unclear, ASK before building.

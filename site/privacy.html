@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Privacy Policy · Miss M</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Cormorant+Garamond:wght@500;600;700&family=Playfair+Display:ital,wght@1,600;1,700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="brand"><span class="brand-crown">♛</span>Miss M</a>
+      <div class="nav-links">
+        <a href="index.html#features">Features</a>
+        <a href="index.html#pricing">Pricing</a>
+        <a href="index.html#install" class="nav-cta">Install</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="doc">
+    <h1>Privacy Policy</h1>
+    <div class="updated">Last updated: April 13, 2026</div>
+
+    <p>Miss M is built for privacy. This policy explains exactly what the app does, does not do, and how the two pricing tiers differ in the data they touch.</p>
+
+    <h2>1. Who we are</h2>
+    <p>Miss M is developed and distributed by Elevarel ("we", "us"). Contact: <a href="mailto:privacy@elevarel.io">privacy@elevarel.io</a>.</p>
+
+    <h2>2. The short version</h2>
+    <ul>
+      <li>The Miss M macOS app runs entirely on your Mac.</li>
+      <li>Your personal data — calendar, reminders, health data, notes, chat history — never leaves your device except when sent to Anthropic to generate a response.</li>
+      <li>We do not operate analytics, ad networks, trackers, or crash reporters.</li>
+      <li>On the Free (BYOK) tier, we do not receive any of your data. Ever.</li>
+      <li>On Miss M Plus (managed), we proxy requests to Anthropic. We do not store the content of those requests beyond short-lived operational logs.</li>
+    </ul>
+
+    <h2>3. Data stored on your Mac</h2>
+    <p>The following data is stored locally on your Mac and never transmitted by us:</p>
+    <ul>
+      <li>Your Anthropic API key (stored in the macOS Keychain on the Free tier).</li>
+      <li>Chat history, assignments, meal plans, grocery lists, budget entries, planner data, flashcards, essays.</li>
+      <li>Preferences, theme settings, and schedule configuration.</li>
+    </ul>
+
+    <h2>4. Apple system data</h2>
+    <p>Miss M requests permission to read and/or write the following Apple system frameworks, only when you use features that depend on them:</p>
+    <ul>
+      <li><strong>Calendar (EventKit)</strong> — read/write events.</li>
+      <li><strong>Reminders (EventKit)</strong> — read/write reminders.</li>
+      <li><strong>Contacts (CNContactStore)</strong> — look up contacts you mention by name.</li>
+      <li><strong>HealthKit</strong> — read steps, sleep, heart rate, HRV, cycle data. Health data is never transmitted off-device unless you explicitly paste it into a Claude chat.</li>
+      <li><strong>Microphone &amp; Speech Recognition</strong> — transcribe voice input locally via Apple's Speech framework.</li>
+      <li><strong>Notifications</strong> — deliver local reminders and briefings.</li>
+      <li><strong>Focus / Shortcuts</strong> — toggle Do Not Disturb during Pomodoro sessions.</li>
+    </ul>
+    <p>Permissions can be revoked at any time in System Settings → Privacy &amp; Security.</p>
+
+    <h2>5. Data sent to Anthropic</h2>
+    <p>When you send a message to Miss M, the message and a short system prompt are sent to Anthropic's Claude API to generate a response. This is required for the assistant to function.</p>
+    <ul>
+      <li>On the <strong>Free (BYOK)</strong> tier, requests go directly from your Mac to Anthropic using your own API key. Elevarel does not see, log, or proxy these requests.</li>
+      <li>On <strong>Miss M Plus</strong>, requests are proxied through our infrastructure to apply your subscription entitlement, then forwarded to Anthropic. We retain only minimal operational metadata (request timestamps, token counts, error codes) for 30 days. We do not store prompt content or responses.</li>
+    </ul>
+    <p>Anthropic's handling of API data is governed by <a href="https://www.anthropic.com/legal/commercial-terms">Anthropic's Commercial Terms</a> and <a href="https://www.anthropic.com/legal/privacy">Anthropic's Privacy Policy</a>. At the time of writing, Anthropic does not train its models on API traffic.</p>
+
+    <h2>6. Account data (Miss M Plus only)</h2>
+    <p>If you subscribe to Miss M Plus, we collect the minimum data required to administer your subscription:</p>
+    <ul>
+      <li>Email address.</li>
+      <li>A hashed license key bound to your device.</li>
+      <li>Payment metadata handled by our payment processor (Stripe or Paddle). We never see your full card number.</li>
+    </ul>
+
+    <h2>7. Cookies and tracking on this website</h2>
+    <p>This website (<code>elevarel.github.io/miss-m</code>) is hosted as a static site on GitHub Pages. We do not set tracking cookies. Google Fonts is loaded from Google's CDN to render the site typefaces; Google receives standard HTTP request metadata (IP, user agent) for that purpose.</p>
+
+    <h2>8. Children</h2>
+    <p>Miss M is not directed at children under 13 and we do not knowingly collect data from them.</p>
+
+    <h2>9. Your rights (GDPR / UK GDPR / CCPA)</h2>
+    <p>You can request access to, correction of, or deletion of any personal data we hold about you by emailing <a href="mailto:privacy@elevarel.io">privacy@elevarel.io</a>. On the Free tier we typically hold no data about you at all.</p>
+
+    <h2>10. Changes</h2>
+    <p>If we change this policy materially, we will note the change in the app and on this page, with a new "Last updated" date.</p>
+
+    <p style="margin-top: 40px;"><a href="index.html">← Back to Miss M</a></p>
+  </main>
+
+  <footer>
+    <div class="foot-links">
+      <a href="privacy.html">Privacy</a>
+      <a href="terms.html">Terms</a>
+      <a href="https://github.com/elevarel/miss-m">GitHub</a>
+    </div>
+    <div>♛ Miss M · Built with care by Elevarel.</div>
+  </footer>
+</body>
+</html>
