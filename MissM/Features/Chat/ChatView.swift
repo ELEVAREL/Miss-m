@@ -343,6 +343,31 @@ class ChatViewModel {
         let allDislikes = foodPrefs.dislikedFoods + foodPrefs.allergies
         ctx.foodDislikes = allDislikes.isEmpty ? "None" : allDislikes.joined(separator: ", ")
 
+        // Budget
+        let budget = await DataStore.shared.loadOrDefault(BudgetData.self, from: "budget.json", default: BudgetData())
+        let budgetExpenses = await DataStore.shared.loadOrDefault([Expense].self, from: "expenses.json", default: [])
+        let f = DateFormatter(); f.dateFormat = "yyyy-MM"
+        let thisMonth = f.string(from: Date())
+        let monthSpent = budgetExpenses.filter { $0.month == thisMonth }.reduce(0.0) { $0 + $1.amount }
+        let monthIncome = budget.incomeEntries.filter { $0.month == thisMonth }.reduce(0.0) { $0 + $1.amount }
+        if monthIncome > 0 {
+            ctx.budgetSummary = "Income $\(Int(monthIncome)), Spent $\(Int(monthSpent)), Remaining $\(Int(monthIncome - monthSpent))"
+        } else {
+            ctx.budgetSummary = "Not set up yet"
+        }
+
+        // Chores
+        let choreData = await DataStore.shared.loadOrDefault(ChoreData.self, from: "chores.json", default: ChoreData())
+        let dayName = { let df = DateFormatter(); df.dateFormat = "EEEE"; return df.string(from: Date()) }()
+        let todayChores = choreData.chores.filter { $0.day == "Daily" || $0.day == dayName }
+        let undone = todayChores.filter { !$0.isComplete }
+        if todayChores.isEmpty {
+            ctx.choresSummary = "None set"
+        } else {
+            let done = todayChores.filter(\.isComplete).count
+            ctx.choresSummary = "\(done)/\(todayChores.count) done. Remaining: \(undone.map(\.title).joined(separator: ", "))"
+        }
+
         return ctx
     }
 

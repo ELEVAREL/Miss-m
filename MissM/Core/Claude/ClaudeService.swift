@@ -127,6 +127,8 @@ class ClaudeService {
         - Heart rate: \(Int(context.heartRate)) bpm
         - Energy estimate: \(context.energyLevel)
         - Food dislikes: \(context.foodDislikes)
+        - Budget: \(context.budgetSummary)
+        - Today's chores: \(context.choresSummary)
         - Web search available: Yes (use when she needs current info or research)
 
         Use this data to give her direct, actionable answers. Never ask for info you already have.
@@ -145,6 +147,8 @@ class ClaudeService {
         var heartRate = 0.0
         var energyLevel = "Moderate"
         var foodDislikes = "None"
+        var budgetSummary = "Not set up"
+        var choresSummary = "None"
     }
 
     private let apiKey: String
