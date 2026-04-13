@@ -2,86 +2,68 @@ import Security
 import Foundation
 
 // MARK: - Keychain Manager
-// Securely stores Miss M's API key — never UserDefaults
+// Stores API key to Application Support file so it persists across rebuilds
+// (Keychain rejects ad-hoc signed apps after each rebuild)
 
 enum KeychainManager {
-    private static let service = "com.missm.assistant"
+    private static var configURL: URL {
+        let support = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+        let appDir = support.appendingPathComponent("com.missm.assistant", isDirectory: true)
+        try? FileManager.default.createDirectory(at: appDir, withIntermediateDirectories: true)
+        return appDir.appendingPathComponent(".missm-config")
+    }
 
     // MARK: - API Key
     static func saveAPIKey(_ key: String) throws {
-        try save(key, for: "anthropic-api-key")
+        var config = loadConfig()
+        config["api_key"] = key
+        saveConfig(config)
     }
 
     static func loadAPIKey() -> String? {
-        load(for: "anthropic-api-key")
+        loadConfig()["api_key"]
     }
 
     static func deleteAPIKey() throws {
-        try delete(for: "anthropic-api-key")
+        var config = loadConfig()
+        config.removeValue(forKey: "api_key")
+        saveConfig(config)
     }
 
-    // MARK: - Phone Number (for iMessage)
+    // MARK: - Phone Number
     static func savePhoneNumber(_ number: String) throws {
-        try save(number, for: "missm-phone-number")
+        var config = loadConfig()
+        config["phone"] = number
+        saveConfig(config)
     }
 
     static func loadPhoneNumber() -> String? {
-        load(for: "missm-phone-number")
+        loadConfig()["phone"]
     }
 
-    // MARK: - Private Helpers
-    private static func save(_ value: String, for key: String) throws {
-        guard let data = value.data(using: .utf8) else { return }
+    // MARK: - Generic Settings
+    static func saveSetting(_ key: String, value: String) {
+        var config = loadConfig()
+        config[key] = value
+        saveConfig(config)
+    }
 
-        // Delete existing first
-        let deleteQuery: [String: Any] = [
-            kSecClass as String: kSecClassGenericPassword,
-            kSecAttrService as String: service,
-            kSecAttrAccount as String: key
-        ]
-        SecItemDelete(deleteQuery as CFDictionary)
+    static func loadSetting(_ key: String) -> String? {
+        loadConfig()[key]
+    }
 
-        // Add new
-        let addQuery: [String: Any] = [
-            kSecClass as String: kSecClassGenericPassword,
-            kSecAttrService as String: service,
-            kSecAttrAccount as String: key,
-            kSecValueData as String: data,
-            kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlocked
-        ]
-
-        let status = SecItemAdd(addQuery as CFDictionary, nil)
-        guard status == errSecSuccess else {
-            throw KeychainError.saveFailed(status)
+    // MARK: - Private
+    private static func loadConfig() -> [String: String] {
+        guard let data = try? Data(contentsOf: configURL),
+              let dict = try? JSONDecoder().decode([String: String].self, from: data) else {
+            return [:]
         }
+        return dict
     }
 
-    private static func load(for key: String) -> String? {
-        let query: [String: Any] = [
-            kSecClass as String: kSecClassGenericPassword,
-            kSecAttrService as String: service,
-            kSecAttrAccount as String: key,
-            kSecReturnData as String: true,
-            kSecMatchLimit as String: kSecMatchLimitOne
-        ]
-        var result: AnyObject?
-        let status = SecItemCopyMatching(query as CFDictionary, &result)
-        guard status == errSecSuccess,
-              let data = result as? Data,
-              let string = String(data: data, encoding: .utf8) else { return nil }
-        return string
-    }
-
-    private static func delete(for key: String) throws {
-        let query: [String: Any] = [
-            kSecClass as String: kSecClassGenericPassword,
-            kSecAttrService as String: service,
-            kSecAttrAccount as String: key
-        ]
-        let status = SecItemDelete(query as CFDictionary)
-        guard status == errSecSuccess || status == errSecItemNotFound else {
-            throw KeychainError.deleteFailed(status)
-        }
+    private static func saveConfig(_ config: [String: String]) {
+        guard let data = try? JSONEncoder().encode(config) else { return }
+        try? data.write(to: configURL, options: .atomic)
     }
 
     enum KeychainError: Error, LocalizedError {
@@ -90,8 +72,8 @@ enum KeychainManager {
 
         var errorDescription: String? {
             switch self {
-            case .saveFailed(let status): return "Keychain save failed: \(status)"
-            case .deleteFailed(let status): return "Keychain delete failed: \(status)"
+            case .saveFailed(let status): return "Save failed: \(status)"
+            case .deleteFailed(let status): return "Delete failed: \(status)"
             }
         }
     }

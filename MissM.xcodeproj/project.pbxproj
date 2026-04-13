@@ -1,0 +1,660 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A10001010000000000000001 /* MissMApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002010000000000000001 /* MissMApp.swift */; };
+		A10001010000000000000002 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002010000000000000002 /* AppDelegate.swift */; };
+		A10001010000000000000003 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002010000000000000003 /* ContentView.swift */; };
+		A10001010000000000000004 /* ClaudeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002010000000000000004 /* ClaudeService.swift */; };
+		A10001010000000000000005 /* CalendarService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002010000000000000005 /* CalendarService.swift */; };
+		A10001010000000000000006 /* RemindersService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002010000000000000006 /* RemindersService.swift */; };
+		A10001010000000000000007 /* MessagesService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002010000000000000007 /* MessagesService.swift */; };
+		A10001010000000000000008 /* KeychainManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002010000000000000008 /* KeychainManager.swift */; };
+		A10001010000000000000009 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002010000000000000009 /* ChatView.swift */; };
+		A1000101000000000000000A /* BriefingScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000201000000000000000A /* BriefingScheduler.swift */; };
+		A1000101000000000000000B /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000201000000000000000B /* Theme.swift */; };
+		A1000101000000000000000C /* DataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000201000000000000000C /* DataStore.swift */; };
+		A1000101000000000000000D /* AssignmentsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000201000000000000000D /* AssignmentsView.swift */; };
+		A1000101000000000000000E /* EssayWriterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000201000000000000000E /* EssayWriterView.swift */; };
+		A1000101000000000000000F /* StudyPlannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000201000000000000000F /* StudyPlannerView.swift */; };
+		A10001010000000000000012 /* FlashcardsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002010000000000000012 /* FlashcardsView.swift */; };
+		A10001010000000000000013 /* MarketingToolsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002010000000000000013 /* MarketingToolsView.swift */; };
+		A10001010000000000000014 /* ResearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002010000000000000014 /* ResearchView.swift */; };
+		A10001010000000000000015 /* CalendarFullView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002010000000000000015 /* CalendarFullView.swift */; };
+		A10001010000000000000016 /* iMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002010000000000000016 /* iMessageView.swift */; };
+		A10001010000000000000017 /* MealPlannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002010000000000000017 /* MealPlannerView.swift */; };
+		A10001010000000000000018 /* GroceryListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002010000000000000018 /* GroceryListView.swift */; };
+		A10001010000000000000019 /* BudgetTrackerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002010000000000000019 /* BudgetTrackerView.swift */; };
+		A1000101000000000000001A /* EmailDrafterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000201000000000000001A /* EmailDrafterView.swift */; };
+		A1000101000000000000001B /* HomeHubView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000201000000000000001B /* HomeHubView.swift */; };
+		A1000101000000000000001C /* PDFDropzoneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000201000000000000001C /* PDFDropzoneView.swift */; };
+		A1000101000000000000001D /* ScreenshotOCRView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000201000000000000001D /* ScreenshotOCRView.swift */; };
+		A1000101000000000000001E /* MenuBarMiniView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000201000000000000001E /* MenuBarMiniView.swift */; };
+		A1000101000000000000001F /* SafariCompanionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000201000000000000001F /* SafariCompanionView.swift */; };
+		A10001010000000000000020 /* FileCommandCentreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002010000000000000020A /* FileCommandCentreView.swift */; };
+		A10001010000000000000021 /* PomodoroMenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002010000000000000021A /* PomodoroMenuBarView.swift */; };
+		A10001010000000000000022 /* QuickLauncherView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002010000000000000022A /* QuickLauncherView.swift */; };
+		A10001010000000000000023 /* HealthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002010000000000000023 /* HealthService.swift */; };
+		A10001010000000000000024 /* WellnessDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002010000000000000024 /* WellnessDashboardView.swift */; };
+		A10001010000000000000025 /* CycleTrackerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002010000000000000025 /* CycleTrackerView.swift */; };
+		A10001010000000000000027 /* VoiceInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002010000000000000027 /* VoiceInputView.swift */; };
+		A10001010000000000000028 /* SystemDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002010000000000000028 /* SystemDashboardView.swift */; };
+		A10001010000000000000029 /* AppleNotesSyncView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10002010000000000000029 /* AppleNotesSyncView.swift */; };
+		A1000101000000000000002A /* TouchIDLockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000201000000000000002A /* TouchIDLockView.swift */; };
+		A10001010000000000000030 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1000201000000000000030 /* Assets.xcassets */; };
+		A1000101000000000000002B /* PeopleHubView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000201000000000000002B /* PeopleHubView.swift */; };
+		A1000101000000000000002C /* RemindersListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000201000000000000002C /* RemindersListView.swift */; };
+		A1000101000000000000002D /* SmartWritingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000201000000000000002D /* SmartWritingView.swift */; };
+		A10001010000000000000010 /* EventKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A10002010000000000000010 /* EventKit.framework */; };
+		A10001010000000000000011 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A10002010000000000000011 /* Security.framework */; };
+		A10001010000000000000026 /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A10002010000000000000026 /* HealthKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		A10002010000000000000001 /* MissMApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MissMApp.swift; sourceTree = "<group>"; };
+		A10002010000000000000002 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		A10002010000000000000003 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		A10002010000000000000004 /* ClaudeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaudeService.swift; sourceTree = "<group>"; };
+		A10002010000000000000005 /* CalendarService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarService.swift; sourceTree = "<group>"; };
+		A10002010000000000000006 /* RemindersService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemindersService.swift; sourceTree = "<group>"; };
+		A10002010000000000000007 /* MessagesService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagesService.swift; sourceTree = "<group>"; };
+		A10002010000000000000008 /* KeychainManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainManager.swift; sourceTree = "<group>"; };
+		A10002010000000000000009 /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
+		A1000201000000000000000A /* BriefingScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BriefingScheduler.swift; sourceTree = "<group>"; };
+		A1000201000000000000000B /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		A1000201000000000000000C /* DataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataStore.swift; sourceTree = "<group>"; };
+		A1000201000000000000000D /* AssignmentsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssignmentsView.swift; sourceTree = "<group>"; };
+		A1000201000000000000000E /* EssayWriterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EssayWriterView.swift; sourceTree = "<group>"; };
+		A1000201000000000000000F /* StudyPlannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudyPlannerView.swift; sourceTree = "<group>"; };
+		A10002010000000000000012 /* FlashcardsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlashcardsView.swift; sourceTree = "<group>"; };
+		A10002010000000000000013 /* MarketingToolsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketingToolsView.swift; sourceTree = "<group>"; };
+		A10002010000000000000014 /* ResearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResearchView.swift; sourceTree = "<group>"; };
+		A10002010000000000000015 /* CalendarFullView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarFullView.swift; sourceTree = "<group>"; };
+		A10002010000000000000016 /* iMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iMessageView.swift; sourceTree = "<group>"; };
+		A10002010000000000000017 /* MealPlannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealPlannerView.swift; sourceTree = "<group>"; };
+		A10002010000000000000018 /* GroceryListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroceryListView.swift; sourceTree = "<group>"; };
+		A10002010000000000000019 /* BudgetTrackerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BudgetTrackerView.swift; sourceTree = "<group>"; };
+		A1000201000000000000001A /* EmailDrafterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailDrafterView.swift; sourceTree = "<group>"; };
+		A1000201000000000000001B /* HomeHubView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeHubView.swift; sourceTree = "<group>"; };
+		A1000201000000000000001C /* PDFDropzoneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PDFDropzoneView.swift; sourceTree = "<group>"; };
+		A1000201000000000000001D /* ScreenshotOCRView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotOCRView.swift; sourceTree = "<group>"; };
+		A1000201000000000000001E /* MenuBarMiniView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarMiniView.swift; sourceTree = "<group>"; };
+		A1000201000000000000001F /* SafariCompanionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafariCompanionView.swift; sourceTree = "<group>"; };
+		A10002010000000000000020A /* FileCommandCentreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileCommandCentreView.swift; sourceTree = "<group>"; };
+		A10002010000000000000021A /* PomodoroMenuBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PomodoroMenuBarView.swift; sourceTree = "<group>"; };
+		A10002010000000000000022A /* QuickLauncherView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickLauncherView.swift; sourceTree = "<group>"; };
+		A10002010000000000000023 /* HealthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthService.swift; sourceTree = "<group>"; };
+		A10002010000000000000024 /* WellnessDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WellnessDashboardView.swift; sourceTree = "<group>"; };
+		A10002010000000000000025 /* CycleTrackerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CycleTrackerView.swift; sourceTree = "<group>"; };
+		A10002010000000000000027 /* VoiceInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceInputView.swift; sourceTree = "<group>"; };
+		A10002010000000000000028 /* SystemDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemDashboardView.swift; sourceTree = "<group>"; };
+		A10002010000000000000029 /* AppleNotesSyncView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleNotesSyncView.swift; sourceTree = "<group>"; };
+		A1000201000000000000002A /* TouchIDLockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TouchIDLockView.swift; sourceTree = "<group>"; };
+		A1000201000000000000002B /* PeopleHubView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeopleHubView.swift; sourceTree = "<group>"; };
+		A1000201000000000000002C /* RemindersListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemindersListView.swift; sourceTree = "<group>"; };
+		A1000201000000000000002D /* SmartWritingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartWritingView.swift; sourceTree = "<group>"; };
+		A1000201000000000000030 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		A10002010000000000000010 /* EventKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = EventKit.framework; path = System/Library/Frameworks/EventKit.framework; sourceTree = SDKROOT; };
+		A10002010000000000000011 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		A10002010000000000000026 /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = System/Library/Frameworks/HealthKit.framework; sourceTree = SDKROOT; };
+		A10002010000000000000020 /* MissM.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MissM.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A10002010000000000000030 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A10002010000000000000031 /* MissM.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MissM.entitlements; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A10003010000000000000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10001010000000000000010 /* EventKit.framework in Frameworks */,
+				A10001010000000000000011 /* Security.framework in Frameworks */,
+				A10001010000000000000026 /* HealthKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A10004010000000000000001 /* = MissM */ = {
+			isa = PBXGroup;
+			children = (
+				A10004010000000000000002 /* MissM */,
+				A10004010000000000000050 /* Frameworks */,
+				A10004010000000000000060 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A10004010000000000000002 /* MissM */ = {
+			isa = PBXGroup;
+			children = (
+				A10004010000000000000003 /* App */,
+				A10004010000000000000004 /* Core */,
+				A10004010000000000000008 /* Features */,
+				A1000401000000000000000B /* Shared */,
+				A1000201000000000000030 /* Assets.xcassets */,
+				A10002010000000000000030 /* Info.plist */,
+				A10002010000000000000031 /* MissM.entitlements */,
+			);
+			path = MissM;
+			sourceTree = "<group>";
+		};
+		A10004010000000000000003 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				A10002010000000000000001 /* MissMApp.swift */,
+				A10002010000000000000002 /* AppDelegate.swift */,
+				A10002010000000000000003 /* ContentView.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		A10004010000000000000004 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				A10004010000000000000005 /* Claude */,
+				A10004010000000000000006 /* Apple */,
+				A10004010000000000000007 /* Storage */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		A10004010000000000000005 /* Claude */ = {
+			isa = PBXGroup;
+			children = (
+				A10002010000000000000004 /* ClaudeService.swift */,
+			);
+			path = Claude;
+			sourceTree = "<group>";
+		};
+		A10004010000000000000006 /* Apple */ = {
+			isa = PBXGroup;
+			children = (
+				A10002010000000000000005 /* CalendarService.swift */,
+				A10002010000000000000006 /* RemindersService.swift */,
+				A10002010000000000000007 /* MessagesService.swift */,
+				A10002010000000000000023 /* HealthService.swift */,
+			);
+			path = Apple;
+			sourceTree = "<group>";
+		};
+		A10004010000000000000007 /* Storage */ = {
+			isa = PBXGroup;
+			children = (
+				A10002010000000000000008 /* KeychainManager.swift */,
+				A1000201000000000000000C /* DataStore.swift */,
+			);
+			path = Storage;
+			sourceTree = "<group>";
+		};
+		A10004010000000000000008 /* Features */ = {
+			isa = PBXGroup;
+			children = (
+				A10004010000000000000009 /* Chat */,
+				A1000401000000000000000A /* Briefing */,
+				A1000401000000000000000C /* Assignments */,
+				A1000401000000000000000D /* Essay */,
+				A1000401000000000000000E /* Study */,
+				A1000401000000000000000F /* Marketing */,
+				A10004010000000000000010 /* Home */,
+				A10004010000000000000011 /* MacTools */,
+				A10004010000000000000012 /* Wellness */,
+				A10004010000000000000013 /* Polish */,
+			);
+			path = Features;
+			sourceTree = "<group>";
+		};
+		A10004010000000000000013 /* Polish */ = {
+			isa = PBXGroup;
+			children = (
+				A10002010000000000000027 /* VoiceInputView.swift */,
+				A10002010000000000000028 /* SystemDashboardView.swift */,
+				A10002010000000000000029 /* AppleNotesSyncView.swift */,
+				A1000201000000000000002A /* TouchIDLockView.swift */,
+				A1000201000000000000002D /* SmartWritingView.swift */,
+			);
+			path = Polish;
+			sourceTree = "<group>";
+		};
+		A10004010000000000000012 /* Wellness */ = {
+			isa = PBXGroup;
+			children = (
+				A10002010000000000000024 /* WellnessDashboardView.swift */,
+				A10002010000000000000025 /* CycleTrackerView.swift */,
+			);
+			path = Wellness;
+			sourceTree = "<group>";
+		};
+		A10004010000000000000011 /* MacTools */ = {
+			isa = PBXGroup;
+			children = (
+				A1000201000000000000001C /* PDFDropzoneView.swift */,
+				A1000201000000000000001D /* ScreenshotOCRView.swift */,
+				A1000201000000000000001E /* MenuBarMiniView.swift */,
+				A1000201000000000000001F /* SafariCompanionView.swift */,
+				A10002010000000000000020A /* FileCommandCentreView.swift */,
+				A10002010000000000000021A /* PomodoroMenuBarView.swift */,
+				A10002010000000000000022A /* QuickLauncherView.swift */,
+			);
+			path = MacTools;
+			sourceTree = "<group>";
+		};
+		A10004010000000000000010 /* Home */ = {
+			isa = PBXGroup;
+			children = (
+				A1000201000000000000001B /* HomeHubView.swift */,
+				A10002010000000000000017 /* MealPlannerView.swift */,
+				A10002010000000000000018 /* GroceryListView.swift */,
+				A10002010000000000000019 /* BudgetTrackerView.swift */,
+				A1000201000000000000001A /* EmailDrafterView.swift */,
+			);
+			path = Home;
+			sourceTree = "<group>";
+		};
+		A1000401000000000000000C /* Assignments */ = {
+			isa = PBXGroup;
+			children = (
+				A1000201000000000000000D /* AssignmentsView.swift */,
+			);
+			path = Assignments;
+			sourceTree = "<group>";
+		};
+		A1000401000000000000000D /* Essay */ = {
+			isa = PBXGroup;
+			children = (
+				A1000201000000000000000E /* EssayWriterView.swift */,
+			);
+			path = Essay;
+			sourceTree = "<group>";
+		};
+		A1000401000000000000000E /* Study */ = {
+			isa = PBXGroup;
+			children = (
+				A1000201000000000000000F /* StudyPlannerView.swift */,
+				A10002010000000000000012 /* FlashcardsView.swift */,
+				A10002010000000000000014 /* ResearchView.swift */,
+				A10002010000000000000015 /* CalendarFullView.swift */,
+			);
+			path = Study;
+			sourceTree = "<group>";
+		};
+		A1000401000000000000000F /* Marketing */ = {
+			isa = PBXGroup;
+			children = (
+				A10002010000000000000013 /* MarketingToolsView.swift */,
+			);
+			path = Marketing;
+			sourceTree = "<group>";
+		};
+		A10004010000000000000010 /* Home */ = {
+			isa = PBXGroup;
+			children = (
+				A1000201000000000000001B /* HomeHubView.swift */,
+				A10002010000000000000017 /* MealPlannerView.swift */,
+				A10002010000000000000018 /* GroceryListView.swift */,
+				A10002010000000000000019 /* BudgetTrackerView.swift */,
+				A1000201000000000000001A /* EmailDrafterView.swift */,
+			);
+			path = Home;
+			sourceTree = "<group>";
+		};
+		A10004010000000000000009 /* Chat */ = {
+			isa = PBXGroup;
+			children = (
+				A10002010000000000000009 /* ChatView.swift */,
+				A1000201000000000000002B /* PeopleHubView.swift */,
+				A1000201000000000000002C /* RemindersListView.swift */,
+			);
+			path = Chat;
+			sourceTree = "<group>";
+		};
+		A1000401000000000000000A /* Briefing */ = {
+			isa = PBXGroup;
+			children = (
+				A1000201000000000000000A /* BriefingScheduler.swift */,
+				A10002010000000000000016 /* iMessageView.swift */,
+			);
+			path = Briefing;
+			sourceTree = "<group>";
+		};
+		A1000401000000000000000B /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				A1000201000000000000000B /* Theme.swift */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		A10004010000000000000050 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				A10002010000000000000010 /* EventKit.framework */,
+				A10002010000000000000011 /* Security.framework */,
+				A10002010000000000000026 /* HealthKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		A10004010000000000000060 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A10002010000000000000020 /* MissM.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A10005010000000000000001 /* MissM */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A10007010000000000000003 /* Build configuration list for PBXNativeTarget "MissM" */;
+			buildPhases = (
+				A10006010000000000000001 /* Sources */,
+				A10003010000000000000001 /* Frameworks */,
+				A10008010000000000000001 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MissM;
+			productName = MissM;
+			productReference = A10002010000000000000020 /* MissM.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A10009010000000000000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1540;
+				LastUpgradeCheck = 1540;
+				TargetAttributes = {
+					A10005010000000000000001 = {
+						CreatedOnToolsVersion = 15.4;
+					};
+				};
+			};
+			buildConfigurationList = A10007010000000000000001 /* Build configuration list for PBXProject "MissM" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = A10004010000000000000001 /* = MissM */;
+			productRefGroup = A10004010000000000000060 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A10005010000000000000001 /* MissM */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A10008010000000000000001 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10001010000000000000030 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A10006010000000000000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10001010000000000000001 /* MissMApp.swift in Sources */,
+				A10001010000000000000002 /* AppDelegate.swift in Sources */,
+				A10001010000000000000003 /* ContentView.swift in Sources */,
+				A10001010000000000000004 /* ClaudeService.swift in Sources */,
+				A10001010000000000000005 /* CalendarService.swift in Sources */,
+				A10001010000000000000006 /* RemindersService.swift in Sources */,
+				/* MessagesService.swift removed — iMessage features disabled */
+				A10001010000000000000008 /* KeychainManager.swift in Sources */,
+				A10001010000000000000009 /* ChatView.swift in Sources */,
+				/* BriefingScheduler.swift removed — iMessage features disabled */
+				A1000101000000000000000B /* Theme.swift in Sources */,
+				A1000101000000000000000C /* DataStore.swift in Sources */,
+				A1000101000000000000000D /* AssignmentsView.swift in Sources */,
+				A1000101000000000000000E /* EssayWriterView.swift in Sources */,
+				A1000101000000000000000F /* StudyPlannerView.swift in Sources */,
+				A10001010000000000000012 /* FlashcardsView.swift in Sources */,
+				A10001010000000000000013 /* MarketingToolsView.swift in Sources */,
+				A10001010000000000000014 /* ResearchView.swift in Sources */,
+				A10001010000000000000015 /* CalendarFullView.swift in Sources */,
+				/* iMessageView.swift removed — iMessage features disabled */
+				A10001010000000000000017 /* MealPlannerView.swift in Sources */,
+				A10001010000000000000018 /* GroceryListView.swift in Sources */,
+				A10001010000000000000019 /* BudgetTrackerView.swift in Sources */,
+				A1000101000000000000001A /* EmailDrafterView.swift in Sources */,
+				A1000101000000000000001B /* HomeHubView.swift in Sources */,
+				A1000101000000000000001C /* PDFDropzoneView.swift in Sources */,
+				A1000101000000000000001D /* ScreenshotOCRView.swift in Sources */,
+				A1000101000000000000001E /* MenuBarMiniView.swift in Sources */,
+				A1000101000000000000001F /* SafariCompanionView.swift in Sources */,
+				A10001010000000000000020 /* FileCommandCentreView.swift in Sources */,
+				A10001010000000000000021 /* PomodoroMenuBarView.swift in Sources */,
+				A10001010000000000000022 /* QuickLauncherView.swift in Sources */,
+				A10001010000000000000023 /* HealthService.swift in Sources */,
+				A10001010000000000000024 /* WellnessDashboardView.swift in Sources */,
+				A10001010000000000000025 /* CycleTrackerView.swift in Sources */,
+				A10001010000000000000027 /* VoiceInputView.swift in Sources */,
+				A10001010000000000000028 /* SystemDashboardView.swift in Sources */,
+				A10001010000000000000029 /* AppleNotesSyncView.swift in Sources */,
+				A1000101000000000000002A /* TouchIDLockView.swift in Sources */,
+				/* PeopleHubView.swift removed — iMessage features disabled */
+				A1000101000000000000002C /* RemindersListView.swift in Sources */,
+				A1000101000000000000002D /* SmartWritingView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		A1000A010000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		A1000A010000000000000002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		A1000A010000000000000003 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = MissM/MissM.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_APP_SANDBOX = NO;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = MissM/Info.plist;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+					INFOPLIST_KEY_CFBundleDisplayName = "Miss M";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.missm.assistant;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		A1000A010000000000000004 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = MissM/MissM.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_APP_SANDBOX = NO;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = MissM/Info.plist;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+					INFOPLIST_KEY_CFBundleDisplayName = "Miss M";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.missm.assistant;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A10007010000000000000001 /* Build configuration list for PBXProject "MissM" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A1000A010000000000000001 /* Debug */,
+				A1000A010000000000000002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A10007010000000000000003 /* Build configuration list for PBXNativeTarget "MissM" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A1000A010000000000000003 /* Debug */,
+				A1000A010000000000000004 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+	};
+	rootObject = A10009010000000000000001 /* Project object */;
+}

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>com.missm.assistant</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>MissM</string>
+	<key>CFBundleDisplayName</key>
+	<string>Miss M</string>
+	<key>CFBundlePackageType</key>
+	<string>$(PRODUCT_BUNDLE_TYPE)</string>
+	<key>CFBundleShortVersionString</key>
+	<string>$(MARKETING_VERSION)</string>
+	<key>CFBundleVersion</key>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>LSMinimumSystemVersion</key>
+	<string>$(MACOSX_DEPLOYMENT_TARGET)</string>
+	<key>LSUIElement</key>
+	<false/>
+	<key>NSCalendarsUsageDescription</key>
+	<string>Miss M reads your calendar to give you daily briefings and smart scheduling suggestions.</string>
+	<key>NSRemindersUsageDescription</key>
+	<string>Miss M manages your reminders so you never miss a deadline or important task.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Miss M listens when you want to speak your request instead of typing.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Miss M uses your microphone to hear your voice commands.</string>
+	<key>NSHealthShareUsageDescription</key>
+	<string>Miss M reads your health data to give personalised wellness and energy insights.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>Miss M logs your mood and wellness data to HealthKit.</string>
+	<key>NSAppleEventsUsageDescription</key>
+	<string>Miss M uses AppleScript to read Safari pages, sync Apple Notes, send iMessages, and control system features on your behalf.</string>
+	<key>NSContactsUsageDescription</key>
+	<string>Miss M reads your contacts to identify people in messages and help you communicate.</string>
+	<key>NSPrincipalClass</key>
+	<string>NSApplication</string>
+</dict>
+</plist>

@@ -1,15 +1,29 @@
 import AppKit
 import SwiftUI
+import Carbon.HIToolbox
 
 class AppDelegate: NSObject, NSApplicationDelegate {
     var statusItem: NSStatusItem?
-    var popover: NSPopover?
+    var hotKeyRef: EventHotKeyRef?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         setupMenuBar()
-        setupPopover()
-        // Hide dock icon — menu bar only
-        NSApp.setActivationPolicy(.accessory)
+        setupGlobalHotkey()
+        requestAllPermissions()
+    }
+
+    /// Request all permissions upfront on first launch so Miss M only asks once
+    private func requestAllPermissions() {
+        Task {
+            // Calendar
+            _ = await CalendarService.shared.requestAccess()
+            // Reminders
+            _ = await RemindersService.shared.requestAccess()
+            // HealthKit
+            if HealthService.shared.isAvailable {
+                _ = await HealthService.shared.requestAccess()
+            }
+        }
     }
 
     private func setupMenuBar() {
@@ -17,30 +31,35 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         if let button = statusItem?.button {
             button.title = "♛"
             button.font = NSFont.systemFont(ofSize: 16)
-            button.action = #selector(togglePopover)
+            button.action = #selector(showWindow)
             button.target = self
         }
     }
 
-    private func setupPopover() {
-        popover = NSPopover()
-        popover?.contentSize = NSSize(width: 420, height: 620)
-        popover?.behavior = .transient
-        popover?.animates = true
-        popover?.contentViewController = NSHostingController(
-            rootView: ContentView()
-        )
+    private func setupGlobalHotkey() {
+        var hotKeyID = EventHotKeyID()
+        hotKeyID.signature = OSType(0x4D534D41)
+        hotKeyID.id = 1
+        let modifiers: UInt32 = UInt32(cmdKey | shiftKey)
+        RegisterEventHotKey(UInt32(kVK_ANSI_M), modifiers, hotKeyID, GetApplicationEventTarget(), 0, &hotKeyRef)
+
+        var eventType = EventTypeSpec(eventClass: OSType(kEventClassKeyboard), eventKind: UInt32(kEventHotKeyPressed))
+        InstallEventHandler(GetApplicationEventTarget(), { _, event, userData -> OSStatus in
+            guard let delegate = NSApp.delegate as? AppDelegate else { return noErr }
+            DispatchQueue.main.async { delegate.showWindow() }
+            return noErr
+        }, 1, &eventType, nil, nil)
     }
 
-    @objc func togglePopover() {
-        guard let button = statusItem?.button else { return }
-        if let popover = popover {
-            if popover.isShown {
-                popover.performClose(nil)
-            } else {
-                popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
-                popover.contentViewController?.view.window?.makeKey()
-            }
+    @objc func showWindow() {
+        NSApp.activate(ignoringOtherApps: true)
+        if let window = NSApp.windows.first(where: { $0.canBecomeMain }) {
+            window.makeKeyAndOrderFront(nil)
         }
+    }
+
+    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
+        if !flag { showWindow() }
+        return true
     }
 }
