@@ -407,5 +407,53 @@ This project fits comfortably within 2-3 months even with daily building session
 
 ---
 
-Last updated: April 2026 — Miss M v1.0
+---
+
+## v2 FEATURES (April 2026)
+
+### Smart Life Planner (New Sidebar Tab — 🧠)
+- 8th tab in sidebar, between Home and Tools
+- Cross-references ALL data: Calendar, Reminders, Cycle, Meals, Fitness, Budget, Assignments, HealthKit
+- Generates comprehensive 7-day smart plan via Claude
+- Each day: schedule blocks + meals + workout + wellness tip
+- Cycle-aware: lighter tasks and comfort meals during menstrual phase
+- Energy-aware: adjusts if sleep was poor
+- "Adjust" feature: tell Claude to tweak the plan naturally
+- Persists via DataStore (smart-plan.json)
+- File: MissM/Features/Planner/SmartPlannerView.swift
+
+### Smart Fitness (New Wellness Sub-Tab — 💪)
+- Under Health tab, alongside Dashboard and Cycle
+- Workout suggestion engine powered by Claude
+- Cycle-aware: yoga/walking during menstrual, HIIT during ovulation
+- Energy level selector (1-5 scale)
+- 7-day workout plan with exercise details per day
+- Types: Strength, Cardio, Yoga, HIIT, Walking, Rest Day
+- Persists via DataStore (fitness-plan.json)
+- File: MissM/Features/Wellness/FitnessView.swift
+
+### Flo App Integration (via HealthKit Bridge)
+- Flo syncs period data to Apple HealthKit
+- Miss M reads menstrual flow, ovulation, cervical mucus from HealthKit
+- "Import from Health" button on Cycle Tracker
+- Auto-calculates cycle day and cycle length from HealthKit history
+- No direct Flo API needed — HealthKit is the bridge
+- Enhanced: MissM/Core/Apple/HealthService.swift + CycleTrackerView.swift
+
+### Auto-DND / Focus Mode
+- FocusService.swift uses macOS Shortcuts CLI to toggle Focus mode
+- Auto-activates when Pomodoro starts or Study session begins
+- Auto-deactivates when session ends/pauses
+- Cross-device sync: if "Share across devices" is on, DND activates on iPhone/iPad/Watch
+- Setup guide built into Pomodoro settings view
+- File: MissM/Core/Apple/FocusService.swift
+
+### New File Structure Additions
+MissM/Core/Apple/FocusService.swift         — Focus/DND toggle via Shortcuts CLI
+MissM/Features/Wellness/FitnessView.swift    — Smart Fitness tab
+MissM/Features/Planner/SmartPlannerView.swift — Smart Life Planner tab
+
+---
+
+Last updated: April 2026 — Miss M v2.0
 If anything in this file is unclear, ASK before building.

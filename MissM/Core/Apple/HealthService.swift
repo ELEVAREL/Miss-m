@@ -30,6 +30,11 @@ class HealthService {
             HKCategoryType(.sleepAnalysis),
             HKCategoryType(.mindfulSession),
             HKQuantityType(.dietaryWater),
+            // Menstrual cycle (reads Flo data synced via HealthKit)
+            HKCategoryType(.menstrualFlow),
+            HKCategoryType(.ovulationTestResult),
+            HKCategoryType(.cervicalMucusQuality),
+            HKCategoryType(.intermenstrualBleeding),
         ]
 
         let writeTypes: Set<HKSampleType> = [
@@ -185,6 +190,92 @@ class HealthService {
             result.append(hours)
         }
         return result
+    }
+
+    // MARK: - Menstrual Cycle (Flo Bridge via HealthKit)
+
+    /// Returns the most recent menstrual flow start date from HealthKit
+    /// Flo syncs this data when "Connect to Health app" is enabled
+    func lastMenstrualFlowStart() async -> Date? {
+        let type = HKCategoryType(.menstrualFlow)
+        let sort = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)
+
+        return await withCheckedContinuation { continuation in
+            let query = HKSampleQuery(sampleType: type, predicate: nil, limit: 50, sortDescriptors: [sort]) { _, samples, _ in
+                guard let categorySamples = samples as? [HKCategorySample], !categorySamples.isEmpty else {
+                    continuation.resume(returning: nil)
+                    return
+                }
+                // Find the start of the most recent period (first sample in a cluster)
+                var periodStart = categorySamples[0].startDate
+                for i in 1..<categorySamples.count {
+                    let gap = categorySamples[i-1].startDate.timeIntervalSince(categorySamples[i].startDate)
+                    if gap < 3 * 24 * 3600 { // same period cluster (within 3 days)
+                        periodStart = categorySamples[i].startDate
+                    } else {
+                        break
+                    }
+                }
+                continuation.resume(returning: periodStart)
+            }
+            store.execute(query)
+        }
+    }
+
+    /// Returns menstrual flow entries for the past N months
+    func menstrualFlowHistory(months: Int = 6) async -> [(date: Date, flow: Int)] {
+        let type = HKCategoryType(.menstrualFlow)
+        let calendar = Calendar.current
+        guard let startDate = calendar.date(byAdding: .month, value: -months, to: Date()) else { return [] }
+        let predicate = HKQuery.predicateForSamples(withStart: startDate, end: Date(), options: .strictStartDate)
+        let sort = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)
+
+        return await withCheckedContinuation { continuation in
+            let query = HKSampleQuery(sampleType: type, predicate: predicate, limit: HKObjectQueryNoLimit, sortDescriptors: [sort]) { _, samples, _ in
+                let entries = (samples as? [HKCategorySample])?.map { sample in
+                    (date: sample.startDate, flow: sample.value)
+                } ?? []
+                continuation.resume(returning: entries)
+            }
+            store.execute(query)
+        }
+    }
+
+    /// Estimates cycle length from HealthKit menstrual flow data
+    func estimatedCycleLength() async -> Int? {
+        let history = await menstrualFlowHistory(months: 6)
+        guard !history.isEmpty else { return nil }
+
+        // Find period start dates (gaps of 10+ days between flow entries indicate new cycles)
+        var periodStarts: [Date] = []
+        var lastDate: Date?
+        for entry in history {
+            if let last = lastDate {
+                let gap = entry.date.timeIntervalSince(last) / (24 * 3600)
+                if gap > 10 {
+                    periodStarts.append(entry.date)
+                }
+            } else {
+                periodStarts.append(entry.date)
+            }
+            lastDate = entry.date
+        }
+
+        guard periodStarts.count >= 2 else { return nil }
+
+        // Average cycle length from consecutive period starts
+        var totalDays = 0
+        for i in 1..<periodStarts.count {
+            totalDays += Int(periodStarts[i].timeIntervalSince(periodStarts[i-1]) / (24 * 3600))
+        }
+        return totalDays / (periodStarts.count - 1)
+    }
+
+    /// Calculates current cycle day based on last period start from HealthKit
+    func currentCycleDay() async -> Int? {
+        guard let lastStart = await lastMenstrualFlowStart() else { return nil }
+        let days = Calendar.current.dateComponents([.day], from: lastStart, to: Date()).day ?? 0
+        return max(1, days + 1)
     }
 
     // MARK: - Helpers

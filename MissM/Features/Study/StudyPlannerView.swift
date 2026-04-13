@@ -47,6 +47,7 @@ class PomodoroTimer {
 
     func start() {
         isRunning = true
+        FocusService.shared.enableStudyMode()
         timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
             guard let self else { return }
             if self.remainingSeconds > 0 {
@@ -61,12 +62,14 @@ class PomodoroTimer {
         isRunning = false
         timer?.invalidate()
         timer = nil
+        FocusService.shared.disableStudyMode()
     }
 
     func reset() {
         pause()
         remainingSeconds = totalSeconds
     }
+
 
     func skip() {
         complete()

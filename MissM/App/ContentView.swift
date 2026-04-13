@@ -27,6 +27,7 @@ struct ContentView: View {
                     selectedTab: $selectedTab,
                     claudeService: claudeService!
                 )
+                .withNotifications()
             }
         }
         .frame(minWidth: 520, idealWidth: 780, maxWidth: .infinity, minHeight: 500, idealHeight: 720, maxHeight: .infinity)
@@ -41,6 +42,7 @@ enum AppTab: String, CaseIterable {
     case today     = "☀️"
     case school    = "📚"
     case home      = "🏠"
+    case planner   = "🧠"
     case tools     = "🔧"
     case wellness  = "💗"
     case settings  = "⚙️"
@@ -51,6 +53,7 @@ enum AppTab: String, CaseIterable {
         case .today:    return "Today"
         case .school:   return "School"
         case .home:     return "Home"
+        case .planner:  return "Planner"
         case .tools:    return "Tools"
         case .wellness: return "Health"
         case .settings: return "Settings"
@@ -85,6 +88,8 @@ struct MainAppView: View {
                         SchoolView(claudeService: claudeService)
                     case .home:
                         HomeView(claudeService: claudeService)
+                    case .planner:
+                        SmartPlannerView(claudeService: claudeService)
                     case .tools:
                         MacToolsView(claudeService: claudeService)
                     case .wellness:

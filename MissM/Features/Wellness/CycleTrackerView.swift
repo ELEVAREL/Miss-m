@@ -1,4 +1,6 @@
 import SwiftUI
+import Vision
+import AppKit
 
 // MARK: - Cycle Phase
 
@@ -89,9 +91,46 @@ class CycleTrackerViewModel {
 
     let allSymptoms = ["Tired", "Energetic", "Cramps", "Bloated", "Happy", "Anxious", "Headache", "Cravings", "Good Skin", "Moody"]
 
+    var hasHealthKitData = false
+    var isImporting = false
+    var importStatus = ""
+
     init(claudeService: ClaudeService) {
         self.claudeService = claudeService
         Task { await load() }
+    }
+
+    /// Imports cycle data from HealthKit (reads Flo-synced menstrual data)
+    func importFromHealthKit() async {
+        isImporting = true
+        importStatus = "Reading HealthKit..."
+
+        let health = HealthService.shared
+        if !health.isAuthorized { _ = await health.requestAccess() }
+
+        // Get cycle day and length from HealthKit
+        if let cycleDay = await health.currentCycleDay() {
+            data.currentDay = min(cycleDay, data.cycleLength)
+            hasHealthKitData = true
+            importStatus = "Found cycle day: \(cycleDay)"
+        }
+
+        if let cycleLength = await health.estimatedCycleLength() {
+            data.cycleLength = cycleLength
+            importStatus = "Cycle length: \(cycleLength) days"
+        }
+
+        if let lastStart = await health.lastMenstrualFlowStart() {
+            data.lastPeriodStart = lastStart
+        }
+
+        save()
+        isImporting = false
+        if hasHealthKitData {
+            importStatus = "Synced from Health (Flo)"
+        } else {
+            importStatus = "No cycle data found. Enable Flo \u{2192} Health sync first."
+        }
     }
 
     var currentPhase: CyclePhase {
@@ -133,6 +172,100 @@ class CycleTrackerViewModel {
         isLoadingInsight = false
     }
 
+    // MARK: - Flo Screenshot Import (Vision OCR + Claude)
+
+    var isScanning = false
+    var scanStatus = ""
+    var scannedText = ""
+
+    func scanFloScreenshot() {
+        let panel = NSOpenPanel()
+        panel.title = "Select a Flo App Screenshot"
+        panel.allowedContentTypes = [.png, .jpeg, .tiff]
+        panel.allowsMultipleSelection = false
+        panel.canChooseDirectories = false
+
+        guard panel.runModal() == .OK, let url = panel.url else { return }
+        Task { await processImage(at: url) }
+    }
+
+    func processImage(at url: URL) async {
+        isScanning = true
+        scanStatus = "Scanning screenshot..."
+
+        // Step 1: Vision OCR
+        guard let cgImage = NSImage(contentsOf: url)?.cgImage(forProposedRect: nil, context: nil, hints: nil) else {
+            scanStatus = "Could not load image"
+            isScanning = false
+            return
+        }
+
+        let request = VNRecognizeTextRequest()
+        request.recognitionLevel = .accurate
+        request.usesLanguageCorrection = true
+
+        let handler = VNImageRequestHandler(cgImage: cgImage, options: [:])
+        do {
+            try handler.perform([request])
+        } catch {
+            scanStatus = "OCR failed"
+            isScanning = false
+            return
+        }
+
+        let recognizedText = (request.results ?? [])
+            .compactMap { $0.topCandidates(1).first?.string }
+            .joined(separator: "\n")
+
+        scannedText = recognizedText
+        scanStatus = "Analyzing with Miss M..."
+
+        // Step 2: Claude interprets the OCR text
+        do {
+            let response = try await claudeService.ask("""
+            I scanned a screenshot from the Flo period tracking app. Here is the text found:
+
+            \(recognizedText)
+
+            Extract the following information and return ONLY a JSON object (no markdown):
+            {
+                "cycleDay": <current day number in cycle, or null>,
+                "cycleLength": <total cycle length in days, or null>,
+                "lastPeriodStart": "<date in YYYY-MM-DD format, or null>",
+                "currentPhase": "<menstrual/follicular/ovulation/luteal, or null>"
+            }
+
+            If you can't determine a value, use null. Parse dates from any format you find.
+            """)
+
+            // Parse Claude's JSON response
+            if let jsonData = response.data(using: .utf8),
+               let parsed = try? JSONSerialization.jsonObject(with: jsonData) as? [String: Any] {
+
+                if let day = parsed["cycleDay"] as? Int {
+                    data.currentDay = day
+                }
+                if let length = parsed["cycleLength"] as? Int {
+                    data.cycleLength = length
+                }
+                if let dateStr = parsed["lastPeriodStart"] as? String {
+                    let formatter = DateFormatter()
+                    formatter.dateFormat = "yyyy-MM-dd"
+                    if let date = formatter.date(from: dateStr) {
+                        data.lastPeriodStart = date
+                    }
+                }
+                save()
+                scanStatus = "Imported from Flo screenshot"
+            } else {
+                scanStatus = "Could not parse — try a clearer screenshot"
+            }
+        } catch {
+            scanStatus = "Analysis failed — try again"
+        }
+        isScanning = false
+    }
+
     func load() async {
         data = await DataStore.shared.loadOrDefault(CycleData.self, from: "cycle.json", default: CycleData())
     }
@@ -169,7 +302,103 @@ struct CycleTrackerView: View {
                         .font(Theme.Fonts.display(18))
                         .foregroundColor(Theme.Colors.rosePrimary)
                     Spacer()
+                    if vm.hasHealthKitData {
+                        HStack(spacing: 3) {
+                            Image(systemName: "heart.fill")
+                                .font(.system(size: 8))
+                            Text("Flo Synced")
+                                .font(.system(size: 9, weight: .medium))
+                        }
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 3)
+                        .background(Color(hex: "#26A69A"))
+                        .cornerRadius(8)
+                    }
                 }
+                .padding(.horizontal, 14)
+
+                // HealthKit / Flo Import
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("\u{1F4F1} SYNC FROM FLO")
+                        .font(.custom("CormorantGaramond-SemiBold", size: 11))
+                        .tracking(2)
+                        .foregroundColor(Theme.Colors.textSoft)
+
+                    Text("Flo syncs your period data to Apple Health. Miss M reads it from there.")
+                        .font(.system(size: 10))
+                        .foregroundColor(Theme.Colors.textMedium)
+                        .lineSpacing(2)
+
+                    HStack(spacing: 8) {
+                        Button(action: {
+                            Task { await vm.importFromHealthKit() }
+                        }) {
+                            HStack(spacing: 4) {
+                                if vm.isImporting {
+                                    ProgressView().scaleEffect(0.6)
+                                } else {
+                                    Image(systemName: "heart.text.square")
+                                }
+                                Text(vm.isImporting ? "Importing..." : "Import from Health")
+                            }
+                            .font(.system(size: 10, weight: .medium))
+                        }
+                        .buttonStyle(RoseButtonStyle())
+                        .disabled(vm.isImporting)
+
+                        if !vm.importStatus.isEmpty {
+                            Text(vm.importStatus)
+                                .font(.system(size: 9))
+                                .foregroundColor(vm.hasHealthKitData ? Color(hex: "#26A69A") : Theme.Colors.textSoft)
+                        }
+                    }
+
+                    // Flo Screenshot Scanner
+                    VStack(alignment: .leading, spacing: 6) {
+                        Divider().padding(.vertical, 4)
+                        Text("Or scan a Flo screenshot if Health sync isn't working:")
+                            .font(.system(size: 9))
+                            .foregroundColor(Theme.Colors.textSoft)
+
+                        HStack(spacing: 8) {
+                            Button(action: { vm.scanFloScreenshot() }) {
+                                HStack(spacing: 4) {
+                                    if vm.isScanning {
+                                        ProgressView().scaleEffect(0.6)
+                                    } else {
+                                        Image(systemName: "camera.viewfinder")
+                                    }
+                                    Text(vm.isScanning ? "Scanning..." : "Scan Flo Screenshot")
+                                }
+                                .font(.system(size: 10, weight: .medium))
+                                .foregroundColor(Theme.Colors.rosePrimary)
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 7)
+                                .background(Theme.Colors.rosePale)
+                                .cornerRadius(10)
+                                .overlay(RoundedRectangle(cornerRadius: 10).stroke(Theme.Colors.roseLight, lineWidth: 1))
+                            }
+                            .buttonStyle(.plain)
+                            .disabled(vm.isScanning)
+
+                            if !vm.scanStatus.isEmpty {
+                                Text(vm.scanStatus)
+                                    .font(.system(size: 9))
+                                    .foregroundColor(Theme.Colors.textMedium)
+                            }
+                        }
+
+                        if vm.isScanning {
+                            HStack(spacing: 8) {
+                                SkeletonView(height: 12)
+                                SkeletonView(height: 12).frame(width: 80)
+                            }
+                            .padding(.top, 2)
+                        }
+                    }
+                }
+                .glassCard(padding: 10)
                 .padding(.horizontal, 14)
 
                 // Cycle Ring

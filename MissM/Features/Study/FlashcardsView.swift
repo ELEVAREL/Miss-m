@@ -447,52 +447,33 @@ struct FlashcardsView: View {
     }
 }
 
-// MARK: - 3D Flip Card View
+// MARK: - 3D Flip Card View (Clean Design)
 
 struct FlipCardView3D: View {
     let card: Flashcard
     let isFlipped: Bool
+    @State private var shadowRadius: CGFloat = 10
 
     var body: some View {
         ZStack {
-            // Front face — Question
-            VStack(spacing: 12) {
-                // Decorative top accent
-                HStack {
-                    RoundedRectangle(cornerRadius: 2)
-                        .fill(Color.white.opacity(0.3))
-                        .frame(width: 30, height: 3)
-                    Spacer()
-                    Text("QUESTION")
-                        .font(.system(size: 9, weight: .bold))
-                        .tracking(2)
-                        .foregroundColor(.white.opacity(0.5))
-                    Spacer()
-                    RoundedRectangle(cornerRadius: 2)
-                        .fill(Color.white.opacity(0.3))
-                        .frame(width: 30, height: 3)
-                }
-
+            // Front face — Question (clean, minimal)
+            VStack(spacing: 0) {
                 Spacer()
 
                 Text(card.question)
-                    .font(.custom("PlayfairDisplay-Italic", size: 17))
+                    .font(.custom("PlayfairDisplay-Italic", size: 18))
                     .foregroundColor(.white)
                     .multilineTextAlignment(.center)
-                    .lineSpacing(4)
-                    .padding(.horizontal, 20)
-                    .shadow(color: .black.opacity(0.15), radius: 2, y: 1)
+                    .lineSpacing(5)
+                    .padding(.horizontal, 24)
 
                 Spacer()
 
-                // Decorative bottom
-                HStack(spacing: 4) {
-                    ForEach(0..<3, id: \.self) { _ in
-                        Circle()
-                            .fill(Color.white.opacity(0.25))
-                            .frame(width: 4, height: 4)
-                    }
-                }
+                Text("tap to reveal")
+                    .font(.system(size: 9, weight: .medium))
+                    .foregroundColor(.white.opacity(0.4))
+                    .tracking(1)
+                    .padding(.bottom, 4)
             }
             .padding(20)
             .frame(maxWidth: .infinity)
@@ -500,43 +481,31 @@ struct FlipCardView3D: View {
             .background(
                 ZStack {
                     Theme.Gradients.heroCard
-                    // Glass shimmer overlay
-                    LinearGradient(
-                        colors: [
-                            Color.white.opacity(0.15),
-                            Color.clear,
-                            Color.white.opacity(0.08)
-                        ],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
+                    // Subtle top-left light
+                    RadialGradient(
+                        colors: [Color.white.opacity(0.12), Color.clear],
+                        center: .topLeading,
+                        startRadius: 0,
+                        endRadius: 200
                     )
                 }
             )
             .cornerRadius(Theme.Radius.xl)
             .overlay(
                 RoundedRectangle(cornerRadius: Theme.Radius.xl)
-                    .stroke(Color.white.opacity(0.3), lineWidth: 1)
+                    .stroke(Color.white.opacity(0.2), lineWidth: 1)
             )
-            .shadow(color: Theme.Colors.roseDeep.opacity(0.35), radius: 15, x: 0, y: 8)
+            .shadow(color: Theme.Colors.roseDeep.opacity(0.3), radius: isFlipped ? 4 : shadowRadius, x: 0, y: isFlipped ? 2 : 8)
             .opacity(isFlipped ? 0 : 1)
-            .rotation3DEffect(.degrees(isFlipped ? 180 : 0), axis: (x: 0, y: 1, z: 0))
+            .rotation3DEffect(.degrees(isFlipped ? 180 : 0), axis: (x: 0, y: 1, z: 0), perspective: 0.4)
 
-            // Back face — Answer
-            VStack(spacing: 12) {
-                HStack {
-                    RoundedRectangle(cornerRadius: 2)
-                        .fill(Theme.Colors.roseLight)
-                        .frame(width: 30, height: 3)
-                    Spacer()
-                    Text("ANSWER")
-                        .font(.system(size: 9, weight: .bold))
-                        .tracking(2)
-                        .foregroundColor(Theme.Colors.rosePrimary.opacity(0.5))
-                    Spacer()
-                    RoundedRectangle(cornerRadius: 2)
-                        .fill(Theme.Colors.roseLight)
-                        .frame(width: 30, height: 3)
-                }
+            // Back face — Answer (clean white with rose accent)
+            VStack(spacing: 0) {
+                // Rose accent line
+                RoundedRectangle(cornerRadius: 2)
+                    .fill(Theme.Gradients.rosePrimary)
+                    .frame(width: 40, height: 3)
+                    .padding(.top, 16)
 
                 Spacer()
 
@@ -544,47 +513,31 @@ struct FlipCardView3D: View {
                     .font(.system(size: 14, weight: .medium))
                     .foregroundColor(Theme.Colors.textPrimary)
                     .multilineTextAlignment(.center)
-                    .lineSpacing(4)
-                    .padding(.horizontal, 20)
+                    .lineSpacing(5)
+                    .padding(.horizontal, 24)
 
                 Spacer()
-
-                HStack(spacing: 4) {
-                    ForEach(0..<3, id: \.self) { _ in
-                        Circle()
-                            .fill(Theme.Colors.roseLight)
-                            .frame(width: 4, height: 4)
-                    }
-                }
             }
-            .padding(20)
+            .padding(12)
             .frame(maxWidth: .infinity)
             .frame(height: 200)
-            .background(
-                ZStack {
-                    Color.white
-                    // Subtle pink glass overlay
-                    LinearGradient(
-                        colors: [
-                            Theme.Colors.rosePale.opacity(0.3),
-                            Color.white,
-                            Theme.Colors.rosePale.opacity(0.15)
-                        ],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                }
-            )
+            .background(Color.white)
+            .background(.ultraThinMaterial)
             .cornerRadius(Theme.Radius.xl)
             .overlay(
                 RoundedRectangle(cornerRadius: Theme.Radius.xl)
-                    .stroke(Theme.Colors.roseLight, lineWidth: 1.5)
+                    .stroke(Theme.Colors.roseLight.opacity(0.6), lineWidth: 1)
             )
-            .shadow(color: Theme.Colors.shadow, radius: 12, x: 0, y: 6)
+            .shadow(color: Theme.Colors.shadow, radius: isFlipped ? shadowRadius : 4, x: 0, y: isFlipped ? 8 : 2)
             .opacity(isFlipped ? 1 : 0)
-            .rotation3DEffect(.degrees(isFlipped ? 0 : -180), axis: (x: 0, y: 1, z: 0))
+            .rotation3DEffect(.degrees(isFlipped ? 0 : -180), axis: (x: 0, y: 1, z: 0), perspective: 0.4)
         }
-        .animation(.spring(response: 0.5, dampingFraction: 0.7), value: isFlipped)
+        .animation(.spring(response: 0.45, dampingFraction: 0.7), value: isFlipped)
+        .onChange(of: isFlipped) { _, flipped in
+            withAnimation(.easeOut(duration: 0.4)) {
+                shadowRadius = flipped ? 14 : 10
+            }
+        }
     }
 }
 
@@ -629,6 +582,7 @@ struct AnswerPill: View {
     let icon: String
     let color: Color
     let action: () -> Void
+    @State private var isHovered = false
 
     var body: some View {
         Button(action: action) {
@@ -638,20 +592,23 @@ struct AnswerPill: View {
                 Text(label)
                     .font(.system(size: 12, weight: .semibold))
             }
-            .foregroundColor(.white)
+            .foregroundColor(isHovered ? .white : color)
             .frame(maxWidth: .infinity)
             .padding(.vertical, 11)
-            .background(
-                LinearGradient(
-                    colors: [color, color.opacity(0.8)],
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
-            )
+            .background(isHovered ? color : Color.clear)
             .cornerRadius(14)
-            .shadow(color: color.opacity(0.3), radius: 6, x: 0, y: 3)
+            .overlay(
+                RoundedRectangle(cornerRadius: 14)
+                    .stroke(color, lineWidth: 1.5)
+            )
+            .shadow(color: isHovered ? color.opacity(0.25) : Color.clear, radius: 6, x: 0, y: 3)
         }
         .buttonStyle(.plain)
+        .onHover { hovering in
+            withAnimation(.easeOut(duration: 0.15)) { isHovered = hovering }
+        }
+        .scaleEffect(isHovered ? 1.02 : 1.0)
+        .animation(Theme.Animations.quickFade, value: isHovered)
     }
 }
 

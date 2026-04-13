@@ -58,7 +58,7 @@ class PomodoroViewModel {
         totalTime = TimeInterval(focusDuration * 60)
         timeRemaining = totalTime
         startTimer()
-        if dndEnabled { enableDND() }
+        if dndEnabled { FocusService.shared.enableStudyMode() }
     }
 
     func pause() {
@@ -83,6 +83,7 @@ class PomodoroViewModel {
         timeRemaining = TimeInterval(focusDuration * 60)
         totalTime = timeRemaining
         sessionsCompleted = 0
+        if dndEnabled { FocusService.shared.disableStudyMode() }
     }
 
     private func startTimer() {
@@ -124,13 +125,7 @@ class PomodoroViewModel {
         }
     }
 
-    private func enableDND() {
-        let script = """
-        do shell script "defaults -currentHost write com.apple.notificationcenterui doNotDisturb -boolean true"
-        """
-        var error: NSDictionary?
-        NSAppleScript(source: script)?.executeAndReturnError(&error)
-    }
+    // DND now handled by FocusService (supports cross-device sync)
 }
 
 // MARK: - Pomodoro Menu Bar View
@@ -309,15 +304,69 @@ struct PomodoroMenuBarView: View {
                         }
                     }
                     HStack {
-                        Text("DND").font(.system(size: 11)).foregroundColor(Theme.Colors.textMedium)
+                        Text("Auto-DND").font(.system(size: 11)).foregroundColor(Theme.Colors.textMedium)
                         Spacer()
                         Toggle("", isOn: $viewModel.dndEnabled)
                             .toggleStyle(.switch)
                             .scaleEffect(0.7)
                     }
+                    if viewModel.dndEnabled && !FocusService.shared.isSetupComplete {
+                        HStack(spacing: 4) {
+                            Image(systemName: "exclamationmark.triangle.fill")
+                                .foregroundColor(.orange)
+                                .font(.system(size: 10))
+                            Text("Focus shortcut not found")
+                                .font(.system(size: 9))
+                                .foregroundColor(Theme.Colors.textSoft)
+                        }
+                    }
                 }
                 .glassCard(padding: 10)
                 .padding(.horizontal, 14)
+
+                // Focus Setup Guide
+                if viewModel.dndEnabled && !FocusService.shared.isSetupComplete {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("\u{1F514} FOCUS MODE SETUP")
+                            .font(.custom("CormorantGaramond-SemiBold", size: 11))
+                            .tracking(2)
+                            .foregroundColor(Theme.Colors.textSoft)
+                        Text("Set up Focus to auto-DND on all your devices when studying")
+                            .font(.system(size: 10))
+                            .foregroundColor(Theme.Colors.textMedium)
+
+                        ForEach(Array(FocusService.setupSteps.enumerated()), id: \.offset) { index, item in
+                            HStack(alignment: .top, spacing: 8) {
+                                Text("\(index + 1)")
+                                    .font(.system(size: 9, weight: .bold))
+                                    .foregroundColor(.white)
+                                    .frame(width: 18, height: 18)
+                                    .background(Theme.Colors.rosePrimary)
+                                    .cornerRadius(9)
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(item.step)
+                                        .font(.system(size: 10, weight: .semibold))
+                                        .foregroundColor(Theme.Colors.textPrimary)
+                                    Text(item.detail)
+                                        .font(.system(size: 9))
+                                        .foregroundColor(Theme.Colors.textSoft)
+                                        .lineSpacing(2)
+                                }
+                            }
+                        }
+
+                        Button(action: { FocusService.shared.checkSetup() }) {
+                            HStack(spacing: 4) {
+                                Image(systemName: "arrow.clockwise")
+                                Text("Check Again")
+                            }
+                            .font(.system(size: 10, weight: .medium))
+                        }
+                        .buttonStyle(RoseButtonStyle())
+                    }
+                    .glassCard(padding: 10)
+                    .padding(.horizontal, 14)
+                }
 
                 Spacer().frame(height: 14)
             }

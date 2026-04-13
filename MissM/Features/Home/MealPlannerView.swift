@@ -36,6 +36,13 @@ struct MealPlan: Codable {
     }
 }
 
+// MARK: - Food Preferences
+
+struct FoodPreferences: Codable {
+    var dislikedFoods: [String] = []
+    var allergies: [String] = []
+}
+
 // MARK: - Meal Planner ViewModel
 
 @Observable
@@ -44,11 +51,15 @@ class MealPlannerViewModel {
     var isGenerating = false
     var dietaryFilter = "Balanced"
     let filters = ["Balanced", "Vegetarian", "High Protein", "Quick Meals"]
+    var foodPrefs = FoodPreferences()
+    var newDislike = ""
+    var newAllergy = ""
+    var showPreferences = false
     private let claudeService: ClaudeService
 
     init(claudeService: ClaudeService) {
         self.claudeService = claudeService
-        Task { await load() }
+        Task { await load(); await loadPrefs() }
     }
 
     var currentWeek: MealPlan.WeekPlan {
@@ -56,10 +67,46 @@ class MealPlannerViewModel {
         set { if plan.weeks.isEmpty { plan.weeks.append(newValue) } else { plan.weeks[0] = newValue } }
     }
 
+    func addDislike(_ food: String) {
+        let trimmed = food.trimmingCharacters(in: .whitespaces)
+        guard !trimmed.isEmpty, !foodPrefs.dislikedFoods.contains(trimmed) else { return }
+        foodPrefs.dislikedFoods.append(trimmed)
+        savePrefs()
+    }
+
+    func removeDislike(_ food: String) {
+        foodPrefs.dislikedFoods.removeAll { $0 == food }
+        savePrefs()
+    }
+
+    func addAllergy(_ food: String) {
+        let trimmed = food.trimmingCharacters(in: .whitespaces)
+        guard !trimmed.isEmpty, !foodPrefs.allergies.contains(trimmed) else { return }
+        foodPrefs.allergies.append(trimmed)
+        savePrefs()
+    }
+
+    func removeAllergy(_ food: String) {
+        foodPrefs.allergies.removeAll { $0 == food }
+        savePrefs()
+    }
+
+    func loadPrefs() async {
+        foodPrefs = await DataStore.shared.loadOrDefault(FoodPreferences.self, from: "food-prefs.json", default: FoodPreferences())
+    }
+
+    func savePrefs() {
+        Task { try? await DataStore.shared.save(foodPrefs, to: "food-prefs.json") }
+    }
+
     func generateWeek() async {
         isGenerating = true
+        let dislikesStr = foodPrefs.dislikedFoods.isEmpty ? "None" : foodPrefs.dislikedFoods.joined(separator: ", ")
+        let allergiesStr = foodPrefs.allergies.isEmpty ? "None" : foodPrefs.allergies.joined(separator: ", ")
         let prompt = """
         Generate a 7-day meal plan (Monday-Sunday) for a busy university student. Diet: \(dietaryFilter).
+        IMPORTANT — She DISLIKES these foods (never include them): \(dislikesStr)
+        ALLERGIES (absolutely never include): \(allergiesStr)
         Return ONLY a JSON array of 7 objects like: [{"breakfast":"...","lunch":"...","dinner":"..."}]
         Keep meal names short (3-5 words). Include emojis.
         """
@@ -124,23 +171,154 @@ struct MealPlannerView: View {
                 }
                 .padding(.horizontal, 14)
 
-                // Diet Filters
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 6) {
-                        ForEach(viewModel.filters, id: \.self) { filter in
-                            Button(action: { viewModel.dietaryFilter = filter }) {
-                                Text(filter)
-                                    .font(.system(size: 10, weight: .medium))
-                                    .foregroundColor(viewModel.dietaryFilter == filter ? .white : Theme.Colors.textMedium)
-                                    .padding(.horizontal, 10)
-                                    .padding(.vertical, 5)
-                                    .background(viewModel.dietaryFilter == filter ? Theme.Gradients.rosePrimary : LinearGradient(colors: [Color.white.opacity(0.7)], startPoint: .top, endPoint: .bottom))
-                                    .cornerRadius(10)
-                                    .overlay(RoundedRectangle(cornerRadius: 10).stroke(viewModel.dietaryFilter == filter ? Color.clear : Theme.Colors.roseLight, lineWidth: 1))
+                // Diet Filters + Preferences Toggle
+                HStack(spacing: 6) {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 6) {
+                            ForEach(viewModel.filters, id: \.self) { filter in
+                                Button(action: { viewModel.dietaryFilter = filter }) {
+                                    Text(filter)
+                                        .font(.system(size: 10, weight: .medium))
+                                        .foregroundColor(viewModel.dietaryFilter == filter ? .white : Theme.Colors.textMedium)
+                                        .padding(.horizontal, 10)
+                                        .padding(.vertical, 5)
+                                        .background(viewModel.dietaryFilter == filter ? Theme.Gradients.rosePrimary : LinearGradient(colors: [Color.white.opacity(0.7)], startPoint: .top, endPoint: .bottom))
+                                        .cornerRadius(10)
+                                        .overlay(RoundedRectangle(cornerRadius: 10).stroke(viewModel.dietaryFilter == filter ? Color.clear : Theme.Colors.roseLight, lineWidth: 1))
+                                }
+                                .buttonStyle(.plain)
                             }
-                            .buttonStyle(.plain)
                         }
                     }
+                    Button(action: { viewModel.showPreferences.toggle() }) {
+                        Image(systemName: viewModel.showPreferences ? "xmark" : "slider.horizontal.3")
+                            .font(.system(size: 11))
+                            .foregroundColor(Theme.Colors.rosePrimary)
+                            .padding(6)
+                            .background(Color.white.opacity(0.7))
+                            .cornerRadius(8)
+                            .overlay(RoundedRectangle(cornerRadius: 8).stroke(Theme.Colors.roseLight, lineWidth: 1))
+                    }
+                    .buttonStyle(.plain)
+                }
+                .padding(.horizontal, 14)
+
+                // Food Preferences Panel
+                if viewModel.showPreferences {
+                    VStack(alignment: .leading, spacing: 10) {
+                        // Dislikes
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text("\u{1F6AB} FOODS I DON'T LIKE")
+                                .font(.custom("CormorantGaramond-SemiBold", size: 11))
+                                .tracking(2)
+                                .foregroundColor(Theme.Colors.textSoft)
+
+                            if !viewModel.foodPrefs.dislikedFoods.isEmpty {
+                                FlowLayout(spacing: 4) {
+                                    ForEach(viewModel.foodPrefs.dislikedFoods, id: \.self) { food in
+                                        HStack(spacing: 3) {
+                                            Text(food)
+                                                .font(.system(size: 9, weight: .medium))
+                                            Button(action: { viewModel.removeDislike(food) }) {
+                                                Image(systemName: "xmark")
+                                                    .font(.system(size: 7, weight: .bold))
+                                            }
+                                            .buttonStyle(.plain)
+                                        }
+                                        .foregroundColor(Theme.Colors.roseDeep)
+                                        .padding(.horizontal, 8)
+                                        .padding(.vertical, 4)
+                                        .background(Theme.Colors.rosePale)
+                                        .cornerRadius(8)
+                                    }
+                                }
+                            }
+
+                            HStack(spacing: 6) {
+                                TextField("e.g. mushrooms, olives...", text: $viewModel.newDislike)
+                                    .textFieldStyle(.plain)
+                                    .font(.system(size: 11))
+                                    .padding(6)
+                                    .background(Color.white.opacity(0.6))
+                                    .cornerRadius(6)
+                                    .onSubmit {
+                                        viewModel.addDislike(viewModel.newDislike)
+                                        viewModel.newDislike = ""
+                                    }
+                                Button(action: {
+                                    viewModel.addDislike(viewModel.newDislike)
+                                    viewModel.newDislike = ""
+                                }) {
+                                    Image(systemName: "plus")
+                                        .font(.system(size: 10, weight: .bold))
+                                        .foregroundColor(.white)
+                                        .padding(6)
+                                        .background(Theme.Colors.rosePrimary)
+                                        .cornerRadius(6)
+                                }
+                                .buttonStyle(.plain)
+                                .disabled(viewModel.newDislike.trimmingCharacters(in: .whitespaces).isEmpty)
+                            }
+                        }
+
+                        Divider()
+
+                        // Allergies
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text("\u{26A0}\u{FE0F} ALLERGIES")
+                                .font(.custom("CormorantGaramond-SemiBold", size: 11))
+                                .tracking(2)
+                                .foregroundColor(Theme.Colors.textSoft)
+
+                            if !viewModel.foodPrefs.allergies.isEmpty {
+                                FlowLayout(spacing: 4) {
+                                    ForEach(viewModel.foodPrefs.allergies, id: \.self) { food in
+                                        HStack(spacing: 3) {
+                                            Text(food)
+                                                .font(.system(size: 9, weight: .medium))
+                                            Button(action: { viewModel.removeAllergy(food) }) {
+                                                Image(systemName: "xmark")
+                                                    .font(.system(size: 7, weight: .bold))
+                                            }
+                                            .buttonStyle(.plain)
+                                        }
+                                        .foregroundColor(.red)
+                                        .padding(.horizontal, 8)
+                                        .padding(.vertical, 4)
+                                        .background(Color.red.opacity(0.1))
+                                        .cornerRadius(8)
+                                    }
+                                }
+                            }
+
+                            HStack(spacing: 6) {
+                                TextField("e.g. peanuts, gluten...", text: $viewModel.newAllergy)
+                                    .textFieldStyle(.plain)
+                                    .font(.system(size: 11))
+                                    .padding(6)
+                                    .background(Color.white.opacity(0.6))
+                                    .cornerRadius(6)
+                                    .onSubmit {
+                                        viewModel.addAllergy(viewModel.newAllergy)
+                                        viewModel.newAllergy = ""
+                                    }
+                                Button(action: {
+                                    viewModel.addAllergy(viewModel.newAllergy)
+                                    viewModel.newAllergy = ""
+                                }) {
+                                    Image(systemName: "plus")
+                                        .font(.system(size: 10, weight: .bold))
+                                        .foregroundColor(.white)
+                                        .padding(6)
+                                        .background(Color.red)
+                                        .cornerRadius(6)
+                                }
+                                .buttonStyle(.plain)
+                                .disabled(viewModel.newAllergy.trimmingCharacters(in: .whitespaces).isEmpty)
+                            }
+                        }
+                    }
+                    .glassCard(padding: 10)
                     .padding(.horizontal, 14)
                 }
 
@@ -220,5 +398,45 @@ struct MealCell: View {
             }
             .padding(10)
         }
+    }
+}
+
+// MARK: - Flow Layout (for food tags)
+
+struct FlowLayout: Layout {
+    var spacing: CGFloat = 4
+
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+        let result = arrange(proposal: proposal, subviews: subviews)
+        return result.size
+    }
+
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+        let result = arrange(proposal: ProposedViewSize(width: bounds.width, height: bounds.height), subviews: subviews)
+        for (index, position) in result.positions.enumerated() {
+            subviews[index].place(at: CGPoint(x: bounds.minX + position.x, y: bounds.minY + position.y), proposal: .unspecified)
+        }
+    }
+
+    private func arrange(proposal: ProposedViewSize, subviews: Subviews) -> (positions: [CGPoint], size: CGSize) {
+        let maxWidth = proposal.width ?? .infinity
+        var positions: [CGPoint] = []
+        var x: CGFloat = 0
+        var y: CGFloat = 0
+        var rowHeight: CGFloat = 0
+
+        for subview in subviews {
+            let size = subview.sizeThatFits(.unspecified)
+            if x + size.width > maxWidth, x > 0 {
+                x = 0
+                y += rowHeight + spacing
+                rowHeight = 0
+            }
+            positions.append(CGPoint(x: x, y: y))
+            rowHeight = max(rowHeight, size.height)
+            x += size.width + spacing
+        }
+
+        return (positions, CGSize(width: maxWidth, height: y + rowHeight))
     }
 }

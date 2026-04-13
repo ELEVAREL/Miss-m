@@ -123,6 +123,126 @@ struct RoseButtonStyle: ButtonStyle {
     }
 }
 
+// MARK: - Animation Presets
+extension Theme {
+    struct Animations {
+        static let springBounce = Animation.spring(response: 0.4, dampingFraction: 0.65)
+        static let springSnap = Animation.spring(response: 0.3, dampingFraction: 0.8)
+        static let smoothEase = Animation.easeInOut(duration: 0.35)
+        static let quickFade = Animation.easeOut(duration: 0.2)
+    }
+}
+
+// MARK: - Shimmer Loading Effect
+struct ShimmerModifier: ViewModifier {
+    @State private var phase: CGFloat = -1
+
+    func body(content: Content) -> some View {
+        content
+            .overlay(
+                GeometryReader { geo in
+                    LinearGradient(
+                        colors: [
+                            Color.white.opacity(0),
+                            Color.white.opacity(0.4),
+                            Color.white.opacity(0)
+                        ],
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    )
+                    .frame(width: geo.size.width * 0.6)
+                    .offset(x: phase * geo.size.width * 1.6 - geo.size.width * 0.3)
+                }
+            )
+            .clipped()
+            .onAppear {
+                withAnimation(.linear(duration: 1.5).repeatForever(autoreverses: false)) {
+                    phase = 1
+                }
+            }
+    }
+}
+
+// MARK: - Pulse Glow Effect
+struct PulseGlowModifier: ViewModifier {
+    let color: Color
+    let radius: CGFloat
+    @State private var isPulsing = false
+
+    func body(content: Content) -> some View {
+        content
+            .shadow(color: color.opacity(isPulsing ? 0.6 : 0.15), radius: isPulsing ? radius : radius * 0.4)
+            .onAppear {
+                withAnimation(.easeInOut(duration: 1.5).repeatForever(autoreverses: true)) {
+                    isPulsing = true
+                }
+            }
+    }
+}
+
+// MARK: - Staggered Appear
+struct StaggeredAppearModifier: ViewModifier {
+    let index: Int
+    @State private var isVisible = false
+
+    func body(content: Content) -> some View {
+        content
+            .opacity(isVisible ? 1 : 0)
+            .offset(y: isVisible ? 0 : 12)
+            .onAppear {
+                withAnimation(.easeOut(duration: 0.4).delay(Double(index) * 0.08)) {
+                    isVisible = true
+                }
+            }
+    }
+}
+
+// MARK: - Animated Counter
+struct AnimatedCounter: View {
+    let value: Int
+    let font: Font
+    let color: Color
+    @State private var displayValue: Int = 0
+
+    var body: some View {
+        Text("\(displayValue)")
+            .font(font)
+            .foregroundColor(color)
+            .contentTransition(.numericText(value: Double(displayValue)))
+            .onAppear {
+                withAnimation(.easeOut(duration: 0.8)) {
+                    displayValue = value
+                }
+            }
+            .onChange(of: value) { _, newVal in
+                withAnimation(.easeOut(duration: 0.5)) {
+                    displayValue = newVal
+                }
+            }
+    }
+}
+
+// MARK: - Skeleton Placeholder
+struct SkeletonView: View {
+    var height: CGFloat = 16
+    var cornerRadius: CGFloat = 8
+
+    var body: some View {
+        RoundedRectangle(cornerRadius: cornerRadius)
+            .fill(Theme.Colors.rosePale)
+            .frame(height: height)
+            .modifier(ShimmerModifier())
+    }
+}
+
+extension View {
+    func shimmer() -> some View { modifier(ShimmerModifier()) }
+    func pulseGlow(_ color: Color = Theme.Colors.rosePrimary, radius: CGFloat = 12) -> some View {
+        modifier(PulseGlowModifier(color: color, radius: radius))
+    }
+    func staggerAppear(index: Int) -> some View { modifier(StaggeredAppearModifier(index: index)) }
+}
+
 // MARK: - Color Hex Extension
 extension Color {
     init(hex: String) {
