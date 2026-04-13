@@ -1,5 +1,8 @@
 import SwiftUI
 import Speech
+import Vision
+import UniformTypeIdentifiers
+import PDFKit
 
 // MARK: - Chat Message Model
 struct ChatMessage: Identifiable {
@@ -73,15 +76,19 @@ class ChatViewModel {
     var inputText = ""
     var isListening = false
     var isProcessing = false
+    var attachedFileName: String?
+    var attachedContent: String?
 
     private let claudeService: ClaudeService
 
     init(claudeService: ClaudeService) {
         self.claudeService = claudeService
         // Welcome message
+        let hour = Calendar.current.component(.hour, from: Date())
+        let greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening"
         messages.append(ChatMessage(
             role: .assistant,
-            content: "Hey Miss M! \u{1F3F5}\u{FE0F} I'm here and ready to help. What do you need today?",
+            content: "\(greeting), Miss M! \u{1F3F5}\u{FE0F} Ready when you are. What do you need today?",
             state: .complete
         ))
     }
@@ -94,8 +101,11 @@ class ChatViewModel {
     }
 
     func sendMessage(_ text: String) {
+        // Build display text with attachment indicator
+        let displayText = attachedFileName != nil ? "\u{1F4CE} \(attachedFileName!)\n\(text)" : text
+
         // Add user message
-        messages.append(ChatMessage(role: .user, content: text, state: .complete))
+        messages.append(ChatMessage(role: .user, content: displayText, state: .complete))
 
         // Add thinking placeholder
         let assistantMsg = ChatMessage(role: .assistant, content: "", state: .thinking)
@@ -113,6 +123,12 @@ class ChatViewModel {
             // Gather live context so Claude has real data
             var context = await gatherLiveContext()
             var contextualPrompt = ClaudeService.buildContextualPrompt(context: context)
+
+            // Inject file attachment content if present
+            if let fileContent = self.attachedContent, let fileName = self.attachedFileName {
+                contextualPrompt += "\n\nATTACHED FILE: \(fileName)\nCONTENT:\n\(fileContent)\n\nUse this content to help answer her question."
+                self.clearAttachment()
+            }
 
             let userText = text.lowercased()
 
@@ -215,6 +231,66 @@ class ChatViewModel {
                 }
             }
         }
+    }
+
+    func pickFile() {
+        let panel = NSOpenPanel()
+        panel.title = "Attach a file or photo"
+        panel.allowedContentTypes = [.image, .pdf, .plainText, .data]
+        panel.allowsMultipleSelection = false
+        panel.canChooseDirectories = false
+
+        guard panel.runModal() == .OK, let url = panel.url else { return }
+        let fileName = url.lastPathComponent
+        attachedFileName = fileName
+
+        Task { @MainActor in
+            let ext = url.pathExtension.lowercased()
+
+            if ["png", "jpg", "jpeg", "tiff", "heic", "webp"].contains(ext) {
+                // Image — OCR it
+                attachedContent = await ocrImage(at: url)
+                if attachedContent?.isEmpty ?? true {
+                    attachedContent = "[Image: \(fileName) — could not read text]"
+                }
+            } else if ext == "pdf" {
+                // PDF — extract text
+                if let pdfDoc = PDFKit.PDFDocument(url: url) {
+                    var text = ""
+                    for i in 0..<min(pdfDoc.pageCount, 10) {
+                        text += pdfDoc.page(at: i)?.string ?? ""
+                        text += "\n"
+                    }
+                    attachedContent = text.isEmpty ? "[PDF: \(fileName) — no text found]" : String(text.prefix(3000))
+                }
+            } else {
+                // Plain text / other
+                attachedContent = try? String(contentsOf: url, encoding: .utf8)
+                if let content = attachedContent {
+                    attachedContent = String(content.prefix(3000))
+                }
+            }
+        }
+    }
+
+    func clearAttachment() {
+        attachedFileName = nil
+        attachedContent = nil
+    }
+
+    private func ocrImage(at url: URL) async -> String? {
+        guard let cgImage = NSImage(contentsOf: url)?.cgImage(forProposedRect: nil, context: nil, hints: nil) else { return nil }
+
+        let request = VNRecognizeTextRequest()
+        request.recognitionLevel = .accurate
+        request.usesLanguageCorrection = true
+
+        let handler = VNImageRequestHandler(cgImage: cgImage, options: [:])
+        try? handler.perform([request])
+
+        return (request.results ?? [])
+            .compactMap { $0.topCandidates(1).first?.string }
+            .joined(separator: "\n")
     }
 
     private func markToolComplete(at msgIndex: Int, name: String) {
@@ -337,8 +413,42 @@ struct ChatView: View {
                 .padding(.vertical, 8)
             }
 
+            // Attached file indicator
+            if let fileName = viewModel.attachedFileName {
+                HStack(spacing: 6) {
+                    Image(systemName: "paperclip")
+                        .font(.system(size: 10))
+                        .foregroundColor(Theme.Colors.rosePrimary)
+                    Text(fileName)
+                        .font(.system(size: 10, weight: .medium))
+                        .foregroundColor(Theme.Colors.textMedium)
+                        .lineLimit(1)
+                    Spacer()
+                    Button(action: { viewModel.clearAttachment() }) {
+                        Image(systemName: "xmark.circle.fill")
+                            .font(.system(size: 12))
+                            .foregroundColor(Theme.Colors.textXSoft)
+                    }
+                    .buttonStyle(.plain)
+                }
+                .padding(.horizontal, 12)
+                .padding(.vertical, 6)
+                .background(Theme.Colors.rosePale.opacity(0.5))
+                .cornerRadius(10)
+                .padding(.horizontal, 14)
+            }
+
             // Input row
             HStack(spacing: 8) {
+                // Attach file
+                Button(action: { viewModel.pickFile() }) {
+                    Image(systemName: "paperclip")
+                        .font(.system(size: 14))
+                        .foregroundColor(Theme.Colors.rosePrimary)
+                        .frame(width: 30, height: 34)
+                }
+                .buttonStyle(.plain)
+
                 TextField("Ask me anything, Miss M...", text: $viewModel.inputText)
                     .textFieldStyle(.plain)
                     .font(.system(size: 12.5))
@@ -1396,6 +1506,43 @@ struct SettingsView: View {
                     Text("Smart Planner \u{00B7} Fitness \u{00B7} Flo Sync \u{00B7} Auto-DND")
                         .font(.system(size: 9))
                         .foregroundColor(Theme.Colors.textXSoft)
+
+                    // Test notifications
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("Test Notifications")
+                            .font(.system(size: 10, weight: .medium))
+                            .foregroundColor(Theme.Colors.textSoft)
+                        HStack(spacing: 6) {
+                            Button(action: {
+                                NotificationManager.shared.info("Workout Ready", message: "Your personalized plan is ready!", icon: "\u{1F4AA}")
+                            }) {
+                                Text("\u{1F4AA}").font(.system(size: 14))
+                                    .padding(6).background(Theme.Colors.rosePale).cornerRadius(8)
+                            }.buttonStyle(.plain)
+
+                            Button(action: {
+                                NotificationManager.shared.success("Plan Generated", message: "Your smart weekly plan is live!", icon: "\u{1F9E0}")
+                            }) {
+                                Text("\u{1F9E0}").font(.system(size: 14))
+                                    .padding(6).background(Theme.Colors.rosePale).cornerRadius(8)
+                            }.buttonStyle(.plain)
+
+                            Button(action: {
+                                NotificationManager.shared.reminder("Essay Due Tomorrow", message: "Marketing essay is due in 18 hours!", icon: "\u{1F6A8}")
+                            }) {
+                                Text("\u{1F6A8}").font(.system(size: 14))
+                                    .padding(6).background(Theme.Colors.rosePale).cornerRadius(8)
+                            }.buttonStyle(.plain)
+
+                            Button(action: {
+                                NotificationManager.shared.health("Time to Move", message: "You've been sitting for 2 hours. Quick stretch?", icon: "\u{1F6B6}\u{200D}\u{2640}\u{FE0F}")
+                            }) {
+                                Text("\u{1F6B6}\u{200D}\u{2640}\u{FE0F}").font(.system(size: 14))
+                                    .padding(6).background(Theme.Colors.rosePale).cornerRadius(8)
+                            }.buttonStyle(.plain)
+                        }
+                    }
+                    .padding(.top, 4)
                 }
                 .glassCard()
                 .padding(.horizontal, 12)

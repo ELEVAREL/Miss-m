@@ -40,6 +40,12 @@
 	<string>Miss M uses AppleScript to read Safari pages, sync Apple Notes, send iMessages, and control system features on your behalf.</string>
 	<key>NSContactsUsageDescription</key>
 	<string>Miss M reads your contacts to identify people in messages and help you communicate.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Miss M can read photos you share with her, like Flo screenshots or study materials.</string>
+	<key>NSLocationUsageDescription</key>
+	<string>Miss M uses your location for weather data and nearby study spot suggestions.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Miss M uses your location for weather data and nearby study spot suggestions.</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
 </dict>

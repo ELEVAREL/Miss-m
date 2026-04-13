@@ -1,6 +1,10 @@
 import AppKit
 import SwiftUI
 import Carbon.HIToolbox
+import CoreLocation
+import Photos
+import Speech
+import Contacts
 
 class AppDelegate: NSObject, NSApplicationDelegate {
     var statusItem: NSStatusItem?
@@ -22,6 +26,22 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             // HealthKit
             if HealthService.shared.isAvailable {
                 _ = await HealthService.shared.requestAccess()
+            }
+            // Speech Recognition (for voice mode + trigger word)
+            _ = await withCheckedContinuation { (cont: CheckedContinuation<SFSpeechRecognizerAuthorizationStatus, Never>) in
+                SFSpeechRecognizer.requestAuthorization { status in
+                    cont.resume(returning: status)
+                }
+            }
+            // Contacts
+            let contactStore = CNContactStore()
+            _ = try? await contactStore.requestAccess(for: .contacts)
+            // Photos
+            _ = await PHPhotoLibrary.requestAuthorization(for: .readWrite)
+            // Location
+            let locationManager = CLLocationManager()
+            if locationManager.authorizationStatus == .notDetermined {
+                locationManager.requestWhenInUseAuthorization()
             }
         }
     }
