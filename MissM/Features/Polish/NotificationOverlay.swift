@@ -1,4 +1,5 @@
 import SwiftUI
+import UserNotifications
 
 // MARK: - Miss M Notification System
 // Animated toast-style notifications that slide in from the top
@@ -48,9 +49,14 @@ class NotificationManager {
     var isShowing = false
     private var dismissTask: Task<Void, Never>?
 
-    private init() {}
+    private init() {
+        // Request notification permission on init
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { _, _ in }
+    }
 
     func show(_ notification: MissMNotification) {
+        // Fire real macOS notification
+        sendSystemNotification(title: notification.title, body: notification.message, icon: notification.icon)
         dismissTask?.cancel()
         current = notification
 
@@ -90,6 +96,22 @@ class NotificationManager {
 
     func health(_ title: String, message: String, icon: String = "\u{2764}\u{FE0F}") {
         show(MissMNotification(icon: icon, title: title, message: message, style: .health))
+    }
+
+    // MARK: - macOS System Notification
+    private func sendSystemNotification(title: String, body: String, icon: String) {
+        let content = UNMutableNotificationContent()
+        content.title = "\(icon) Miss M"
+        content.subtitle = title
+        content.body = body
+        content.sound = .default
+
+        let request = UNNotificationRequest(
+            identifier: UUID().uuidString,
+            content: content,
+            trigger: nil // Fire immediately
+        )
+        UNUserNotificationCenter.current().add(request)
     }
 }
 
